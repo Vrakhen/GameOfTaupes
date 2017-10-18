@@ -1,0 +1,30 @@
+version: 0.5
+author: Vraken
+main: fr.vraken.gameoftaupes.GameOfTaupes
+description: Plugin de Game of Taupes
+name: VrakenGameOfTaupes
+commands:
+  start:
+    description: Commencer la partie
+    usage: /start
+  t:
+    description: Pour parler entre taupes !
+    usage: /t
+  reveal:
+    description: Pour vous reveler en tant que taupe !
+    usage: /reveal
+  claim:
+    description: Pour réclamer votre kit de taupe !
+    usage: /claim
+  superreveal:
+    description: Pour vous reveler en tant que supertaupe !
+    usage: /superreveal
+  duel:
+    description: Pour défier un autre spectateur en duel !
+    usage: /duel
+  accept:
+    description: Pour accepter une demande de duel !
+    usage: /accept
+  decline:
+    description: Pour refuser une demande de duel !
+    usage: /decline

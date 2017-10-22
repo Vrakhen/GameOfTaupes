@@ -79,6 +79,9 @@ public class BossManager
 		} while(true);
 		
 		Bukkit.broadcastMessage(ChatColor.DARK_RED + "Un autel a été activé par une énergie mystique ! Utilisez votre boussole pour en trouver la source ! ");
+	    Location loc = shrinesLocation.get(index);
+		Bukkit.getPlayer("Spec").performCommand("dmarker add " + plugin.bossf.getString("boss." + level) + " icon:skull x:" + loc.getX() + " y:" + loc.getY() + " z:" + loc.getZ() + " world:" + loc.getWorld().getName());
+	    
 		bossLocations.put(index, level);
 		aliveBoss.put(level, index);
 	}

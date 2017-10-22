@@ -144,6 +144,8 @@ public class BossEvents implements Listener
 					{
 						BroadcastBossDeath(null, e.getEntity().getCustomName());
 					}
+					
+					Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.1"));
 				}
 			}
 		}
@@ -215,6 +217,8 @@ public class BossEvents implements Listener
 					{
 						BroadcastBossDeath(null, e.getEntity().getCustomName());
 					}
+					
+					Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.3"));
 				}
 			}
 		}
@@ -289,6 +293,8 @@ public class BossEvents implements Listener
 					{
 						BroadcastBossDeath(null, e.getEntity().getCustomName());
 					}
+					
+					Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.2"));
 				}
 			}
 		}
@@ -403,6 +409,8 @@ public class BossEvents implements Listener
 					{
 						BroadcastBossDeath(null, e.getEntity().getCustomName());
 					}
+					
+					Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.5"));
 				}
 			}
 		}
@@ -464,6 +472,8 @@ public class BossEvents implements Listener
 					{
 						BroadcastBossDeath(null, e.getEntity().getCustomName());
 					}
+					
+					Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.4"));
 				}
 			}
 		}
@@ -579,6 +589,8 @@ public class BossEvents implements Listener
 						{
 							BroadcastBossDeath(null, e.getEntity().getCustomName());
 						}
+						
+						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.6"));
 					}
 				}
 			}

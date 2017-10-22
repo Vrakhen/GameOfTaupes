@@ -32,6 +32,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -568,5 +569,17 @@ public class EventsClass implements Listener
         p.sendMessage("Ce craft a été modifié !");
       }
     }
+  }
+
+  @EventHandler
+  public void OnPlayerOpenTreasureChest(PlayerInteractEvent e)
+  {
+	if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getType() == Material.CHEST)
+	{
+		if(e.getClickedBlock().getLocation().distance(plugin.chestLocation) <= 10.0f)
+		{
+			Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
+		}
+	}
   }
 }

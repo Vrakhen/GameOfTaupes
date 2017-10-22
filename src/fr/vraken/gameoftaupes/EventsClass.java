@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,12 +56,13 @@ public class EventsClass implements Listener
   public static boolean pvp = false;
   ItemStack playerSkull = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
   File file = null;
-  BufferedWriter writer = null;
+  BufferedWriter bwriter = null;
   FileWriter fwriter = null;
+  PrintWriter pwriter = null;
   
   public EventsClass(GameOfTaupes gameoftaupes)
   {
-    plugin = gameoftaupes;	    
+    plugin = gameoftaupes;
     file = new File(plugin.getDataFolder(), "death_log.txt");
     if(!file.exists())
     {
@@ -73,7 +75,8 @@ public class EventsClass implements Listener
     try 
     {
         fwriter = new FileWriter(file, true);
-        writer = new BufferedWriter(fwriter);
+        bwriter = new BufferedWriter(fwriter);
+        pwriter = new PrintWriter(bwriter);
     }
     catch (IOException ex) {}
   }
@@ -400,12 +403,7 @@ public class EventsClass implements Listener
     
     if(plugin.playersAlive.contains(player))
     {	    
-	    try 
-        {
-		    writer.write(e.getDeathMessage());
-        }
-        catch (IOException ex) {}
-	    
+	    pwriter.println(e.getDeathMessage());
     	alive.remove(player.getUniqueId());  
 	    plugin.playersAlive.remove(player);
 	    

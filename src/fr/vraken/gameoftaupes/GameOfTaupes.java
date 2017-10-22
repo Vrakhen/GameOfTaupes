@@ -449,7 +449,7 @@ public class GameOfTaupes extends JavaPlugin
         		}
     		}
     		
-    		Bukkit.broadcastMessage("Le Grand Oeil a détecté une armée en " 
+    		Bukkit.broadcastMessage(ChatColor.GOLD + "Le Grand Oeil a détecté une armée en " 
     		+ (int)p.getLocation().getX() 
     		+ " / "
     		+ (int)p.getLocation().getZ()
@@ -581,6 +581,12 @@ public class GameOfTaupes extends JavaPlugin
         GameOfTaupes.this.objTxt = "Taupes reveal : ";
         GameOfTaupes.this.hasChangedGS = true;        
         GameOfTaupes.this.countdownObj = GameOfTaupes.this.objTxt + GameOfTaupes.this.objMinute + ":" + GameOfTaupes.this.objSecond;      
+      
+
+        
+        getServer().getWorld(getConfig().getString("world"))
+        	.getWorldBorder()
+        	.setSize(getConfig().getDouble("worldborder.finalsize"), 1200 * getConfig().getInt("worldborder.episodestorestract"));
       }
     }.runTaskLater(this, 1200 * getConfig().getInt("worldborder.retractafter"));
     
@@ -913,6 +919,7 @@ public class GameOfTaupes extends JavaPlugin
   {
 	    List<UUID> players2;
 	    int psize;
+        Random random = new Random(System.currentTimeMillis());
 	    for (Team team : this.s.getTeams()) 
 	    {
 	      if (team.getPlayers().size() >= 1)
@@ -922,7 +929,6 @@ public class GameOfTaupes extends JavaPlugin
 	        {
 	          players2.add(player2.getUniqueId());
 	        }
-	        Random random = new Random(System.currentTimeMillis());
 	        psize = random.nextInt(players2.size());
 	        
 	        UUID p = (UUID)players2.get(psize);
@@ -1005,7 +1011,7 @@ public class GameOfTaupes extends JavaPlugin
   
   public void spawnChest()
   {
-	Bukkit.broadcastMessage("Un trésor est apparu ! Allez vite le chercher avant que vos adversaires ne s'en emparent ! ");  
+	Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "Un trésor est apparu ! Allez vite le chercher avant que vos adversaires ne s'en emparent ! ");  
 	  
     Block chestBlock = Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.chestLocation);
     if(chestBlock.getType() != Material.TRAPPED_CHEST)

@@ -18,6 +18,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.ChatColor;
 
 public class BossManager 
 {
@@ -77,7 +78,7 @@ public class BossManager
 			
 		} while(true);
 		
-		Bukkit.broadcastMessage("Un autel a été activé par une énergie mystique ! Utilisez votre boussole pour en trouver la source ! ");
+		Bukkit.broadcastMessage(ChatColor.DARK_RED + "Un autel a été activé par une énergie mystique ! Utilisez votre boussole pour en trouver la source ! ");
 		bossLocations.put(index, level);
 		aliveBoss.put(level, index);
 	}

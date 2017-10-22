@@ -439,7 +439,7 @@ public class EventsClass implements Listener
 	    	public void run()
 	    	{
 	    	    Bukkit.getPlayer("Spec").performCommand("dynmap hide " + player.getName());
-	    	    Bukkit.getPlayer("Spec").performCommand("tp " + player.getName() + " 0 250 0");
+	    	    Bukkit.getPlayer("Spec").performCommand("tp " + player.getName() + " 0 500 0");
 	    	}
 	    }.runTaskLater(plugin, 60);
      }

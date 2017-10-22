@@ -47,12 +47,11 @@ public class BossEvents implements Listener
 	int spiderDead = 0;
 	int witchDead = 0;
 	
-	int zombielife = 4;
-	int creeperlife = 4;
-	int skeletonlife = 4;
-	int endermanlife = 2;
+	int zombielife = 3;
+	int creeperlife = 3;
+	int skeletonlife = 3;
 	int spiderlife = 3;
-	int witchlife = 3;
+	int witchlife = 2;
 	
 	boolean isWitchDead = false;
 

@@ -95,7 +95,15 @@ public class BossEvents implements Listener
 		{		
 			LivingEntity livingzombie = (LivingEntity) e.getEntity();
 			Zombie zombie = (Zombie) livingzombie;
-			zombie.setTarget((LivingEntity)e.getDamager());
+			if(e.getDamager() instanceof Arrow)
+			{
+				Arrow arr = (Arrow) e.getDamager();
+				zombie.setTarget((Player)arr.getShooter());
+			}
+			else 
+			{
+				zombie.setTarget((LivingEntity)e.getDamager());
+			}
 			if(livingzombie.getHealth() - e.getFinalDamage() <= 0)
 			{
 				e.setCancelled(true);	
@@ -170,7 +178,16 @@ public class BossEvents implements Listener
 		{		
 			LivingEntity livingcreeper = (LivingEntity) e.getEntity();
 			Creeper creeper = (Creeper) livingcreeper;
-			creeper.setTarget((LivingEntity)e.getDamager());
+			if(e.getDamager() instanceof Arrow)
+			{
+				Arrow arr = (Arrow) e.getDamager();
+				creeper.setTarget((Player)arr.getShooter());
+			}
+			else 
+			{
+				creeper.setTarget((LivingEntity)e.getDamager());
+			}
+			
 			if(livingcreeper.getHealth() - e.getFinalDamage() <= 0)
 			{
 				e.setCancelled(true);	
@@ -247,7 +264,15 @@ public class BossEvents implements Listener
 		{		
 			LivingEntity livingskeleton = (LivingEntity) e.getEntity();
 			Skeleton skel = (Skeleton) livingskeleton;
-			skel.setTarget((LivingEntity)e.getDamager());
+			if(e.getDamager() instanceof Arrow)
+			{
+				Arrow arr = (Arrow) e.getDamager();
+				skel.setTarget((Player)arr.getShooter());
+			}
+			else 
+			{
+				skel.setTarget((LivingEntity)e.getDamager());
+			}
 			if(livingskeleton.getHealth() - e.getFinalDamage() <= 0)
 			{
 				e.setCancelled(true);	
@@ -365,7 +390,15 @@ public class BossEvents implements Listener
 		{		
 			LivingEntity livingzombie = (LivingEntity) e.getEntity();
 			Zombie zomb = (Zombie) livingzombie;
-			zomb.setTarget((LivingEntity)e.getDamager());
+			if(e.getDamager() instanceof Arrow)
+			{
+				Arrow arr = (Arrow) e.getDamager();
+				zomb.setTarget((Player)arr.getShooter());
+			}
+			else 
+			{
+				zomb.setTarget((LivingEntity)e.getDamager());
+			}
 			if(livingzombie.getHealth() - e.getFinalDamage() <= 0)
 			{
 				e.setCancelled(true);
@@ -426,7 +459,15 @@ public class BossEvents implements Listener
 		{		
 			LivingEntity livingspider = (LivingEntity) e.getEntity();
 			Spider spider = (Spider) livingspider;
-			spider.setTarget((LivingEntity)e.getDamager());
+			if(e.getDamager() instanceof Arrow)
+			{
+				Arrow arr = (Arrow) e.getDamager();
+				spider.setTarget((Player)arr.getShooter());
+			}
+			else 
+			{
+				spider.setTarget((LivingEntity)e.getDamager());
+			}
 			if(livingspider.getHealth() - e.getFinalDamage() <= 0)
 			{
 				e.setCancelled(true);	

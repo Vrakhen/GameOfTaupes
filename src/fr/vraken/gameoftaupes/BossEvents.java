@@ -37,6 +37,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 public class BossEvents implements Listener
 {
@@ -57,6 +58,7 @@ public class BossEvents implements Listener
 
 	ArrayList<Player> slowingPlayers = new ArrayList<Player>();
 	ArrayList<Player> resistPlayers = new ArrayList<Player>();
+	ArrayList<Player> knockbackPlayers = new ArrayList<Player>();
 	ArrayList<Player> firePlayers = new ArrayList<Player>();
 	
 	static GameOfTaupes plugin;
@@ -85,6 +87,22 @@ public class BossEvents implements Listener
 		}
 	}
 
+	public void onBossDamage(EntityDamageEvent e)
+	{
+		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.1")
+				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.2")
+				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.3")
+				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.4")
+				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.6")
+				|| plugin.bossManager.gobelins.contains(e.getEntity())
+				|| plugin.blazes.contains(e.getEntity()))
+		{		
+			if(e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.PROJECTILE)
+			{
+				e.setCancelled(true);
+			}
+		}
+	}
 	
 	//GOLDEN ZOMBIE MANAGER
 	//---------------------
@@ -92,7 +110,7 @@ public class BossEvents implements Listener
 	public void onDamageZombie(EntityDamageByEntityEvent e)
 	{
 		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.1"))
-		{		
+		{					
 			LivingEntity livingzombie = (LivingEntity) e.getEntity();
 			Zombie zombie = (Zombie) livingzombie;
 			if(e.getDamager() instanceof Arrow)
@@ -167,7 +185,7 @@ public class BossEvents implements Listener
 			e.setCancelled(true);
 		}
 	}
-	  
+
 	
 	//CHARGED CREEPER MANAGER
 	//-----------------------
@@ -175,7 +193,7 @@ public class BossEvents implements Listener
 	public void onDamageCreeper(EntityDamageByEntityEvent e)
 	{
 		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.3"))
-		{		
+		{				
 			LivingEntity livingcreeper = (LivingEntity) e.getEntity();
 			Creeper creeper = (Creeper) livingcreeper;
 			if(e.getDamager() instanceof Arrow)
@@ -224,8 +242,11 @@ public class BossEvents implements Listener
 						
 						for(OfflinePlayer pl : team.getPlayers())
 						{
+							knockbackPlayers.add((Player) pl);
+							/*
 							LivingEntity livingpl = (LivingEntity) pl;
-							livingpl.setHealth(20.0f);
+							livingpl.setHealth(20.0f);*/
+							
 						}
 						
 						BroadcastBossDeath(team, e.getEntity().getCustomName());
@@ -254,14 +275,44 @@ public class BossEvents implements Listener
 		}
 	}
 
+	@EventHandler
+	public void onKnockbackPlayerHit(EntityDamageByEntityEvent e)
+	{
+		if(e.getEntity() instanceof Player)
+		{
+			Player player = (Player) e.getEntity();
+			
+			if(knockbackPlayers.contains(player) 
+					&& e.getDamager() instanceof Player
+					&& e.getCause() == DamageCause.ENTITY_ATTACK)
+			{
+				Player damager = (Player) e.getDamager();
+				
+				Random rdm = new Random();
+				int knockChance = rdm.nextInt(100);
+				
+				if(knockChance < 25)
+				{
+					Vector knockback = new Vector(
+							damager.getLocation().getX() - player.getLocation().getX(),
+							damager.getLocation().getY() - player.getLocation().getY(),
+							damager.getLocation().getZ() - player.getLocation().getZ());
+					knockback.normalize().multiply(-2);
+					
+					damager.setVelocity(knockback);
+				}
+			}
+		}
+	}
 
+	
 	//SLOWING SKELETON MANAGER
 	//------------------------
 	@EventHandler
 	public void onDamageSkeleton(EntityDamageByEntityEvent e)
 	{
 		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.2"))
-		{		
+		{					
 			LivingEntity livingskeleton = (LivingEntity) e.getEntity();
 			Skeleton skel = (Skeleton) livingskeleton;
 			if(e.getDamager() instanceof Arrow)
@@ -387,7 +438,7 @@ public class BossEvents implements Listener
 	public void onDamageGobelins(EntityDamageByEntityEvent e)
 	{
 		if(plugin.bossManager.gobelins.contains(e.getEntity()))
-		{		
+		{					
 			LivingEntity livingzombie = (LivingEntity) e.getEntity();
 			Zombie zomb = (Zombie) livingzombie;
 			if(e.getDamager() instanceof Arrow)
@@ -456,7 +507,7 @@ public class BossEvents implements Listener
 	public void onDamageSpider(EntityDamageByEntityEvent e)
 	{
 		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.4"))
-		{		
+		{					
 			LivingEntity livingspider = (LivingEntity) e.getEntity();
 			Spider spider = (Spider) livingspider;
 			if(e.getDamager() instanceof Arrow)
@@ -551,7 +602,7 @@ public class BossEvents implements Listener
 	public void onDamageWitch(EntityDamageByEntityEvent e)
 	{
 		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.6"))
-		{		
+		{					
 			LivingEntity livingwitch = (LivingEntity) e.getEntity();
 			if(livingwitch.getHealth() - e.getFinalDamage() <= 0)
 			{
@@ -590,7 +641,7 @@ public class BossEvents implements Listener
 				e.setCancelled(true);
 			}
 			else 
-			{
+			{				
 				LivingEntity bl = (LivingEntity) e.getEntity();
 				if(bl.getHealth() - e.getFinalDamage() <= 0)
 				{

@@ -1012,7 +1012,11 @@ public class GameOfTaupes extends JavaPlugin
   public void spawnChest()
   {
 	Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "Un trésor est apparu ! Allez vite le chercher avant que vos adversaires ne s'en emparent ! ");  
-	Bukkit.getPlayer("Spec").performCommand("dmarker add chest icon:chest x:" + GameOfTaupes.this.chestLocation.getX() + " y:" + GameOfTaupes.this.chestLocation.getY() + " z:" + GameOfTaupes.this.chestLocation.getZ() + " world:" + GameOfTaupes.this.chestLocation.getWorld().getName());
+	try 
+	{
+		Bukkit.getPlayer("Spec").performCommand("dmarker add chest icon:chest x:" + GameOfTaupes.this.chestLocation.getX() + " y:" + GameOfTaupes.this.chestLocation.getY() + " z:" + GameOfTaupes.this.chestLocation.getZ() + " world:" + GameOfTaupes.this.chestLocation.getWorld().getName());
+	}
+	catch(Exception ex) {}
   
     Block chestBlock = Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.chestLocation);
     if(chestBlock.getType() != Material.TRAPPED_CHEST)

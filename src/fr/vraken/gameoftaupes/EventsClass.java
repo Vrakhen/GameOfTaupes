@@ -577,7 +577,11 @@ public class EventsClass implements Listener
 	{
 		if(e.getClickedBlock().getLocation().distance(plugin.chestLocation) <= 10.0f)
 		{
-			Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
+			try 
+			{
+				Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
+			}
+			catch(Exception ex) {}
 		}
 	}
   }

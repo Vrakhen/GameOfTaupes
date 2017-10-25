@@ -247,9 +247,9 @@ public class BossEvents implements Listener
 						for(OfflinePlayer pl : team.getPlayers())
 						{
 							knockbackPlayers.add((Player) pl);
-							/*
+							
 							LivingEntity livingpl = (LivingEntity) pl;
-							livingpl.setHealth(20.0f);*/
+							livingpl.setHealth(20.0f);
 							
 						}
 						
@@ -762,7 +762,7 @@ public class BossEvents implements Listener
 		}
 		else
 		{
-			Bukkit.broadcastMessage(bossName + " est mort de manière indigne ! Personne ne profitera donc de ses récompenses ! ");
+			Bukkit.broadcastMessage(bossName + " est mort de maniÃ¨re indigne ! Personne ne profitera donc de ses rÃ©compenses ! ");
 		}
 		for (Player online : Bukkit.getOnlinePlayers())
         {

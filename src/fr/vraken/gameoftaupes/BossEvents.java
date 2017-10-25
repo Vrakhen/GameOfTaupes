@@ -299,7 +299,7 @@ public class BossEvents implements Listener
 				Random rdm = new Random();
 				int knockChance = rdm.nextInt(100);
 				
-				if(knockChance < 25)
+				if(knockChance < 50)
 				{
 					Vector knockback = new Vector(
 							damager.getLocation().getX() - player.getLocation().getX(),

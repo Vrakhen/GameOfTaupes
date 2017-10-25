@@ -50,7 +50,9 @@ public class GameOfTaupes extends JavaPlugin
   BossManager bossManager;
   FileConfiguration teamf;
   FileConfiguration bossf;
+  FileConfiguration deathf;
   
+  ArrayList<UUID> playersInTeam = new ArrayList<UUID>();
   HashMap<UUID, Integer> taupesId = new HashMap<UUID, Integer>();
   HashMap<UUID, Integer> supertaupesId = new HashMap<UUID, Integer>();
   int taupeId;
@@ -145,6 +147,7 @@ public class GameOfTaupes extends JavaPlugin
     
     teamf = filesManager.getTeamConfig();
     bossf = filesManager.getBossConfig();
+    deathf = filesManager.getDeathConfig();
     
     this.sm = Bukkit.getScoreboardManager();
     this.s = this.sm.getMainScoreboard();
@@ -159,6 +162,7 @@ public class GameOfTaupes extends JavaPlugin
     getConfig().options().copyDefaults(true);
     teamf.options().copyDefaults(true);
     bossf.options().copyDefaults(true);
+    deathf.options().copyDefaults(true);
     saveConfig();
     
     Bukkit.createWorld(new WorldCreator(getConfig().getString("world")));

@@ -1,10 +1,6 @@
 package fr.vraken.gameoftaupes;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,30 +51,10 @@ public class EventsClass implements Listener
   static ArrayList<UUID> alive = new ArrayList<UUID>();
   public static boolean pvp = false;
   ItemStack playerSkull = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
-  File file = null;
-  BufferedWriter bwriter = null;
-  FileWriter fwriter = null;
-  PrintWriter pwriter = null;
   
   public EventsClass(GameOfTaupes gameoftaupes)
   {
     plugin = gameoftaupes;
-    file = new File(plugin.getDataFolder(), "death_log.txt");
-    if(!file.exists())
-    {
-        try 
-        {
-            file.createNewFile();
-        } 
-        catch (IOException ex) {}
-    }
-    try 
-    {
-        fwriter = new FileWriter(file, true);
-        bwriter = new BufferedWriter(fwriter);
-        pwriter = new PrintWriter(bwriter);
-    }
-    catch (IOException ex) {}
   }
   
   public static void addItem(Inventory inv, ChatColor ccolor, DyeColor color, String Name, int slot)
@@ -230,6 +206,10 @@ public class EventsClass implements Listener
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("rose.name"));
 	          plugin.rose.addPlayer(p);
+	          if(!plugin.playersInTeam.contains(p.getUniqueId()))
+	          {
+		          plugin.playersInTeam.add(p.getUniqueId());
+	          }
 	        }
 	        else
 	        {
@@ -244,6 +224,10 @@ public class EventsClass implements Listener
 		            ChatColor.RESET + 
 		            " Vous avez rejoint " + plugin.teamf.getString("cyan.name"));
 		          plugin.cyan.addPlayer(p);
+		          if(!plugin.playersInTeam.contains(p.getUniqueId()))
+		          {
+			          plugin.playersInTeam.add(p.getUniqueId());
+		          }
 		        }
 		        else
 		        {
@@ -258,6 +242,10 @@ public class EventsClass implements Listener
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("jaune.name"));
 	          plugin.jaune.addPlayer(p);
+	          if(!plugin.playersInTeam.contains(p.getUniqueId()))
+	          {
+		          plugin.playersInTeam.add(p.getUniqueId());
+	          }
 	        }
 	        else
 	        {
@@ -272,6 +260,10 @@ public class EventsClass implements Listener
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("violette.name"));
 	          plugin.violette.addPlayer(p);
+	          if(!plugin.playersInTeam.contains(p.getUniqueId()))
+	          {
+		          plugin.playersInTeam.add(p.getUniqueId());
+	          }
 	        }
 	        else
 	        {
@@ -286,6 +278,10 @@ public class EventsClass implements Listener
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("verte.name"));
 	          plugin.verte.addPlayer(p);
+	          if(!plugin.playersInTeam.contains(p.getUniqueId()))
+	          {
+		          plugin.playersInTeam.add(p.getUniqueId());
+	          }
 	        }
 	        else
 	        {
@@ -402,8 +398,15 @@ public class EventsClass implements Listener
     Player player = e.getEntity();
     
     if(plugin.playersAlive.contains(player))
-    {	    
-	    pwriter.println(e.getDeathMessage());
+    {	    	    
+	    plugin.deathf.addDefault(player.getName(), (String)e.getDeathMessage());
+	    plugin.deathf.options().copyDefaults(true);
+	    try 
+	    {
+			plugin.deathf.save(plugin.filesManager.deathf);
+		} 
+	    catch (IOException e1) {}
+	    
     	alive.remove(player.getUniqueId());  
 	    plugin.playersAlive.remove(player);
 	    
@@ -577,11 +580,7 @@ public class EventsClass implements Listener
 	{
 		if(e.getClickedBlock().getLocation().distance(plugin.chestLocation) <= 10.0f)
 		{
-			try 
-			{
-				Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
-			}
-			catch(Exception ex) {}
+			Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
 		}
 	}
   }

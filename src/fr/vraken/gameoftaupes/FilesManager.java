@@ -10,8 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class FilesManager
 {
-	private File configf, teamf, bossf;
-    private FileConfiguration config, team, boss;
+	public File configf, teamf, bossf, deathf;
+    private FileConfiguration config, team, boss, death;
     GameOfTaupes plugin;
     
     public FilesManager(GameOfTaupes plugin) throws IOException, InvalidConfigurationException
@@ -33,11 +33,17 @@ public class FilesManager
         return this.boss;
     }
 
+    public FileConfiguration getDeathConfig() 
+    {
+        return this.death;
+    }
+
     private void createFiles() throws IOException 
     {
         configf = new File(plugin.getDataFolder(), "config.yml");
         teamf = new File(plugin.getDataFolder(), "team.yml");
         bossf = new File(plugin.getDataFolder(), "boss.yml");
+        deathf = new File(plugin.getDataFolder(), "death.yml");
 
         if (!configf.exists()) 
         {
@@ -51,10 +57,15 @@ public class FilesManager
         {
             bossf.createNewFile();
         }
+        if (!deathf.exists()) 
+        {
+            deathf.createNewFile();
+        }
 
         config = new YamlConfiguration();
         team = new YamlConfiguration();
         boss = new YamlConfiguration();
+        death = new YamlConfiguration();
     }
     
     public void addTeamDefault() throws IOException, InvalidConfigurationException

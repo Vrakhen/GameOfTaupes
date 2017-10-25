@@ -2,6 +2,7 @@ package fr.vraken.gameoftaupes;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,10 +57,11 @@ public class BossEvents implements Listener
 	
 	boolean isWitchDead = false;
 
-	ArrayList<Player> slowingPlayers = new ArrayList<Player>();
-	ArrayList<Player> resistPlayers = new ArrayList<Player>();
-	ArrayList<Player> knockbackPlayers = new ArrayList<Player>();
-	ArrayList<Player> firePlayers = new ArrayList<Player>();
+	ArrayList<UUID> slowingPlayers = new ArrayList<UUID>();
+	ArrayList<UUID> resistPlayers = new ArrayList<UUID>();
+	ArrayList<UUID> knockbackPlayers = new ArrayList<UUID>();
+	ArrayList<UUID> nauseaPlayers = new ArrayList<UUID>();
+	ArrayList<UUID> firePlayers = new ArrayList<UUID>();
 	
 	static GameOfTaupes plugin;
 	BossManager bossManager;
@@ -246,7 +248,7 @@ public class BossEvents implements Listener
 						
 						for(OfflinePlayer pl : team.getPlayers())
 						{
-							knockbackPlayers.add((Player) pl);
+							knockbackPlayers.add(pl.getUniqueId());
 							
 							LivingEntity livingpl = (LivingEntity) pl;
 							livingpl.setHealth(20.0f);
@@ -288,11 +290,10 @@ public class BossEvents implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			Player player = (Player) e.getEntity();
+			Player damaged = (Player) e.getEntity();
 			
-			if(knockbackPlayers.contains(player) 
-					&& e.getDamager() instanceof Player
-					&& e.getCause() == DamageCause.ENTITY_ATTACK)
+			if(knockbackPlayers.contains(damaged.getUniqueId()) 
+					&& e.getDamager() instanceof Player)
 			{
 				Player damager = (Player) e.getDamager();
 				
@@ -302,9 +303,9 @@ public class BossEvents implements Listener
 				if(knockChance < 50)
 				{
 					Vector knockback = new Vector(
-							damager.getLocation().getX() - player.getLocation().getX(),
-							damager.getLocation().getY() - player.getLocation().getY(),
-							damager.getLocation().getZ() - player.getLocation().getZ());
+							damager.getLocation().getX() - damaged.getLocation().getX(),
+							damager.getLocation().getY() - damaged.getLocation().getY(),
+							damager.getLocation().getZ() - damaged.getLocation().getZ());
 					knockback.normalize().multiply(-2);
 					
 					damager.setVelocity(knockback);
@@ -368,7 +369,7 @@ public class BossEvents implements Listener
 						
 						for(OfflinePlayer pl : team.getPlayers())
 						{
-							slowingPlayers.add((Player) pl);
+							slowingPlayers.add(pl.getUniqueId());
 						}
 						
 						BroadcastBossDeath(team, e.getEntity().getCustomName());
@@ -412,22 +413,26 @@ public class BossEvents implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			Player player = (Player) e.getEntity();
+			Player damaged = (Player) e.getEntity();
 			
-			if(slowingPlayers.contains(player))
+			if(slowingPlayers.contains(damaged.getUniqueId()))
 			{
-				Random rdm = new Random();
-				int slowChance = rdm.nextInt(100);
-				
-				if(slowChance < 25)
+				if(e.getDamager() instanceof Player)
 				{
-					try
-					{						
-						LivingEntity damager = (LivingEntity) e.getDamager();					
-						PotionEffect slow = new PotionEffect(PotionEffectType.SLOW, 100, 0);
-						damager.addPotionEffect(slow);
+					Player damager = (Player) e.getDamager();
+					
+					Random rdm = new Random();
+					int slowChance = rdm.nextInt(100);
+					
+					if(slowChance < 25)
+					{
+						try
+						{						
+							PotionEffect slow = new PotionEffect(PotionEffectType.SLOW, 100, 0);
+							damager.addPotionEffect(slow);
+						}
+						catch(Exception ex) {}
 					}
-					catch(ClassCastException ex) {}
 				}
 			}
 		}
@@ -495,8 +500,7 @@ public class BossEvents implements Listener
 						
 						for(OfflinePlayer pl : team.getPlayers())
 						{
-							LivingEntity livingpl = (LivingEntity) pl;
-							livingpl.setHealth(20.0f);
+							nauseaPlayers.add(pl.getUniqueId());
 						}
 						
 						BroadcastBossDeath(team, e.getEntity().getCustomName());
@@ -511,6 +515,31 @@ public class BossEvents implements Listener
 						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.5"));
 					}
 					catch(Exception ex) {}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onNauseaPlayerHit(EntityDamageByEntityEvent e)
+	{
+		if(e.getDamager() instanceof Player)
+		{
+			Player damager = (Player) e.getDamager();
+			
+			if(nauseaPlayers.contains(damager.getUniqueId()))
+			{
+				if(e.getEntity() instanceof Player)
+				{
+					Player damaged = (Player) e.getEntity();
+					Random rdm = new Random();
+					int nauseaChance = rdm.nextInt(100);
+					
+					if(nauseaChance < 20)
+					{
+						PotionEffect nausea = new PotionEffect(PotionEffectType.CONFUSION, 100, 0);
+						damaged.addPotionEffect(nausea);
+					}
 				}
 			}
 		}
@@ -571,7 +600,7 @@ public class BossEvents implements Listener
 						
 						for(OfflinePlayer pl : team.getPlayers())
 						{
-							resistPlayers.add((Player) pl);
+							resistPlayers.add(pl.getUniqueId());
 						}
 						
 						BroadcastBossDeath(team, e.getEntity().getCustomName());
@@ -604,13 +633,16 @@ public class BossEvents implements Listener
 	@EventHandler
 	public void onResistPlayerHit(EntityDamageByEntityEvent e)
 	{
-		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player)
+		if(e.getEntity() instanceof Player)
 		{
-			Player player = (Player) e.getEntity();
+			Player damaged = (Player) e.getEntity();
 			
-			if(resistPlayers.contains(player))
+			if(resistPlayers.contains(damaged.getUniqueId()))
 			{
-				e.setDamage(e.getDamage() * 0.75f);
+				if(e.getDamager() instanceof Player)
+				{
+					e.setDamage(e.getDamage() * 0.75f);
+				}
 			}
 		}
 	}
@@ -692,7 +724,7 @@ public class BossEvents implements Listener
 							
 							for(OfflinePlayer pl : team.getPlayers())
 							{
-								firePlayers.add((Player) pl);
+								firePlayers.add(pl.getUniqueId());
 							}
 							
 							BroadcastBossDeath(team, plugin.bossf.getString("boss.6"));
@@ -716,16 +748,24 @@ public class BossEvents implements Listener
 	@EventHandler
 	public void onFirePlayerAttack(EntityDamageByEntityEvent e)
 	{
-		if(e.getDamager() instanceof Player && firePlayers.contains(e.getDamager()))
+		if(e.getDamager() instanceof Player)
 		{
-			//Player player = (Player) e.getEntity();
-			Random rdm = new Random();
-			int fireChance = rdm.nextInt(100);
+			Player damager = (Player) e.getDamager();
 			
-			if(fireChance < 20)
+			if(firePlayers.contains(damager.getUniqueId()))
 			{
-				LivingEntity damaged = (LivingEntity) e.getEntity();					
-				damaged.setFireTicks(40);
+				if(e.getEntity() instanceof Player)
+				{
+					Player damaged = (Player) e.getEntity();
+					
+					Random rdm = new Random();
+					int fireChance = rdm.nextInt(100);
+					
+					if(fireChance < 20)
+					{
+						damaged.setFireTicks(40);
+					}
+				}
 			}
 		}
 	}

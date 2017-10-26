@@ -362,27 +362,27 @@ public class GameOfTaupes extends JavaPlugin
           //-----------------        
           if(this.minutes == 15 && GameOfTaupes.this.episode == 1)
           {
-          	GameOfTaupes.this.bossManager.activateShrine(1);
+          	GameOfTaupes.this.bossManager.activateShrine(4);
           }
           if(this.minutes == 5 && GameOfTaupes.this.episode == 1)
           {
-          	GameOfTaupes.this.bossManager.activateShrine(2);
+          	GameOfTaupes.this.bossManager.activateShrine(5);
           }
           if(this.minutes == 15 && GameOfTaupes.this.episode == 2)
           {
-          	GameOfTaupes.this.bossManager.activateShrine(3);
+          	GameOfTaupes.this.bossManager.activateShrine(6);
           }
           if(this.minutes == 5 && GameOfTaupes.this.episode == 2)
           {
-          	GameOfTaupes.this.bossManager.activateShrine(4);
+          	GameOfTaupes.this.bossManager.activateShrine(1);
           }
           if(this.minutes == 15 && GameOfTaupes.this.episode == 3)
           {
-          	GameOfTaupes.this.bossManager.activateShrine(5);
+          	GameOfTaupes.this.bossManager.activateShrine(2);
           }
           if(this.minutes == 5 && GameOfTaupes.this.episode == 3)
           {
-          	GameOfTaupes.this.bossManager.activateShrine(6);
+          	GameOfTaupes.this.bossManager.activateShrine(3);
           }
           
           
@@ -1498,7 +1498,7 @@ public class GameOfTaupes extends JavaPlugin
 	Team t = null;
 	Random rdm = new Random();
 		
-	while(n < 10)
+	while(n < 20)
 	{
 		++n;
 		tIdx = rdm.nextInt(GameOfTaupes.this.s.getTeams().size());

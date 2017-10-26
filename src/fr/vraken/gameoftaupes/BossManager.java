@@ -249,6 +249,11 @@ public class BossManager
 		Entity blaze3 = this.plugin.getServer().getWorld(this.plugin.getConfig().getString("world")).spawnEntity(loc3, EntityType.BLAZE);
 		Entity blaze4 = this.plugin.getServer().getWorld(this.plugin.getConfig().getString("world")).spawnEntity(loc4, EntityType.BLAZE);
 		
+		blaze1.setCustomName("Fire minion");
+		blaze2.setCustomName("Fire minion");
+		blaze3.setCustomName("Fire minion");
+		blaze4.setCustomName("Fire minion");
+		
 		this.blazes.add(blaze1.getEntityId());
 		this.blazes.add(blaze2.getEntityId());
 		this.blazes.add(blaze3.getEntityId());

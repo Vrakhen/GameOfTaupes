@@ -89,6 +89,7 @@ public class BossEvents implements Listener
 		}
 	}
 
+	@EventHandler
 	public void onBossDamage(EntityDamageEvent e)
 	{
 		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.1")
@@ -275,13 +276,16 @@ public class BossEvents implements Listener
 	@EventHandler
 	public void onCreeperExplode(EntityExplodeEvent e)
 	{
-		if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.3"))
+		if(e.getEntity() instanceof Creeper)
 		{
-			e.setCancelled(true);
-			e.getLocation().getWorld().createExplosion(e.getLocation(), 4.0f, true);
-			plugin.bossManager.aliveBoss.remove(3);
+			if(e.getEntity().getCustomName() == plugin.bossf.getString("boss.3"))
+			{
+				e.setCancelled(true);
+				e.getLocation().getWorld().createExplosion(e.getLocation(), 4.0f, true);
+				plugin.bossManager.aliveBoss.remove(3);
 
-			Bukkit.broadcastMessage(plugin.bossf.getString("boss.3") + " a fait exploser un autel de pouvoir ! ");
+				Bukkit.broadcastMessage(plugin.bossf.getString("boss.3") + " a fait exploser un autel de pouvoir ! ");
+			}
 		}
 	}
 

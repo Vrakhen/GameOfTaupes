@@ -28,9 +28,10 @@ public class BossManager
 	private ArrayList<Integer> activatedShrines = new ArrayList<Integer>();
 	private Map<Integer, Integer> bossLocations = new HashMap<Integer, Integer>();
 	public Map<Integer, Integer> aliveBoss = new HashMap<Integer, Integer>();
-	public ArrayList<Entity> gobelins = new ArrayList<Entity>();
+	public ArrayList<Integer> gobelins = new ArrayList<Integer>();
+	public ArrayList<Integer> blazes = new ArrayList<Integer>();
 	
-	public ArrayList<LivingEntity> spawnedBoss = new ArrayList<LivingEntity>();
+	public ArrayList<Integer> spawnedBoss = new ArrayList<Integer>();
 
 	public BossManager(GameOfTaupes gameoftaupes)
 	{
@@ -138,7 +139,7 @@ public class BossManager
 		
 		livingzombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100000, 1));
 		
-		this.spawnedBoss.add(livingzombie);
+		this.spawnedBoss.add(livingzombie.getEntityId());
 	}
 	
 	private void spawnSkeleton(Location loc)
@@ -160,7 +161,7 @@ public class BossManager
 		livingskeleton.getEquipment().setLeggings(new ItemStack(Material.CHAINMAIL_LEGGINGS, 1));
 		livingskeleton.getEquipment().setItemInHand(new ItemStack(Material.BOW, 1));
 		
-		this.spawnedBoss.add(livingskeleton);
+		this.spawnedBoss.add(livingskeleton.getEntityId());
 	}
 	
 	private void spawnCreeper(Location loc)
@@ -176,7 +177,7 @@ public class BossManager
 		c.setPowered(true);
 		c.setRemoveWhenFarAway(false);
 		
-		this.spawnedBoss.add(livingcreeper);
+		this.spawnedBoss.add(livingcreeper.getEntityId());
 	}
 	
 	private void spawnSpider(Location loc)
@@ -190,7 +191,7 @@ public class BossManager
 		livingspider.setHealth(16.0f);
 		livingspider.setRemoveWhenFarAway(false);
 		
-		this.spawnedBoss.add(livingspider);
+		this.spawnedBoss.add(livingspider.getEntityId());
 	}
 	
 	private void spawnGobelins(Location loc)
@@ -201,7 +202,7 @@ public class BossManager
 		
 			gzombie.setCustomName("Gobelin");
 			gzombie.setCustomNameVisible(true);
-			gobelins.add(gzombie);
+			gobelins.add(gzombie.getEntityId());
 		
 			LivingEntity livingzombie = (LivingEntity)gzombie;
 			livingzombie.setHealth(20.0f);
@@ -215,7 +216,7 @@ public class BossManager
 			livingzombie.getEquipment().setLeggings(new ItemStack(Material.LEATHER_LEGGINGS, 1));
 			livingzombie.getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD, 1));
 			
-			this.spawnedBoss.add(livingzombie);
+			this.spawnedBoss.add(livingzombie.getEntityId());
 		}
 	}
 	
@@ -232,7 +233,7 @@ public class BossManager
 		
 		livingwitch.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2400000, 10));
 		
-		this.spawnedBoss.add(livingwitch);
+		this.spawnedBoss.add(livingwitch.getEntityId());
 		
 		Location loc1 = loc.clone();
 		Location loc2 = loc.clone();
@@ -248,10 +249,10 @@ public class BossManager
 		Entity blaze3 = this.plugin.getServer().getWorld(this.plugin.getConfig().getString("world")).spawnEntity(loc3, EntityType.BLAZE);
 		Entity blaze4 = this.plugin.getServer().getWorld(this.plugin.getConfig().getString("world")).spawnEntity(loc4, EntityType.BLAZE);
 		
-		this.plugin.blazes.add(blaze1);
-		this.plugin.blazes.add(blaze2);
-		this.plugin.blazes.add(blaze3);
-		this.plugin.blazes.add(blaze4);
+		this.blazes.add(blaze1.getEntityId());
+		this.blazes.add(blaze2.getEntityId());
+		this.blazes.add(blaze3.getEntityId());
+		this.blazes.add(blaze4.getEntityId());
 		
 		LivingEntity bl1 = (LivingEntity) blaze1;
 		LivingEntity bl2 = (LivingEntity) blaze2;
@@ -263,10 +264,10 @@ public class BossManager
 		bl3.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2400000, 10));
 		bl4.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2400000, 10));
 		
-		this.spawnedBoss.add(bl1);
-		this.spawnedBoss.add(bl2);
-		this.spawnedBoss.add(bl3);
-		this.spawnedBoss.add(bl4);
+		this.spawnedBoss.add(bl1.getEntityId());
+		this.spawnedBoss.add(bl2.getEntityId());
+		this.spawnedBoss.add(bl3.getEntityId());
+		this.spawnedBoss.add(bl4.getEntityId());
 		
 		bl1.setRemoveWhenFarAway(false);
 		bl2.setRemoveWhenFarAway(false);

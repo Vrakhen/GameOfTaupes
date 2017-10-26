@@ -96,8 +96,8 @@ public class BossEvents implements Listener
 				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.3")
 				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.4")
 				|| e.getEntity().getCustomName() == plugin.bossf.getString("boss.6")
-				|| plugin.bossManager.gobelins.contains(e.getEntity())
-				|| plugin.blazes.contains(e.getEntity()))
+				|| plugin.bossManager.gobelins.contains(e.getEntity().getEntityId())
+				|| plugin.bossManager.blazes.contains(e.getEntity().getEntityId()))
 		{		
 			if(e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.PROJECTILE)
 			{
@@ -454,7 +454,7 @@ public class BossEvents implements Listener
 	@EventHandler
 	public void onDamageGobelins(EntityDamageByEntityEvent e)
 	{
-		if(plugin.bossManager.gobelins.contains(e.getEntity()))
+		if(plugin.bossManager.gobelins.contains(e.getEntity().getEntityId()))
 		{					
 			LivingEntity livingzombie = (LivingEntity) e.getEntity();
 			Zombie zomb = (Zombie) livingzombie;
@@ -472,7 +472,7 @@ public class BossEvents implements Listener
 				e.setCancelled(true);
 				e.getEntity().playEffect(EntityEffect.DEATH);
 				e.getEntity().remove();
-				plugin.bossManager.gobelins.remove(e.getEntity());
+				plugin.bossManager.gobelins.remove(e.getEntity().getEntityId());
 				
 				if(plugin.bossManager.gobelins.isEmpty())
 				{
@@ -677,7 +677,7 @@ public class BossEvents implements Listener
 	@EventHandler
 	public void onNaturalDamageBlaze(EntityDamageEvent e)
 	{
-		if(plugin.blazes.contains(e.getEntity()) && e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.PROJECTILE)
+		if(plugin.bossManager.blazes.contains(e.getEntity().getEntityId()) && e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.PROJECTILE)
 		{ 
 			e.setCancelled(true);
 		}
@@ -686,7 +686,7 @@ public class BossEvents implements Listener
 	@EventHandler
 	public void onDamageBlaze(EntityDamageByEntityEvent e)
 	{
-		if(plugin.blazes.contains(e.getEntity()))
+		if(plugin.bossManager.blazes.contains(e.getEntity().getEntityId()))
 		{ 
 			if(!isWitchDead)
 			{
@@ -697,8 +697,8 @@ public class BossEvents implements Listener
 				LivingEntity bl = (LivingEntity) e.getEntity();
 				if(bl.getHealth() - e.getFinalDamage() <= 0)
 				{
-					plugin.blazes.remove(e.getEntity());			
-					if(plugin.blazes.isEmpty())
+					plugin.bossManager.blazes.remove(e.getEntity().getEntityId());			
+					if(plugin.bossManager.blazes.isEmpty())
 					{
 						Location loc = e.getEntity().getLocation();
 						plugin.bossManager.aliveBoss.remove(6);

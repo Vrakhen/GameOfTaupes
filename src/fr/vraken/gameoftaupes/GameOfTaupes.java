@@ -23,7 +23,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -78,13 +77,8 @@ public class GameOfTaupes extends JavaPlugin
   Objective obj;
   int episode;
   int equipes;
-  ArrayList<Player> playersAlive = new ArrayList<>();
+  ArrayList<UUID> playersAlive = new ArrayList<UUID>();
   BukkitTask runnable;
-  ArrayList<Player> loc1 = new ArrayList<Player>();
-  ArrayList<Player> loc2 = new ArrayList<Player>();
-  ArrayList<Player> loc3 = new ArrayList<Player>();
-  ArrayList<Player> loc4 = new ArrayList<Player>();
-  ArrayList<Player> loc5 = new ArrayList<Player>();
   Location l1;
   Location l2;
   Location l3;
@@ -122,7 +116,6 @@ public class GameOfTaupes extends JavaPlugin
   String teamChoiceString = "son équipe";
 
   ArrayList<Integer> bossLoc = new ArrayList<Integer>();
-  ArrayList<Entity> blazes = new ArrayList<Entity>();
   
   UUID provoker;
   UUID provoked;
@@ -130,7 +123,8 @@ public class GameOfTaupes extends JavaPlugin
   Location duelSpawn2;
   boolean duelInProgress = false;
   
-  ArrayList<UUID> playerReveal = new ArrayList<>();
+  ArrayList<UUID> playerReveal = new ArrayList<UUID>();
+  ArrayList<String> teamReveal = new ArrayList<String>();
   
   
   public void onEnable()
@@ -138,7 +132,6 @@ public class GameOfTaupes extends JavaPlugin
     System.out.println("+-------------VrakenGameOfTaupes--------------+");
     System.out.println("|           Plugin cree par Vraken            |");
     System.out.println("+---------------------------------------------+");
-    
     try 
     {
 		filesManager = new FilesManager(this);
@@ -304,7 +297,7 @@ public class GameOfTaupes extends JavaPlugin
     //------------------
     for (Player p : Bukkit.getOnlinePlayers())
     {
-      this.playersAlive.add(p);
+      this.playersAlive.add(p.getUniqueId());
       EventsClass.alive.add(p.getUniqueId());
       p.getInventory().clear();
     }
@@ -429,35 +422,14 @@ public class GameOfTaupes extends JavaPlugin
       }
     }.runTaskTimer(this, 0L, 20L);
     
+    
+    //REVEALING A PLAYER'S LOCATION
+    //-----------------------------
     new BukkitRunnable()
     {
     	public void run()
     	{
-    		int n = 0;
-    		int pIdx;
-    		Player p = null;
-    		UUID uid = null;
-    		Random rdm = new Random();
-    		
-    		while(true && n < 10)
-    		{
-    			n++;
-        		pIdx = rdm.nextInt(GameOfTaupes.this.playersAlive.size());
-        		p = GameOfTaupes.this.playersAlive.get(pIdx);
-        		uid = p.getUniqueId();
-        		
-        		if(!GameOfTaupes.this.playerReveal.contains(uid))
-        		{
-        			GameOfTaupes.this.playerReveal.add(uid);
-        			break;
-        		}
-    		}
-    		
-    		Bukkit.broadcastMessage(ChatColor.GOLD + "Le Grand Oeil a détecté une armée en " 
-    		+ (int)p.getLocation().getX() 
-    		+ " / "
-    		+ (int)p.getLocation().getZ()
-    		+ " ! ");
+    		RevealPlayerLocation(false);
     	}
     	
     }.runTaskTimer(this, 6000, 12000);
@@ -737,10 +709,10 @@ public class GameOfTaupes extends JavaPlugin
       //---------------------
       if(cmd.getName().equalsIgnoreCase("duel") && !this.duelInProgress && this.gameStarted)
       {
-    	  if(!this.playersAlive.contains(player))
+    	  if(!this.playersAlive.contains(player.getUniqueId()))
     	  {
     		  Player provoked = Bukkit.getPlayer(args[0]);
-    		  if(!this.playersAlive.contains(provoked))
+    		  if(!this.playersAlive.contains(provoked.getUniqueId()))
     		  {
     			  if(this.provoker != null)
     			  {
@@ -758,7 +730,7 @@ public class GameOfTaupes extends JavaPlugin
       //--------------------
       if(cmd.getName().equalsIgnoreCase("accept"))
       {
-    	  if(!this.playersAlive.contains(player) && this.provoked == player.getUniqueId())
+    	  if(!this.playersAlive.contains(player.getUniqueId()) && this.provoked == player.getUniqueId())
     	  {
     		  this.duelInProgress = true;
     		  Bukkit.getPlayer(this.provoked).teleport(this.duelSpawn1);
@@ -772,7 +744,7 @@ public class GameOfTaupes extends JavaPlugin
       //---------------------
       if(cmd.getName().equalsIgnoreCase("decline"))
       {
-    	  if(!this.playersAlive.contains(player) && this.provoked == player.getUniqueId())
+    	  if(!this.playersAlive.contains(player.getUniqueId()) && this.provoked == player.getUniqueId())
     	  {
 			  Bukkit.getPlayer(provoker).sendMessage(player.getName() + " a refusé le duel. Le lâche !");
     		  this.provoked = null;
@@ -782,7 +754,7 @@ public class GameOfTaupes extends JavaPlugin
       
       //SPECTATE DUEL SPECTATE
       //----------------------
-      if(cmd.getName().equalsIgnoreCase("duelspectate") && this.duelInProgress && !this.playersAlive.contains(player))
+      if(cmd.getName().equalsIgnoreCase("duelspectate") && this.duelInProgress && !this.playersAlive.contains(player.getUniqueId()))
       {
 		  player.teleport(this.duelSpawn1);
       }
@@ -961,23 +933,64 @@ public class GameOfTaupes extends JavaPlugin
   
   public void checkVictory()
   {
-        if (GameOfTaupes.this.s.getTeams().size() == 1) {
-          for (Team lastteam : GameOfTaupes.this.s.getTeams())
-          {
-            Bukkit.broadcastMessage(GameOfTaupes.this.teamAnnounceString 
-            							+ lastteam.getPrefix() 
-            							+ lastteam.getName() 
-            							+ ChatColor.RESET 
-            							+ " a gagné ! ");
-            
-            Bukkit.getScheduler().cancelAllTasks();
-          }
-        }
-        else if(GameOfTaupes.this.s.getTeams().size() == 0)
-        {
-        	Bukkit.broadcastMessage("Toutes les équipes ont été éliminées, personne n'a gagné ! ");
-        	Bukkit.getScheduler().cancelAllTasks();
-        }	  
+	  if(GameOfTaupes.this.s.getTeams().size() == 2
+			  && (GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.taupesteam)
+					  || GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.supertaupesteam)))
+	  {
+		  if (GameOfTaupes.this.aliveTaupes.size() == 0
+				  && !GameOfTaupes.this.isTaupesTeamDead)
+		  {
+			  GameOfTaupes.this.isTaupesTeamDead = true;
+			  Bukkit.broadcastMessage(ChatColor.RED + "L'équipe des taupes a été éliminée ! ");
+			  GameOfTaupes.this.taupesteam.unregister();
+		  }
+		  if (GameOfTaupes.this.aliveSupertaupes.size() == 0
+				  && !GameOfTaupes.this.isSuperTaupeDead
+				  && GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
+		  {
+			  GameOfTaupes.this.isSuperTaupeDead = true;
+			  Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe a été éliminée ! ");
+			  GameOfTaupes.this.supertaupesteam.unregister();
+		  }
+	  }
+	  else if(GameOfTaupes.this.s.getTeams().size() == 3
+			  && GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.taupesteam)
+			  && GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.supertaupesteam))
+	  {
+		  if (GameOfTaupes.this.aliveTaupes.size() == 0
+				  && !GameOfTaupes.this.isTaupesTeamDead
+				  && GameOfTaupes.this.aliveSupertaupes.size() == 0
+				  && !GameOfTaupes.this.isSuperTaupeDead
+				  && GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
+		  {
+			  GameOfTaupes.this.isTaupesTeamDead = true;
+			  Bukkit.broadcastMessage(ChatColor.RED + "L'équipe des taupes a été éliminée ! ");
+			  GameOfTaupes.this.taupesteam.unregister();
+			  GameOfTaupes.this.isSuperTaupeDead = true;
+			  Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe a été éliminée ! ");
+			  GameOfTaupes.this.supertaupesteam.unregister();
+		  }
+	  }
+
+
+	  if (GameOfTaupes.this.s.getTeams().size() == 1) 
+	  {
+		  for (Team lastteam : GameOfTaupes.this.s.getTeams())
+		  {
+			  Bukkit.broadcastMessage(GameOfTaupes.this.teamAnnounceString 
+					  + lastteam.getPrefix() 
+					  + lastteam.getName() 
+					  + ChatColor.RESET 
+					  + " a gagné ! ");
+
+			  Bukkit.getScheduler().cancelAllTasks();
+		  }
+	  }
+	  else if(GameOfTaupes.this.s.getTeams().size() == 0)
+	  {
+		  Bukkit.broadcastMessage("Toutes les équipes ont été éliminées, personne n'a gagné ! ");
+		  Bukkit.getScheduler().cancelAllTasks();
+	  }
   }
   
   public void unregisterTeam()
@@ -985,7 +998,9 @@ public class GameOfTaupes extends JavaPlugin
       for(Team teams : GameOfTaupes.this.s.getTeams())
       {
       	//NORMAL TEAM UNREGISTRATION
-      	if(teams.getSize() == 0 && !teams.getName().equalsIgnoreCase("Taupes") && !teams.getName().equalsIgnoreCase("SuperTaupe"))
+      	if(teams.getSize() == 0 
+      			&& !teams.getName().equalsIgnoreCase("Taupes") 
+      			&& !teams.getName().equalsIgnoreCase("SuperTaupe"))
       	{
       		Bukkit.broadcastMessage(GameOfTaupes.this.teamAnnounceString 
           							+ teams.getPrefix() 
@@ -999,13 +1014,18 @@ public class GameOfTaupes extends JavaPlugin
   
   public void unregisterTaupeTeam()
   {
-      if (GameOfTaupes.this.aliveTaupes.size() == 0 && !GameOfTaupes.this.isTaupesTeamDead && GameOfTaupes.this.showedtaupes.size() == GameOfTaupes.this.taupeId)
+      if (GameOfTaupes.this.aliveTaupes.size() == 0
+    		  && !GameOfTaupes.this.isTaupesTeamDead
+    		  && GameOfTaupes.this.showedtaupes.size() == GameOfTaupes.this.taupeId)
       {
     	  GameOfTaupes.this.isTaupesTeamDead = true;
     	  Bukkit.broadcastMessage(ChatColor.RED + "L'équipe des taupes a été éliminée ! ");
     	  GameOfTaupes.this.taupesteam.unregister();
       }
-      if (GameOfTaupes.this.aliveSupertaupes.size() == 0 && !GameOfTaupes.this.isSuperTaupeDead && GameOfTaupes.this.showedsupertaupes.size() == GameOfTaupes.this.supertaupeId && GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
+      if (GameOfTaupes.this.aliveSupertaupes.size() == 0
+    		  && !GameOfTaupes.this.isSuperTaupeDead
+    		  && GameOfTaupes.this.showedsupertaupes.size() == GameOfTaupes.this.supertaupeId
+    		  && GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
       {
     	  GameOfTaupes.this.isSuperTaupeDead = true;
     	  Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe a été éliminée ! ");
@@ -1443,7 +1463,7 @@ public class GameOfTaupes extends JavaPlugin
 				{
 					Player pl = (Player) player;
 					
-					if(!GameOfTaupes.this.playersAlive.contains(player))
+					if(!GameOfTaupes.this.playersAlive.contains(player.getUniqueId()))
 					{
 						return;
 					}
@@ -1469,28 +1489,68 @@ public class GameOfTaupes extends JavaPlugin
 		}
 	}	
 
+  public void RevealPlayerLocation(boolean reset)
+  {	 
+	boolean foundTeam = false;
+	int n = 0;
+	int tIdx;
+	Player p = null;
+	Team t = null;
+	Random rdm = new Random();
+		
+	while(n < 10)
+	{
+		++n;
+		tIdx = rdm.nextInt(GameOfTaupes.this.s.getTeams().size());
+		t = (Team) GameOfTaupes.this.s.getTeams().toArray()[tIdx];
+			
+		if(t.getSize() == 0)
+		{
+			continue;
+		}
+			
+		if(!GameOfTaupes.this.teamReveal.contains(t.getName()))
+		{
+			for(OfflinePlayer op : t.getPlayers())
+			{
+				if(op.isOnline())
+				{
+					GameOfTaupes.this.teamReveal.add(t.getName());
+					p = (Player) op;
+	       			foundTeam = true;
+	       			break;
+				}
+			}
+		}
+		
+		if(foundTeam)
+		{
+			break;
+		}
+	}
+		
+	if(foundTeam)
+	{
+		Bukkit.broadcastMessage(ChatColor.GOLD + "Le Grand Oeil a détecté une armée en " 
+	  		+ (int)p.getLocation().getX() 
+	  		+ " / "
+	  		+ (int)p.getLocation().getZ()
+	  		+ " ! ");
+	}
+	else
+	{
+		if(reset)
+		{
+			return;
+		}
+		GameOfTaupes.this.teamReveal.clear();
+		RevealPlayerLocation(true);
+	}
+  }
+  
   
   //TODO
   public void testIfBossDespawn()
   {
-	  for(Entity boss : GameOfTaupes.this.bossManager.spawnedBoss)
-	  {
-		  try
-		  {
-			  boss.getLocation();
-		  }
-		  catch(Exception ex)
-		  {
-			  GameOfTaupes.this.bossManager.spawnedBoss.remove(boss);
-			  if(GameOfTaupes.this.bossManager.gobelins.contains(boss))
-			  {
-				  GameOfTaupes.this.bossManager.gobelins.remove(boss);
-			  }
-			  else if(GameOfTaupes.this.blazes.contains(boss))
-			  {
-				  GameOfTaupes.this.blazes.remove(boss);
-			  }			  
-		  }
-	  }
   }
 }

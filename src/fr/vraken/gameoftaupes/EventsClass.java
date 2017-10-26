@@ -188,20 +188,11 @@ public class EventsClass implements Listener
 	    if (e.getInventory().getName().equals(ChatColor.GOLD + "    Choisir " + plugin.teamChoiceString) && e.getCurrentItem().getType() == Material.BANNER)
 	    {
 	      BannerMeta banner = (BannerMeta)e.getCurrentItem().getItemMeta();
-	      try
-	      {
-	        plugin.loc1.remove(p);
-	        plugin.loc2.remove(p);
-	        plugin.loc3.remove(p);
-	        plugin.loc4.remove(p);
-	        plugin.loc5.remove(p);
-	      }
-	      catch (Exception localException) {}
+	      
 	      if (banner.getBaseColor() == DyeColor.PINK) 
 	      {
 	        if (plugin.rose.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 	        {
-	          plugin.loc1.add(p);
 	          p.sendMessage(plugin.rose.getPrefix() + "�" + 
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("rose.name"));
@@ -219,7 +210,6 @@ public class EventsClass implements Listener
 	      if (banner.getBaseColor() == DyeColor.CYAN) {
 		        if (plugin.cyan.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 		        {
-		          plugin.loc2.add(p);
 		          p.sendMessage(plugin.cyan.getPrefix() + "�" + 
 		            ChatColor.RESET + 
 		            " Vous avez rejoint " + plugin.teamf.getString("cyan.name"));
@@ -237,7 +227,6 @@ public class EventsClass implements Listener
 	      if (banner.getBaseColor() == DyeColor.YELLOW) {
 	        if (plugin.jaune.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 	        {
-	          plugin.loc3.add(p);
 	          p.sendMessage(plugin.jaune.getPrefix() + "�" + 
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("jaune.name"));
@@ -255,7 +244,6 @@ public class EventsClass implements Listener
 	      if (banner.getBaseColor() == DyeColor.PURPLE) {
 	        if (plugin.violette.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 	        {
-	          plugin.loc4.add(p);
 	          p.sendMessage(plugin.violette.getPrefix() + "�" + 
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("violette.name"));
@@ -273,7 +261,6 @@ public class EventsClass implements Listener
 	      if (banner.getBaseColor() == DyeColor.GREEN) {
 	        if (plugin.verte.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 	        {
-	          plugin.loc5.add(p);
 	          p.sendMessage(plugin.verte.getPrefix() + "�" + 
 	            ChatColor.RESET + 
 	            " Vous avez rejoint " + plugin.teamf.getString("verte.name"));
@@ -397,18 +384,18 @@ public class EventsClass implements Listener
   {
     Player player = e.getEntity();
     
-    if(plugin.playersAlive.contains(player))
+    if(plugin.playersAlive.contains(player.getUniqueId()))
     {	    	    
 	    plugin.deathf.addDefault(player.getName(), (String)e.getDeathMessage());
 	    plugin.deathf.options().copyDefaults(true);
 	    try 
 	    {
 			plugin.deathf.save(plugin.filesManager.deathf);
-		} 
+		}
 	    catch (IOException e1) {}
 	    
     	alive.remove(player.getUniqueId());  
-	    plugin.playersAlive.remove(player);
+	    plugin.playersAlive.remove(player.getUniqueId());
 	    
 	    e.getDrops().add(new ItemStack(Material.SKULL_ITEM));
 	    e.getDrops().add(new ItemStack(Material.GOLDEN_APPLE));
@@ -460,7 +447,7 @@ public class EventsClass implements Listener
     	 }
     	 for (Player pl : Bukkit.getOnlinePlayers()) 
 	     {
-    		 if(!plugin.playersAlive.contains(pl))
+    		 if(!plugin.playersAlive.contains(pl.getUniqueId()))
     		 {
     			 pl.sendMessage(victor + " a remporté son duel contre " + loser + " !");
     		 }

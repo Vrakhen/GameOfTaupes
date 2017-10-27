@@ -438,14 +438,17 @@ public class EventsClass implements Listener
 				pl.playSound(pl.getLocation(), Sound.WITHER_DEATH, 10.0F, 10.0F);
 			}
 
-			for(int i = 0; i < plugin.getConfig().getInt("options.taupesteams"); i++)
+			for(int i = 0; i < plugin.taupes.size(); i++)
 			{
 				if (plugin.taupes.get(i).contains(player.getUniqueId())) 
 				{
-					plugin.aliveTaupes.get(i).remove(player.getUniqueId());
+					plugin.aliveTaupes.remove(player.getUniqueId());
 				}
+			}
 
-				if (plugin.supertaupes.contains(player.getUniqueId())) 
+			for(int i = 0; i < plugin.supertaupes.size(); i++)
+			{
+				if (plugin.supertaupes.get(i) == player.getUniqueId()) 
 				{
 					plugin.aliveSupertaupes.remove(player.getUniqueId());
 				}
@@ -458,7 +461,12 @@ public class EventsClass implements Listener
 					Bukkit.getPlayer("Spec").performCommand("dynmap hide " + player.getName());
 					Bukkit.getPlayer("Spec").performCommand("tp " + player.getName() + " 0 500 0");
 				}
-			}.runTaskLater(plugin, 60);
+			}.runTaskLater(plugin, 60);		
+
+
+			plugin.unregisterTeam();
+			plugin.unregisterTaupeTeam();
+			plugin.checkVictory();
 		}
 		else if(plugin.duelInProgress)
 		{

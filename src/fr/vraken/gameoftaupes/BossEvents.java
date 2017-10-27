@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Witch;
@@ -713,6 +714,11 @@ public class BossEvents implements Listener
 							Arrow arr = (Arrow) killer;
 							player = (Player)arr.getShooter();
 						}
+						else if(killer instanceof Snowball)
+						{
+							Snowball snow = (Snowball) killer;
+							player = (Player)snow.getShooter();
+						}
 						else 
 						{
 							player = (Player) killer;
@@ -784,12 +790,15 @@ public class BossEvents implements Listener
 			{
 				Witch witch = (Witch) pot.getShooter();
 				if(witch.getCustomName() == plugin.bossf.getString("boss.6"))
-				{
+				{					
 					Potion p = new Potion(PotionType.SLOWNESS, 1);
 					p.setSplash(true);
 					ItemStack slow = new ItemStack(Material.POTION);
 					p.apply(slow);
-					pot.setItem(slow);
+					//pot.setItem(slow);
+					e.setCancelled(true);
+					ThrownPotion tpot = witch.launchProjectile(ThrownPotion.class);
+					tpot.setItem(slow);
 				}
 			}
 		}
@@ -806,7 +815,7 @@ public class BossEvents implements Listener
 		}
 		else
 		{
-			Bukkit.broadcastMessage(bossName + " est mort de maniÃ¨re indigne ! Personne ne profitera donc de ses rÃ©compenses ! ");
+			Bukkit.broadcastMessage(bossName + " est mort de manière indigne ! Personne ne profitera donc de ses récompenses ! ");
 		}
 		for (Player online : Bukkit.getOnlinePlayers())
         {

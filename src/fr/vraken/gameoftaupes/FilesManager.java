@@ -92,6 +92,10 @@ public class FilesManager
 		team.addDefault("verte.X", Integer.valueOf(0));
 		team.addDefault("verte.Y", Integer.valueOf(250));
 		team.addDefault("verte.Z", Integer.valueOf(0));
+		team.addDefault("grise.name", "grise");
+		team.addDefault("grise.X", Integer.valueOf(0));
+		team.addDefault("grise.Y", Integer.valueOf(250));
+		team.addDefault("grise.Z", Integer.valueOf(0));
 
 		team.options().copyDefaults(true);
 		team.save(teamf);

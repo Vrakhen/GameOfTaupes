@@ -101,18 +101,18 @@ public class GameOfTaupes extends JavaPlugin
 	NumberFormat objFormatter;
 	
 	//Teams
-	int equipes;
 	Location l1;
 	Location l2;
 	Location l3;
 	Location l4;
 	Location l5;
-	Team team;
+	Location l6;
 	Team rose;
 	Team jaune;
 	Team violette;
 	Team cyan;
 	Team verte;
+	Team grise;
 	
 	//Announcements
 	int revealEpisode;
@@ -214,6 +214,9 @@ public class GameOfTaupes extends JavaPlugin
 		this.verte = this.s.registerNewTeam(teamf.getString("verte.name"));
 		this.verte.setPrefix(ChatColor.GREEN.toString());
 		this.verte.setSuffix(ChatColor.WHITE.toString());
+		this.grise = this.s.registerNewTeam(teamf.getString("grise.name"));
+		this.grise.setPrefix(ChatColor.GRAY.toString());
+		this.grise.setSuffix(ChatColor.WHITE.toString());
 		
 		for(int i = 0; i < getConfig().getInt("options.taupesteams"); i++)
 		{
@@ -809,6 +812,10 @@ public class GameOfTaupes extends JavaPlugin
 				this.teamf.getInt("verte.X"), 
 				this.teamf.getInt("verte.Y"), 
 				this.teamf.getInt("verte.Z"));
+		this.l6 = new Location(Bukkit.getWorld(getConfig().get("world").toString()), 
+				this.teamf.getInt("grise.X"), 
+				this.teamf.getInt("grise.Y"), 
+				this.teamf.getInt("grise.Z"));
 
 	}
 
@@ -878,6 +885,10 @@ public class GameOfTaupes extends JavaPlugin
 			else if (this.s.getPlayerTeam(p).getName().equals(teamf.getString("verte.name"))) 
 			{
 				p.teleport(this.l5);
+			}
+			else if (this.s.getPlayerTeam(p).getName().equals(teamf.getString("grise.name"))) 
+			{
+				p.teleport(this.l6);
 			}
 			p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 
 					20 * getConfig().getInt("options.nodamagetime"), 4));
@@ -1056,8 +1067,8 @@ public class GameOfTaupes extends JavaPlugin
 		{
 			//NORMAL TEAM UNREGISTRATION
 			if(teams.getSize() == 0 
-					&& !teams.getName().equalsIgnoreCase("Taupes") 
-					&& !teams.getName().equalsIgnoreCase("SuperTaupe"))
+					&& !teams.getName().contains("Taupes") 
+					&& !teams.getName().contains("SuperTaupe"))
 			{
 				Bukkit.broadcastMessage(GameOfTaupes.this.teamAnnounceString 
 						+ teams.getPrefix() 

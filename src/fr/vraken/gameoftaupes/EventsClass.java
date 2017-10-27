@@ -102,6 +102,14 @@ public class EventsClass implements Listener
 			}
 			meta.setLore(lore);
 		}
+		else if (color.equals(DyeColor.GRAY))
+		{
+			List<String> lore = new ArrayList<String>();
+			for (OfflinePlayer pl : plugin.s.getTeam(plugin.teamf.getString("grise.name")).getPlayers()) {
+				lore.add(ChatColor.GRAY + "- " + pl.getName());
+			}
+			meta.setLore(lore);
+		}
 		meta.setBaseColor(color);
 
 		team.setItemMeta(meta);
@@ -118,6 +126,7 @@ public class EventsClass implements Listener
 		addItem(inv, ChatColor.DARK_PURPLE, DyeColor.PURPLE, plugin.teamf.getString("violette.name"), 2);
 		addItem(inv, ChatColor.AQUA, DyeColor.CYAN, plugin.teamf.getString("cyan.name"), 3);
 		addItem(inv, ChatColor.GREEN, DyeColor.GREEN, plugin.teamf.getString("verte.name"), 4);
+		addItem(inv, ChatColor.GRAY, DyeColor.GRAY, plugin.teamf.getString("grise.name"), 5);
 
 		p.openInventory(inv);
 	}
@@ -265,6 +274,23 @@ public class EventsClass implements Listener
 							ChatColor.RESET + 
 							" Vous avez rejoint " + plugin.teamf.getString("verte.name"));
 					plugin.verte.addPlayer(p);
+					if(!plugin.playersInTeam.contains(p.getUniqueId()))
+					{
+						plugin.playersInTeam.add(p.getUniqueId());
+					}
+				}
+				else
+				{
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+				}
+			}
+			if (banner.getBaseColor() == DyeColor.GRAY) {
+				if (plugin.grise.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
+				{
+					p.sendMessage(plugin.grise.getPrefix() + "�" + 
+							ChatColor.RESET + 
+							" Vous avez rejoint " + plugin.teamf.getString("grise.name"));
+					plugin.grise.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
 					{
 						plugin.playersInTeam.add(p.getUniqueId());

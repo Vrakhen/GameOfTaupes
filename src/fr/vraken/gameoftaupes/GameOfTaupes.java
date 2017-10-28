@@ -849,6 +849,12 @@ public class GameOfTaupes extends JavaPlugin
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
+			if(!this.playersInTeam.contains(p.getUniqueId()))
+			{
+				p.kickPlayer("Vous n'avez pas choisi d'équipe. Tant pis pour vous !");
+				continue;
+			}
+			
 			p.getInventory().clear();
 			p.getInventory().setHelmet(null);
 			p.getInventory().setChestplate(null);

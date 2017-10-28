@@ -311,7 +311,7 @@ public class BossEvents implements Listener
 							damager.getLocation().getX() - damaged.getLocation().getX(),
 							damager.getLocation().getY() - damaged.getLocation().getY(),
 							damager.getLocation().getZ() - damaged.getLocation().getZ());
-					knockback.normalize().multiply(-2);
+					knockback.normalize().multiply(2);
 					
 					damager.setVelocity(knockback);
 				}
@@ -477,7 +477,7 @@ public class BossEvents implements Listener
 				e.setCancelled(true);
 				e.getEntity().playEffect(EntityEffect.DEATH);
 				e.getEntity().remove();
-				plugin.bossManager.gobelins.remove(e.getEntity().getEntityId());
+				plugin.bossManager.gobelins.remove(plugin.bossManager.gobelins.indexOf(e.getEntity().getEntityId()));
 				
 				if(plugin.bossManager.gobelins.isEmpty())
 				{
@@ -542,7 +542,7 @@ public class BossEvents implements Listener
 					
 					if(nauseaChance < 20)
 					{
-						PotionEffect nausea = new PotionEffect(PotionEffectType.CONFUSION, 100, 0);
+						PotionEffect nausea = new PotionEffect(PotionEffectType.CONFUSION, 200, 0);
 						damaged.addPotionEffect(nausea);
 					}
 				}
@@ -702,7 +702,7 @@ public class BossEvents implements Listener
 				LivingEntity bl = (LivingEntity) e.getEntity();
 				if(bl.getHealth() - e.getFinalDamage() <= 0)
 				{
-					plugin.bossManager.blazes.remove(e.getEntity().getEntityId());			
+					plugin.bossManager.blazes.remove(plugin.bossManager.blazes.indexOf(e.getEntity().getEntityId()));					
 					if(plugin.bossManager.blazes.isEmpty())
 					{
 						Location loc = e.getEntity().getLocation();
@@ -795,10 +795,11 @@ public class BossEvents implements Listener
 					p.setSplash(true);
 					ItemStack slow = new ItemStack(Material.POTION);
 					p.apply(slow);
-					//pot.setItem(slow);
+					pot.setItem(slow);
+					/*
 					e.setCancelled(true);
 					ThrownPotion tpot = witch.launchProjectile(ThrownPotion.class);
-					tpot.setItem(slow);
+					tpot.setItem(slow);*/
 				}
 			}
 		}

@@ -29,6 +29,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -188,6 +189,14 @@ public class EventsClass implements Listener
 				p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.WITHER_DEATH, 10.0F, 10.0F);
 			} 
 		} 
+	}
+	
+	@EventHandler
+	public void OnChatEvent(AsyncPlayerChatEvent e)
+	{
+		Team team = e.getPlayer().getScoreboard().getPlayerTeam(e.getPlayer());
+		String format = team.getPrefix() + "<%s> " + ChatColor.WHITE + "%s";
+		e.setFormat(format);
 	}
 
 	@EventHandler
@@ -458,8 +467,12 @@ public class EventsClass implements Listener
 			{
 				public void run()
 				{
-					Bukkit.getPlayer("Spec").performCommand("dynmap hide " + player.getName());
-					Bukkit.getPlayer("Spec").performCommand("tp " + player.getName() + " 0 500 0");
+					try
+					{
+						Bukkit.getPlayer("Spec").performCommand("dynmap hide " + player.getName());
+						Bukkit.getPlayer("Spec").performCommand("tp " + player.getName() + " 0 500 0");
+					}
+					catch(Exception ex) {}
 				}
 			}.runTaskLater(plugin, 60);		
 

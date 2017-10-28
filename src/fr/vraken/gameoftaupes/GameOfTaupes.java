@@ -222,6 +222,7 @@ public class GameOfTaupes extends JavaPlugin
 			this.taupesteam.put(i, this.s.registerNewTeam("Taupes #" + i));
 			this.taupesteam.get(i).setPrefix(ChatColor.RED.toString());
 			this.taupesteam.get(i).setSuffix(ChatColor.WHITE.toString());
+			
 			this.supertaupesteam.put(i, this.s.registerNewTeam("SuperTaupe #" + i));
 			this.supertaupesteam.get(i).setPrefix(ChatColor.DARK_RED.toString());
 			this.supertaupesteam.get(i).setSuffix(ChatColor.WHITE.toString());
@@ -582,14 +583,27 @@ public class GameOfTaupes extends JavaPlugin
 					{
 						for (UUID taupe : this.taupes.get(i))
 						{
+							if(GameOfTaupes.this.showedsupertaupes.contains(taupe))
+							{
+								continue;
+							}
+							
 							message = StringUtils.join(args, ' ', 0, 
 									args.length);
 
-							Bukkit.getPlayer(taupe).sendMessage(
-									ChatColor.GOLD + "(Taupes #" + i + ") " + ChatColor.RED + 
-									"<" + player.getName() + "(" + 
-									player.getScoreboard().getPlayerTeam(player).getName() + 
-									")> " + ChatColor.WHITE + message);
+							String content = ChatColor.GOLD 
+									+ "(Taupes #" + i + ") " 
+									+ ChatColor.RED + 
+									"<" + player.getName();
+							
+							if(!GameOfTaupes.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(taupe)).getName().contains("aupe"))
+							{
+								content += "(" + player.getScoreboard().getPlayerTeam(player).getName() + ")";
+							}
+							
+							content += "> " + ChatColor.WHITE + message;
+							
+							Bukkit.getPlayer(taupe).sendMessage(content);
 						}
 						return true;
 					}
@@ -969,6 +983,10 @@ public class GameOfTaupes extends JavaPlugin
 					
 					teams.add(tsize);
 					taupes.add(p);
+					if(!this.taupes.containsKey(tsize))
+					{
+						this.taupes.put(tsize, new ArrayList<UUID>());
+					}
 					this.taupes.get(tsize).add(p);
 					this.aliveTaupes.add(p);
 					if(this.taupesTeamsPlayersNb.containsKey(tsize))
@@ -1002,65 +1020,71 @@ public class GameOfTaupes extends JavaPlugin
 
 	public void checkVictory()
 	{
-		/*
-		if(GameOfTaupes.this.s.getTeams().size() == 2
-				&& (GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.taupesteam)
-						|| GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.supertaupesteam)))
+		Team lastTeam = null;
+		int teamsAlive = 0;
+		for(Team team : GameOfTaupes.this.s.getTeams())
 		{
-			if (GameOfTaupes.this.aliveTaupes.size() == 0
-					&& !GameOfTaupes.this.isTaupesTeamDead)
+			if(!team.getName().contains("aupe"))
 			{
-				GameOfTaupes.this.isTaupesTeamDead = true;
-				Bukkit.broadcastMessage(ChatColor.RED + "L'équipe des taupes a été éliminée ! ");
-				GameOfTaupes.this.taupesteam.unregister();
-			}
-			if (GameOfTaupes.this.aliveSupertaupes.size() == 0
-					&& !GameOfTaupes.this.isSuperTaupeDead
-					&& GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
-			{
-				GameOfTaupes.this.isSuperTaupeDead = true;
-				Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe a été éliminée ! ");
-				GameOfTaupes.this.supertaupesteam.unregister();
+				teamsAlive++;
+				if(teamsAlive > 1)
+				{
+					return;
+				}
+				lastTeam = team;
 			}
 		}
-		else if(GameOfTaupes.this.s.getTeams().size() == 3
-				&& GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.taupesteam)
-				&& GameOfTaupes.this.s.getTeams().contains(GameOfTaupes.this.supertaupesteam))
+		
+		for(int i = 0; i < GameOfTaupes.this.taupes.size(); i++)
 		{
-			if (GameOfTaupes.this.aliveTaupes.size() == 0
-					&& !GameOfTaupes.this.isTaupesTeamDead
-					&& GameOfTaupes.this.aliveSupertaupes.size() == 0
-					&& !GameOfTaupes.this.isSuperTaupeDead
-					&& GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
+			for(UUID uid : GameOfTaupes.this.taupes.get(i))
 			{
-				GameOfTaupes.this.isTaupesTeamDead = true;
-				Bukkit.broadcastMessage(ChatColor.RED + "L'équipe des taupes a été éliminée ! ");
-				GameOfTaupes.this.taupesteam.unregister();
-				GameOfTaupes.this.isSuperTaupeDead = true;
-				Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe a été éliminée ! ");
-				GameOfTaupes.this.supertaupesteam.unregister();
+				if(GameOfTaupes.this.playersAlive.contains(uid)
+						&& GameOfTaupes.this.supertaupes.get(i) != uid)
+				{
+					teamsAlive++;
+					if(teamsAlive > 1)
+					{
+						return;
+					}
+					lastTeam = GameOfTaupes.this.taupesteam.get(i);
+					break;
+				}
 			}
-		}
-		*/
 
-		if (GameOfTaupes.this.s.getTeams().size() == 1) 
-		{
-			for (Team lastteam : GameOfTaupes.this.s.getTeams())
+			if(GameOfTaupes.this.aliveSupertaupes.contains(GameOfTaupes.this.supertaupes.get(i)))
 			{
-				Bukkit.broadcastMessage(GameOfTaupes.this.teamAnnounceString 
-						+ lastteam.getPrefix() 
-						+ lastteam.getName() 
-						+ ChatColor.RESET 
-						+ " a gagné ! ");
-
-				Bukkit.getScheduler().cancelAllTasks();
+				teamsAlive++;
+				if(teamsAlive > 1)
+				{
+					return;
+				}
+				lastTeam = GameOfTaupes.this.supertaupesteam.get(i);
 			}
 		}
-		else if(GameOfTaupes.this.s.getTeams().size() == 0)
+		
+		if(teamsAlive == 1 || teamsAlive == 0)
+		{
+			announceWinner(lastTeam);
+		}
+	}
+	
+	public void announceWinner(Team team)
+	{
+		if(team == null)
 		{
 			Bukkit.broadcastMessage("Toutes les équipes ont été éliminées, personne n'a gagné ! ");
 			Bukkit.getScheduler().cancelAllTasks();
+			return;
 		}
+		
+		Bukkit.broadcastMessage(GameOfTaupes.this.teamAnnounceString 
+				+ team.getPrefix() 
+				+ team.getName() 
+				+ ChatColor.RESET 
+				+ " a gagné ! ");
+
+		Bukkit.getScheduler().cancelAllTasks();
 	}
 
 	public void unregisterTeam()
@@ -1485,6 +1509,10 @@ public class GameOfTaupes extends JavaPlugin
 		while(true)
 		{
 			kitnumber = random.nextInt(8);
+			if(!GameOfTaupes.this.claimedkits.containsKey(taupeteam))
+			{
+				GameOfTaupes.this.claimedkits.put(taupeteam, new ArrayList<Integer>());
+			}
 			if(!GameOfTaupes.this.claimedkits.get(taupeteam).contains(kitnumber))
 			{
 				GameOfTaupes.this.claimedkits.get(taupeteam).add(kitnumber);

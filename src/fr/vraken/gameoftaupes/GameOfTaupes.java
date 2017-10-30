@@ -56,9 +56,9 @@ public class GameOfTaupes extends JavaPlugin
 	
 	//Taupes
 	boolean taupessetup;
-	int taupesTeamMax;
+	HashMap<Integer, Integer> taupesperteam = new HashMap<Integer, Integer>();
 	HashMap<Integer, Team> taupesteam = new HashMap<Integer, Team>();
-	HashMap<Integer, Integer> taupesTeamsPlayersNb = new HashMap<Integer, Integer>();
+	//HashMap<Integer, Integer> taupesTeamsPlayersNb = new HashMap<Integer, Integer>();
 	HashMap<Integer, ArrayList<UUID>> taupes = new HashMap<Integer, ArrayList<UUID>>();
 	HashMap<Integer, Boolean> isTaupesTeamDead = new HashMap<Integer, Boolean>();
 	ArrayList<UUID> aliveTaupes = new ArrayList<UUID>();
@@ -226,6 +226,12 @@ public class GameOfTaupes extends JavaPlugin
 			this.supertaupesteam.put(i, this.s.registerNewTeam("SuperTaupe #" + i));
 			this.supertaupesteam.get(i).setPrefix(ChatColor.DARK_RED.toString());
 			this.supertaupesteam.get(i).setSuffix(ChatColor.WHITE.toString());
+			
+			this.taupes.put(i, new ArrayList<UUID>());
+			this.supertaupes.put(i, null);
+			this.taupesperteam.put(i, 0);
+			this.isTaupesTeamDead.put(i, false);
+			this.isSupertaupeDead.put(i, false);
 		}
 
 		if (this.s.getObjective("Vie") == null)
@@ -233,6 +239,10 @@ public class GameOfTaupes extends JavaPlugin
 			this.vie = this.s.registerNewObjective("Vie", "health");
 			this.vie.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		}
+
+		setSpawnLocations();
+		setDuelSpawnLocations();
+		
 		super.onEnable();
 	}
 
@@ -245,15 +255,6 @@ public class GameOfTaupes extends JavaPlugin
 		this.taupessetup = false;
 		this.supertaupessetup = false;
 		EventsClass.rushIsStart = true;    
-
-		for(int i = 0; i < getConfig().getInt("options.taupesteams"); i++)
-		{
-			this.isTaupesTeamDead.put(i, false);
-			this.isSupertaupeDead.put(i, false);
-		}
-
-		setSpawnLocations();
-		setDuelSpawnLocations();
 
 		String world = getConfig().getString("world");
 		Boolean istimecycle = getConfig().getBoolean("options.timecycle");
@@ -269,7 +270,22 @@ public class GameOfTaupes extends JavaPlugin
 		{
 			nbTeams -=  getConfig().getInt("options.taupesteams");
 		}
-		this.taupesTeamMax = (int) Math.ceil((double)(nbTeams * getConfig().getInt("options.taupesperteam") / getConfig().getInt("options.taupesteams")));
+		int taupesTot = nbTeams * getConfig().getInt("options.taupesperteam");
+		int taupesMin = taupesTot / getConfig().getInt("options.taupesteams");
+		int taupesLeft = taupesTot % getConfig().getInt("options.taupesteams");
+		
+		for(int i = 0; i < getConfig().getInt("options.taupesperteam"); i++)
+		{
+			if(taupesLeft > 0)
+			{
+				this.taupesperteam.put(i, taupesMin);
+				taupesLeft--;
+				continue;
+			}
+
+			this.taupesperteam.put(i, taupesMin);
+		}
+		
 		
 		this.episode += 1;
 
@@ -278,11 +294,6 @@ public class GameOfTaupes extends JavaPlugin
 		//-------------------------
 		this.objFormatter = new DecimalFormat("00");
 		initScoreboard();    
-
-
-		//CLEARING INVENTORY AND STATUS OF EVERY PLAYER THEN TELEPORTING HIM TO HIS SPAWN
-		//-------------------------------------------------------------------------------
-		clearPlayers();
 
 
 		//SPAWNING CHEST
@@ -310,6 +321,11 @@ public class GameOfTaupes extends JavaPlugin
 			EventsClass.alive.add(p.getUniqueId());
 			p.getInventory().clear();
 		}
+
+
+		//CLEARING INVENTORY AND STATUS OF EVERY PLAYER THEN TELEPORTING HIM TO HIS SPAWN
+		//-------------------------------------------------------------------------------
+		clearPlayers();
 
 
 		//RUNNABLE TASKS DURING ALL GAME
@@ -502,7 +518,7 @@ public class GameOfTaupes extends JavaPlugin
 		{
 			public void run()
 			{
-				forceReveal();
+				forceReveal(true);
 
 				//Updating scoreboard status
 				GameOfTaupes.this.s.resetScores(ChatColor.WHITE + GameOfTaupes.this.countdownObj);
@@ -526,7 +542,7 @@ public class GameOfTaupes extends JavaPlugin
 		{
 			public void run()
 			{
-				superReveal();
+				superReveal(true);
 
 				//Updating scoreboard status
 				GameOfTaupes.this.s.resetScores(ChatColor.WHITE + GameOfTaupes.this.countdownObj);
@@ -967,14 +983,7 @@ public class GameOfTaupes extends JavaPlugin
 						tsize = random.nextInt(this.getConfig().getInt("options.taupesteams"));						
 						if(!teams.contains(tsize))
 						{
-							if(this.taupesTeamsPlayersNb.containsKey(tsize))
-							{
-								if(this.taupesTeamsPlayersNb.get(tsize) < this.taupesTeamMax)
-								{
-									break;
-								}
-							}
-							else
+							if(this.taupes.get(tsize).size()< this.taupesperteam.get(tsize))
 							{
 								break;
 							}
@@ -989,14 +998,6 @@ public class GameOfTaupes extends JavaPlugin
 					}
 					this.taupes.get(tsize).add(p);
 					this.aliveTaupes.add(p);
-					if(this.taupesTeamsPlayersNb.containsKey(tsize))
-					{
-						this.taupesTeamsPlayersNb.put(tsize, this.taupesTeamsPlayersNb.get(tsize) + 1);
-					}
-					else
-					{
-						this.taupesTeamsPlayersNb.put(tsize, 1);
-					}
 				}
 			}
 		}
@@ -1065,6 +1066,8 @@ public class GameOfTaupes extends JavaPlugin
 		
 		if(teamsAlive == 1 || teamsAlive == 0)
 		{
+			forceReveal(false);
+			superReveal(false);
 			announceWinner(lastTeam);
 		}
 	}
@@ -1432,7 +1435,7 @@ public class GameOfTaupes extends JavaPlugin
 		GameOfTaupes.this.supertaupessetup = true;
 	}
 
-	public void forceReveal()
+	public void forceReveal(boolean check)
 	{
 		for(int i = 0; i < GameOfTaupes.this.taupes.size(); i++)
 		{
@@ -1458,10 +1461,14 @@ public class GameOfTaupes extends JavaPlugin
 
 		unregisterTeam();
 		unregisterTaupeTeam();
-		checkVictory();
+		
+		if(check)
+		{
+			checkVictory();
+		}
 	}
 
-	public void superReveal()
+	public void superReveal(boolean check)
 	{
 		UUID uid;
 		for(int i = 0; i < GameOfTaupes.this.supertaupes.size(); i++)
@@ -1488,7 +1495,11 @@ public class GameOfTaupes extends JavaPlugin
 
 		unregisterTeam();
 		unregisterTaupeTeam();
-		checkVictory();
+		
+		if(check)
+		{
+			checkVictory();
+		}
 	}
 
 	public void claimKit(Player player)

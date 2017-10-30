@@ -466,7 +466,11 @@ public class EventsClass implements Listener
 			new BukkitRunnable()
 			{
 				public void run()
-				{
+				{	
+					plugin.unregisterTeam();
+					plugin.unregisterTaupeTeam();
+					plugin.checkVictory();
+					
 					try
 					{
 						Bukkit.getPlayer("Spec").performCommand("dynmap hide " + player.getName());
@@ -474,12 +478,7 @@ public class EventsClass implements Listener
 					}
 					catch(Exception ex) {}
 				}
-			}.runTaskLater(plugin, 60);		
-
-
-			plugin.unregisterTeam();
-			plugin.unregisterTaupeTeam();
-			plugin.checkVictory();
+			}.runTaskLater(plugin, 60);	
 		}
 		else if(plugin.duelInProgress)
 		{

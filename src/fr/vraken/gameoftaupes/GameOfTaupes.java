@@ -372,27 +372,27 @@ public class GameOfTaupes extends JavaPlugin
 					//-----------------        
 					if(this.minutes == 15 && GameOfTaupes.this.episode == 1)
 					{
-						GameOfTaupes.this.bossManager.activateShrine(4);
+						GameOfTaupes.this.bossManager.activateShrine(1);
 					}
 					if(this.minutes == 5 && GameOfTaupes.this.episode == 1)
 					{
-						GameOfTaupes.this.bossManager.activateShrine(5);
+						GameOfTaupes.this.bossManager.activateShrine(2);
 					}
 					if(this.minutes == 15 && GameOfTaupes.this.episode == 2)
 					{
-						GameOfTaupes.this.bossManager.activateShrine(6);
+						GameOfTaupes.this.bossManager.activateShrine(3);
 					}
 					if(this.minutes == 5 && GameOfTaupes.this.episode == 2)
 					{
-						GameOfTaupes.this.bossManager.activateShrine(1);
+						GameOfTaupes.this.bossManager.activateShrine(4);
 					}
 					if(this.minutes == 15 && GameOfTaupes.this.episode == 3)
 					{
-						GameOfTaupes.this.bossManager.activateShrine(2);
+						GameOfTaupes.this.bossManager.activateShrine(5);
 					}
 					if(this.minutes == 5 && GameOfTaupes.this.episode == 3)
 					{
-						GameOfTaupes.this.bossManager.activateShrine(3);
+						GameOfTaupes.this.bossManager.activateShrine(6);
 					}
 
 
@@ -568,7 +568,7 @@ public class GameOfTaupes extends JavaPlugin
 				GameOfTaupes.this.hasChangedGS = true;        
 				GameOfTaupes.this.countdownObj = GameOfTaupes.this.objTxt + GameOfTaupes.this.objMinute + ":" + GameOfTaupes.this.objSecond;      
 
-
+				Bukkit.broadcastMessage("La carte est en train de rétrécir ! Dépêchez-vous d'aller au centre ! ");
 
 				getServer().getWorld(getConfig().getString("world"))
 				.getWorldBorder()

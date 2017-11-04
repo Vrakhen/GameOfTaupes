@@ -202,6 +202,11 @@ public class EventsClass implements Listener
 	@EventHandler
 	public void ChoiceTeam(InventoryClickEvent e)
 	{
+		if (e.getCurrentItem() == null)
+		{
+			return;
+        }
+		
 		Player p = (Player)e.getWhoClicked();
 		if (e.getInventory().getName().equals(ChatColor.GOLD + "    Choisir " + plugin.teamChoiceString) && e.getCurrentItem().getType() == Material.BANNER)
 		{

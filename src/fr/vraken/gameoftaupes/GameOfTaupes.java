@@ -313,16 +313,6 @@ public class GameOfTaupes extends JavaPlugin
 		setSuperTaupe();
 
 
-		//INVENTORY CLEANING
-		//------------------
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			this.playersAlive.add(p.getUniqueId());
-			EventsClass.alive.add(p.getUniqueId());
-			p.getInventory().clear();
-		}
-
-
 		//CLEARING INVENTORY AND STATUS OF EVERY PLAYER THEN TELEPORTING HIM TO HIS SPAWN
 		//-------------------------------------------------------------------------------
 		clearPlayers();
@@ -855,7 +845,7 @@ public class GameOfTaupes extends JavaPlugin
 	}
 
 	public void initScoreboard()
-	{
+	{		
 		this.s.getObjective(this.obj.getDisplayName())
 		.getScore(ChatColor.WHITE + "Episode " + this.episode)
 		.setScore(0);
@@ -884,6 +874,9 @@ public class GameOfTaupes extends JavaPlugin
 				p.kickPlayer("Vous n'avez pas choisi d'équipe. Tant pis pour vous !");
 				continue;
 			}
+			
+			this.playersAlive.add(p.getUniqueId());
+			EventsClass.alive.add(p.getUniqueId());
 			
 			p.getInventory().clear();
 			p.getInventory().setHelmet(null);

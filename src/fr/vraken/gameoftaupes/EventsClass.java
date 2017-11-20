@@ -605,13 +605,18 @@ public class EventsClass implements Listener
 		craft.setIngredient('i', Material.GOLD_NUGGET);
 		craft.setIngredient('e', Material.MELON);
 		Bukkit.addRecipe(craft);
-		if (((CraftShapedRecipe)e.getRecipe()).getIngredientMap().equals(craft.getIngredientMap()))
+		
+		try
 		{
-			e.getInventory().setResult(new ItemStack(Material.AIR));
-			for (HumanEntity p : e.getViewers()) {
-				p.sendMessage("Ce craft a été modifié !");
+			if (((CraftShapedRecipe)e.getRecipe()).getIngredientMap().equals(craft.getIngredientMap()))
+			{
+				e.getInventory().setResult(new ItemStack(Material.AIR));
+				for (HumanEntity p : e.getViewers()) {
+					p.sendMessage("Ce craft a été modifié !");
+				}
 			}
 		}
+		catch(Exception ex) {}
 	}
 
 	@EventHandler
@@ -621,7 +626,7 @@ public class EventsClass implements Listener
 		{
 			if(e.getClickedBlock().getLocation().distance(plugin.chestLocation) <= 10.0f)
 			{
-				Bukkit.getPlayer("Spec").performCommand("dmarker deleteset chest");
+				Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
 			}
 		}
 	}

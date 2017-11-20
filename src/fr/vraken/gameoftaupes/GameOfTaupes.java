@@ -152,9 +152,9 @@ public class GameOfTaupes extends JavaPlugin
 
 		this.sm = Bukkit.getScoreboardManager();
 		this.s = this.sm.getMainScoreboard();
-		if (this.s.getObjective("Game Of Taupes") != null) 
+		if (this.s.getObjective("GameOfTaupes") != null) 
 		{
-			this.s.getObjective("Game Of Taupes").unregister();
+			this.s.getObjective("GameOfTaupes").unregister();
 		}
 
 		this.revealEpisode = getConfig().getInt("options.forcereveal") / 20;
@@ -172,7 +172,7 @@ public class GameOfTaupes extends JavaPlugin
 		Bukkit.getPluginManager().registerEvents(new EventsClass(this), this);
 		Bukkit.getPluginManager().registerEvents(new BossEvents(this, bossManager), this);
 
-		this.obj = this.s.registerNewObjective("Game Of Taupes", "dummy");
+		this.obj = this.s.registerNewObjective("GameOfTaupes", "dummy");
 		this.obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 		for (Team team : this.s.getTeams()) 
 		{

@@ -177,7 +177,7 @@ public class BossEvents implements Listener
 
 				    try 
 					{
-						Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.1"));
+						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.1"));
 					}
 					catch(Exception ex) {}
 				}
@@ -266,7 +266,7 @@ public class BossEvents implements Listener
 
 				    try 
 					{
-						Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.3"));
+						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.3"));
 					}
 					catch(Exception ex) {}
 				}
@@ -289,7 +289,7 @@ public class BossEvents implements Listener
 
 			    try 
 				{
-					Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.3"));
+					Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.3"));
 				}
 				catch(Exception ex) {}
 			}
@@ -392,7 +392,7 @@ public class BossEvents implements Listener
 
 				    try 
 					{
-						Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.2"));
+						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.2"));
 					}
 					catch(Exception ex) {}
 				}
@@ -523,7 +523,7 @@ public class BossEvents implements Listener
 
 				    try 
 					{
-						Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.5"));
+						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.5"));
 					}
 					catch(Exception ex) {}
 				}
@@ -623,7 +623,7 @@ public class BossEvents implements Listener
 
 				    try 
 					{
-						Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.4"));
+						Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.4"));
 					}
 					catch(Exception ex) {}
 				}
@@ -752,7 +752,7 @@ public class BossEvents implements Listener
 
 					    try 
 						{
-							Bukkit.getPlayer("Spec").performCommand("dmarker deleteset " + plugin.bossf.getString("boss.6"));
+							Bukkit.getPlayer("Spec").performCommand("dmarker delete " + plugin.bossf.getString("boss.6"));
 						}
 						catch(Exception ex) {}
 					}

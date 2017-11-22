@@ -105,6 +105,7 @@ public class FilesManager
 	{
 		boss.load(bossf);
 
+		boss.addDefault("boss.active", Boolean.valueOf(false));		
 		boss.addDefault("boss.1", "Gothmog");
 		boss.addDefault("boss.2", "Lurtz");
 		boss.addDefault("boss.3", "le berzerker");
@@ -143,11 +144,14 @@ public class FilesManager
 		plugin.getConfig().addDefault("worldborder.finalsize", Integer.valueOf(100));
 		plugin.getConfig().addDefault("worldborder.retractafter", Integer.valueOf(100));
 		plugin.getConfig().addDefault("worldborder.episodestorestract", Integer.valueOf(1));
+		plugin.getConfig().addDefault("worldborder.finalretract", Integer.valueOf(150));
 		plugin.getConfig().addDefault("potions.allowglowstone", Boolean.valueOf(false));
 		plugin.getConfig().addDefault("lobby.world", "lobby");
 		plugin.getConfig().addDefault("lobby.X", Integer.valueOf(0));
 		plugin.getConfig().addDefault("lobby.Y", Integer.valueOf(100));
 		plugin.getConfig().addDefault("lobby.Z", Integer.valueOf(0));
+		plugin.getConfig().addDefault("chest.random", Boolean.valueOf(false));
+		plugin.getConfig().addDefault("chest.timer", Integer.valueOf(10));
 		plugin.getConfig().addDefault("chest.X", Integer.valueOf(0));
 		plugin.getConfig().addDefault("chest.Y", Integer.valueOf(62));
 		plugin.getConfig().addDefault("chest.Z", Integer.valueOf(0));
@@ -168,6 +172,7 @@ public class FilesManager
 		plugin.getConfig().addDefault("options.supertaupe", Boolean.valueOf(false));
 		plugin.getConfig().addDefault("options.setsupertaupesafter", Integer.valueOf(50));
 		plugin.getConfig().addDefault("options.superreveal", Integer.valueOf(90));
+		plugin.getConfig().addDefault("options.autosmelting", Boolean.valueOf(false));
 
 		plugin.getConfig().addDefault("duelspawn1.X", Integer.valueOf(0));
 		plugin.getConfig().addDefault("duelspawn1.Y", Integer.valueOf(250));

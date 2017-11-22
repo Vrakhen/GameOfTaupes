@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -628,6 +629,26 @@ public class EventsClass implements Listener
 			{
 				Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
 			}
+		}
+	}
+	
+	@EventHandler
+	public void OnPlayerMineRessource(BlockBreakEvent e)
+	{
+		if(!plugin.getConfig().getBoolean("options.autosmelting"))
+			return;
+		
+		if(e.getBlock().getType() == Material.IRON_ORE)
+		{
+			e.getBlock().setType(Material.AIR);
+			e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT, 1));
+			e.setExpToDrop(1);
+		}
+		else if(e.getBlock().getType() == Material.GOLD_ORE)
+		{
+			e.getBlock().setType(Material.AIR);
+			e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
+			e.setExpToDrop(1);
 		}
 	}
 }

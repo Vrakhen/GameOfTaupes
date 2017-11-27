@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftShapedRecipe;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -628,6 +629,102 @@ public class EventsClass implements Listener
 			if(e.getClickedBlock().getLocation().distance(plugin.chestLocation) <= 10.0f)
 			{
 				Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
+				
+				if(plugin.getConfig().getBoolean("chest.random"))
+				{
+					Block redstoneBlock = e.getClickedBlock();
+					Location redstoneLocation = redstoneBlock.getLocation();
+					int x = (int)redstoneBlock.getLocation().getX();	
+					int y = 120;
+					int z = (int)redstoneBlock.getLocation().getZ();
+
+					redstoneBlock.setType(Material.AIR);
+					redstoneLocation.setY(y);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					
+					redstoneLocation.setY(y + 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x + 1);
+					redstoneLocation.setY(y + 1);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x - 1);
+					redstoneLocation.setY(y + 1);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 1);
+					redstoneLocation.setZ(z + 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 1);
+					redstoneLocation.setZ(z - 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x + 1);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x - 1);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z + 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z - 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x + 2);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x - 2);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z + 2);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z - 2);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x + 1);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z + 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x + 1);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z - 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x - 1);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z + 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setX(x - 1);
+					redstoneLocation.setY(y + 2);
+					redstoneLocation.setZ(z - 1);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					
+					redstoneLocation.setX(x);
+					redstoneLocation.setY(y + 3);
+					redstoneLocation.setZ(z);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setY(y + 4);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setY(y + 5);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+					redstoneLocation.setY(y + 6);
+					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
+				}
 			}
 		}
 	}

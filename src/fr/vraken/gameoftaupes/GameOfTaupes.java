@@ -80,6 +80,59 @@ public class GameOfTaupes extends JavaPlugin
 	Location redstoneLocation;
 	int chestLvl;
 	int chestMinute;
+	static ArrayList<ItemStack> tmpKits = new ArrayList<ItemStack>();
+	static HashMap<Integer, ArrayList<ItemStack>> loots;
+	static
+	{
+		loots = new HashMap<Integer, ArrayList<ItemStack>>();
+		tmpKits.add(new ItemStack(Material.GOLDEN_APPLE, 2));
+		loots.put(0, tmpKits);
+		tmpKits.clear();
+		
+		tmpKits.add(new ItemStack(Material.IRON_INGOT, 32));
+		loots.put(1, tmpKits);
+		tmpKits.clear();
+		
+		tmpKits.add(new ItemStack(Material.DIAMOND, 8));
+		loots.put(2, tmpKits);
+		tmpKits.clear();
+		
+		tmpKits.add(new ItemStack(Material.EXP_BOTTLE, 5));
+		loots.put(3, tmpKits);
+		tmpKits.clear();
+		
+		tmpKits.add(new ItemStack(Material.BOW, 1));
+		tmpKits.add(new ItemStack(Material.ARROW, 32));
+		loots.put(4, tmpKits);
+		tmpKits.clear();
+		
+		tmpKits.add(new ItemStack(Material.ENCHANTMENT_TABLE, 1));
+		tmpKits.add(new ItemStack(Material.LAPIS_ORE, 32));
+		loots.put(5, tmpKits);
+		tmpKits.clear();
+		
+		Potion potion = new Potion(1);
+		potion.setType(PotionType.INVISIBILITY);
+		potion.setHasExtendedDuration(false);
+		potion.setSplash(true);
+		tmpKits.add(potion.toItemStack(2));
+		loots.put(6, tmpKits);
+		tmpKits.clear();
+		
+		potion.setType(PotionType.SPEED);
+		potion.setHasExtendedDuration(false);
+		potion.setSplash(true);
+		tmpKits.add(potion.toItemStack(2));
+		loots.put(7, tmpKits);
+		tmpKits.clear();
+		
+		potion.setType(PotionType.INSTANT_DAMAGE);
+		potion.setHasExtendedDuration(false);
+		potion.setSplash(true);
+		tmpKits.add(potion.toItemStack(1));
+		loots.put(8, tmpKits);
+		tmpKits.clear();
+	}
 
 	//Scoreboard
 	int episode;
@@ -168,9 +221,12 @@ public class GameOfTaupes extends JavaPlugin
 
 		Bukkit.createWorld(new WorldCreator(getConfig().getString("world")));
 
-		bossManager = new BossManager(this);
+		if(bossf.getBoolean("boss.active"))
+		{
+			bossManager = new BossManager(this);
+			Bukkit.getPluginManager().registerEvents(new BossEvents(this, bossManager), this);
+		}
 		Bukkit.getPluginManager().registerEvents(new EventsClass(this), this);
-		Bukkit.getPluginManager().registerEvents(new BossEvents(this, bossManager), this);
 
 		this.obj = this.s.registerNewObjective("GameOfTaupes", "dummy");
 		this.obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -254,7 +310,8 @@ public class GameOfTaupes extends JavaPlugin
 		this.chestLvl = 1;
 		this.taupessetup = false;
 		this.supertaupessetup = false;
-		EventsClass.rushIsStart = true;    
+		EventsClass.rushIsStart = true;
+		this.tmpBorder = this.getConfig().getInt("worldborder.size");
 
 		String world = getConfig().getString("world");
 		Boolean istimecycle = getConfig().getBoolean("options.timecycle");
@@ -298,12 +355,9 @@ public class GameOfTaupes extends JavaPlugin
 
 		//SPAWNING CHEST
 		//--------------
-		if(!this.getConfig().getBoolean("chest.random"))
-		{
-			this.chestLocation = new Location(Bukkit.getWorld(getConfig().get("world").toString()), getConfig().getInt("chest.X"), getConfig().getInt("chest.Y"), getConfig().getInt("chest.Z"));
-			this.redstoneLocation = new Location(Bukkit.getWorld(getConfig().get("world").toString()), getConfig().getInt("chest.X"), getConfig().getInt("chest.Y") - 5, getConfig().getInt("chest.Z"));
-			this.chestMinute = 0;
-		}
+		this.chestLocation = new Location(Bukkit.getWorld(getConfig().get("world").toString()), getConfig().getInt("chest.X"), getConfig().getInt("chest.Y"), getConfig().getInt("chest.Z"));
+		this.redstoneLocation = new Location(Bukkit.getWorld(getConfig().get("world").toString()), getConfig().getInt("chest.X"), getConfig().getInt("chest.Y") - 5, getConfig().getInt("chest.Z"));
+		this.chestMinute = 0;
 
 
 		//TAUPES SETTING
@@ -462,6 +516,9 @@ public class GameOfTaupes extends JavaPlugin
 					GameOfTaupes.this.chestLocation.setX(x);
 					GameOfTaupes.this.chestLocation.setY(y);
 					GameOfTaupes.this.chestLocation.setZ(z);
+					GameOfTaupes.this.redstoneLocation.setX(x);
+					GameOfTaupes.this.redstoneLocation.setY(120);
+					GameOfTaupes.this.redstoneLocation.setZ(z);
 					GameOfTaupes.this.chestLvl = (GameOfTaupes.this.episode > 3)? 3 : GameOfTaupes.this.episode;
 					
 					spawnChest();
@@ -616,7 +673,7 @@ public class GameOfTaupes extends JavaPlugin
 
 				getServer().getWorld(getConfig().getString("world"))
 				.getWorldBorder()
-				.setSize(2, 1200 * 10);
+				.setSize(2, 60 * 10);
 			}
 		}.runTaskLater(this, 1200 * getConfig().getInt("worldborder.finalretract"));
 	}
@@ -1214,10 +1271,134 @@ public class GameOfTaupes extends JavaPlugin
 		{
 			redstoneBlock.setType(Material.REDSTONE_BLOCK);
 		}*/
+		//Bukkit.broadcastMessage(chestBlock.getLocation().getX() + " / " + chestBlock.getLocation().getZ());
+
+		if(GameOfTaupes.this.getConfig().getBoolean("chest.random"))
+		{
+			Block redstoneBlock = Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation);
+			int x = (int)redstoneLocation.getX();	
+			int y = (int)redstoneLocation.getY();
+			int z = (int)redstoneLocation.getZ();
+			
+			redstoneBlock.setType(Material.REDSTONE_BLOCK);	
+			
+			redstoneLocation.setY(y + 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x + 1);
+			redstoneLocation.setY(y + 1);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x - 1);
+			redstoneLocation.setY(y + 1);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 1);
+			redstoneLocation.setZ(z + 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 1);
+			redstoneLocation.setZ(z - 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x + 1);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x - 1);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z + 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z - 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x + 2);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x - 2);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z + 2);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z - 2);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x + 1);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z + 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x + 1);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z - 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x - 1);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z + 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setX(x - 1);
+			redstoneLocation.setY(y + 2);
+			redstoneLocation.setZ(z - 1);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			
+			redstoneLocation.setX(x);
+			redstoneLocation.setY(y + 3);
+			redstoneLocation.setZ(z);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setY(y + 4);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setY(y + 5);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+			redstoneLocation.setY(y + 6);
+			Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(GameOfTaupes.this.redstoneLocation).setType(Material.REDSTONE_BLOCK);
+		}		
+		
 		org.bukkit.block.Chest chest = (org.bukkit.block.Chest) chestBlock.getState();
 		Inventory inv = chest.getInventory();
 		inv.clear();
 		kits.clear();
+		
+		if(GameOfTaupes.this.getConfig().getBoolean("chest.random"))
+		{
+			Random rdm = new Random();
+			int chestPosition;
+			int chestKit;
+			
+			for(int i = 0; i < 2; i++)
+			{
+				chestPosition = 12;
+						
+				while(true)
+				{
+					chestKit = rdm.nextInt(GameOfTaupes.this.loots.size());
+					if(!GameOfTaupes.this.kits.contains(chestKit))
+					{
+						GameOfTaupes.this.kits.add(chestKit);
+						break;
+					}
+				}
+				
+				for(ItemStack it : GameOfTaupes.this.loots.get(chestKit))
+				{
+					inv.setItem(chestPosition++, it);
+				}
+			}
+			
+			return;
+		}
 
 		Random rdm = new Random();
 		int chestKit;
@@ -1381,7 +1562,7 @@ public class GameOfTaupes extends JavaPlugin
 
 		GameOfTaupes.this.tmpPlayers = EventsClass.alive.size();
 
-		if(GameOfTaupes.this.gameState < 6)
+		if(GameOfTaupes.this.gameState < 7)
 		{
 			if(!GameOfTaupes.this.hasChangedGS)
 			{

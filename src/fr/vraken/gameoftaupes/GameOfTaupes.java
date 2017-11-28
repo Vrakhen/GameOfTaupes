@@ -1374,13 +1374,11 @@ public class GameOfTaupes extends JavaPlugin
 		if(GameOfTaupes.this.getConfig().getBoolean("chest.random"))
 		{
 			Random rdm = new Random();
-			int chestPosition;
+			int chestPosition = 12;
 			int chestKit;
 			
 			for(int i = 0; i < 2; i++)
-			{
-				chestPosition = 12;
-						
+			{						
 				while(true)
 				{
 					chestKit = rdm.nextInt(GameOfTaupes.this.loots.size());

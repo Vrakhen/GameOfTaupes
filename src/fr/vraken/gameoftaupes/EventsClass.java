@@ -15,6 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
+import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftShapedRecipe;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -24,11 +25,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -748,4 +752,45 @@ public class EventsClass implements Listener
 			e.setExpToDrop(1);
 		}
 	}
+	
+	@EventHandler
+    public void FurnaceBurnEvent(FurnaceBurnEvent e) 
+	{
+		if(!plugin.getConfig().getBoolean("options.fastcooking"))
+		{
+			return;
+		}
+		
+        Furnace furnace = (Furnace) e.getBlock().getState();
+        furnace.setCookTime((short)100);
+    }
+ 
+    @EventHandler
+    public void FurnaceSmeltEvent(FurnaceSmeltEvent e) 
+    {
+		if(!plugin.getConfig().getBoolean("options.fastcooking"))
+		{
+			return;
+		}
+		
+        Furnace furnace = (Furnace) e.getBlock().getState();
+        furnace.setCookTime((short)100);
+    }
+ 
+    @EventHandler
+    public void OnInventoryClick(BlockPlaceEvent e) 
+    {
+		if(!plugin.getConfig().getBoolean("options.fastcooking"))
+		{
+			return;
+		}
+		
+    	Block block = e.getBlock();
+    	
+    	if(block.getType() == Material.FURNACE || block.getType() == Material.BURNING_FURNACE)
+    	{
+    		Furnace furnace = (Furnace) block.getState();
+            furnace.setCookTime((short)100);
+    	}
+    }
 }

@@ -1049,6 +1049,12 @@ public class GameOfTaupes extends JavaPlugin
 			}
 			p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 
 					20 * getConfig().getInt("options.nodamagetime"), 4));
+			
+			if(this.getConfig().getBoolean("options.haste"))
+			{
+				p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING,
+						Integer.MAX_VALUE, 1));
+			}
 		}
 	}
 

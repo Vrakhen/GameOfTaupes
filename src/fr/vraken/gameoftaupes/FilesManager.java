@@ -173,6 +173,8 @@ public class FilesManager
 		plugin.getConfig().addDefault("options.setsupertaupesafter", Integer.valueOf(50));
 		plugin.getConfig().addDefault("options.superreveal", Integer.valueOf(90));
 		plugin.getConfig().addDefault("options.autosmelting", Boolean.valueOf(false));
+		plugin.getConfig().addDefault("options.fastcooking", Boolean.valueOf(false));
+		plugin.getConfig().addDefault("options.haste", Boolean.valueOf(false));
 
 		plugin.getConfig().addDefault("duelspawn1.X", Integer.valueOf(0));
 		plugin.getConfig().addDefault("duelspawn1.Y", Integer.valueOf(250));

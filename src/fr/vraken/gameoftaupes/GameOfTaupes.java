@@ -152,6 +152,7 @@ public class GameOfTaupes extends JavaPlugin
 	int tmpTeams;
 	int tmpBorder;
 	NumberFormat objFormatter;
+	int height = 10;
 	
 	//Teams
 	Location l1;
@@ -673,9 +674,30 @@ public class GameOfTaupes extends JavaPlugin
 
 				getServer().getWorld(getConfig().getString("world"))
 				.getWorldBorder()
-				.setSize(2, 60 * 10);
+				.setSize(1, 60 * 10);
 			}
 		}.runTaskLater(this, 1200 * getConfig().getInt("worldborder.finalretract"));
+		
+
+		//FINAL FINAL SHRINK
+		//------------------
+		new BukkitRunnable()
+		{
+			public void run()
+			{				
+				new BukkitRunnable()
+				{
+					public void run()
+					{
+						Block block = Bukkit.getWorld(getConfig().get("world").toString()).getBlockAt(0, GameOfTaupes.this.height, 0);
+						block.setType(Material.STATIONARY_WATER);
+						++GameOfTaupes.this.height;
+					}
+
+				}.runTaskTimer(GameOfTaupes.this, 0, 40);
+
+			}
+		}.runTaskLater(this, 1200 * (getConfig().getInt("worldborder.finalretract") + 20));
 	}
 
 
@@ -1381,7 +1403,7 @@ public class GameOfTaupes extends JavaPlugin
 			{						
 				while(true)
 				{
-					chestKit = rdm.nextInt(GameOfTaupes.this.loots.size());
+					chestKit = rdm.nextInt(GameOfTaupes.loots.size());
 					if(!GameOfTaupes.this.kits.contains(chestKit))
 					{
 						GameOfTaupes.this.kits.add(chestKit);
@@ -1389,7 +1411,7 @@ public class GameOfTaupes extends JavaPlugin
 					}
 				}
 				
-				for(ItemStack it : GameOfTaupes.this.loots.get(chestKit))
+				for(ItemStack it : GameOfTaupes.loots.get(chestKit))
 				{
 					inv.setItem(chestPosition++, it);
 				}

@@ -127,7 +127,6 @@ public class GameOfTaupes extends JavaPlugin
 		tmpKits.clear();
 		
 		potion.setType(PotionType.INSTANT_DAMAGE);
-		potion.setHasExtendedDuration(false);
 		potion.setSplash(true);
 		tmpKits.add(potion.toItemStack(1));
 		loots.put(8, tmpKits);

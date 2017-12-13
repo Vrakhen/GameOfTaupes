@@ -81,57 +81,7 @@ public class GameOfTaupes extends JavaPlugin
 	int chestLvl;
 	int chestMinute;
 	static ArrayList<ItemStack> tmpKits = new ArrayList<ItemStack>();
-	static HashMap<Integer, ArrayList<ItemStack>> loots;
-	static
-	{
-		loots = new HashMap<Integer, ArrayList<ItemStack>>();
-		tmpKits.add(new ItemStack(Material.GOLDEN_APPLE, 2));
-		loots.put(0, tmpKits);
-		tmpKits.clear();
-		
-		tmpKits.add(new ItemStack(Material.IRON_INGOT, 32));
-		loots.put(1, tmpKits);
-		tmpKits.clear();
-		
-		tmpKits.add(new ItemStack(Material.DIAMOND, 8));
-		loots.put(2, tmpKits);
-		tmpKits.clear();
-		
-		tmpKits.add(new ItemStack(Material.EXP_BOTTLE, 5));
-		loots.put(3, tmpKits);
-		tmpKits.clear();
-		
-		tmpKits.add(new ItemStack(Material.BOW, 1));
-		tmpKits.add(new ItemStack(Material.ARROW, 32));
-		loots.put(4, tmpKits);
-		tmpKits.clear();
-		
-		tmpKits.add(new ItemStack(Material.ENCHANTMENT_TABLE, 1));
-		tmpKits.add(new ItemStack(Material.LAPIS_ORE, 32));
-		loots.put(5, tmpKits);
-		tmpKits.clear();
-		
-		Potion potion = new Potion(1);
-		potion.setType(PotionType.INVISIBILITY);
-		potion.setHasExtendedDuration(false);
-		potion.setSplash(true);
-		tmpKits.add(potion.toItemStack(2));
-		loots.put(6, tmpKits);
-		tmpKits.clear();
-		
-		potion.setType(PotionType.SPEED);
-		potion.setHasExtendedDuration(false);
-		potion.setSplash(true);
-		tmpKits.add(potion.toItemStack(2));
-		loots.put(7, tmpKits);
-		tmpKits.clear();
-		
-		potion.setType(PotionType.INSTANT_DAMAGE);
-		potion.setSplash(true);
-		tmpKits.add(potion.toItemStack(1));
-		loots.put(8, tmpKits);
-		tmpKits.clear();
-	}
+	boolean finalZone = false;
 
 	//Scoreboard
 	int episode;
@@ -509,6 +459,11 @@ public class GameOfTaupes extends JavaPlugin
 			{
 				public void run()
 				{
+					if(GameOfTaupes.this.finalZone)
+					{
+						this.cancel();
+					}
+					
 					Random rdm = new Random();
 					int x = rdm.nextInt(GameOfTaupes.this.tmpBorder) - GameOfTaupes.this.tmpBorder / 2;
 					int z = rdm.nextInt(GameOfTaupes.this.tmpBorder) - GameOfTaupes.this.tmpBorder / 2;
@@ -671,6 +626,8 @@ public class GameOfTaupes extends JavaPlugin
 
 				Bukkit.broadcastMessage("Rétrécissement final de la carte ! Il ne restera bientôt aucun endroit où se cacher !");
 
+				GameOfTaupes.this.finalZone = true;
+				
 				getServer().getWorld(getConfig().getString("world"))
 				.getWorldBorder()
 				.setSize(1, 60 * 10);
@@ -1016,7 +973,12 @@ public class GameOfTaupes extends JavaPlugin
 			p.getInventory().setBoots(null);
 			p.setExp(0.0f);
 			p.setLevel(0);
-			p.getActivePotionEffects().clear();
+			
+			for(PotionEffect potion : p.getActivePotionEffects())
+			{
+				p.removePotionEffect(potion.getType());
+			}
+			
 			p.setGameMode(GameMode.SURVIVAL);
 			p.setHealth(20.0D);
 			p.setFoodLevel(40);
@@ -1052,7 +1014,7 @@ public class GameOfTaupes extends JavaPlugin
 			if(this.getConfig().getBoolean("options.haste"))
 			{
 				p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING,
-						Integer.MAX_VALUE, 1));
+						Integer.MAX_VALUE, 0));
 			}
 		}
 	}
@@ -1403,12 +1365,13 @@ public class GameOfTaupes extends JavaPlugin
 			Random rdm = new Random();
 			int chestPosition = 12;
 			int chestKit;
+			ItemStack item = new ItemStack(Material.DIAMOND, 8);
 			
 			for(int i = 0; i < 2; i++)
 			{						
 				while(true)
 				{
-					chestKit = rdm.nextInt(GameOfTaupes.loots.size());
+					chestKit = rdm.nextInt(9);
 					if(!GameOfTaupes.this.kits.contains(chestKit))
 					{
 						GameOfTaupes.this.kits.add(chestKit);
@@ -1416,9 +1379,65 @@ public class GameOfTaupes extends JavaPlugin
 					}
 				}
 				
-				for(ItemStack it : GameOfTaupes.loots.get(chestKit))
+				switch(chestKit)
 				{
-					inv.setItem(chestPosition++, it);
+				case 0:
+					inv.setItem(chestPosition++, item);
+					break;
+				case 1:
+					item.setAmount(32);
+					item.setType(Material.IRON_INGOT);
+					inv.setItem(chestPosition++, item);
+					break;
+				case 2:
+					item.setAmount(2);
+					item.setType(Material.GOLDEN_APPLE);
+					inv.setItem(chestPosition++, item);
+					break;
+				case 3:
+					item.setAmount(10);
+					item.setType(Material.EXP_BOTTLE);
+					inv.setItem(chestPosition++, item);
+					break;
+				case 4:
+					item.setAmount(1);
+					item.setType(Material.ENCHANTMENT_TABLE);
+					inv.setItem(chestPosition++, item);
+					item.setAmount(32);
+					item.setType(Material.LAPIS_ORE);
+					inv.setItem(chestPosition++, item);
+					break;
+				case 5:	
+					Potion potion = new Potion(1);
+					potion.setType(PotionType.INVISIBILITY);
+					potion.setHasExtendedDuration(false);
+					potion.setSplash(true);
+					inv.setItem(chestPosition++, potion.toItemStack(2));
+					chestPosition++;
+					break;
+				case 6:
+					Potion potion1 = new Potion(2);
+					potion1.setType(PotionType.SPEED);
+					potion1.setHasExtendedDuration(false);
+					potion1.setSplash(true);
+					inv.setItem(chestPosition++, potion1.toItemStack(2));
+					chestPosition++;
+					break;
+				case 7:
+					Potion potion2 = new Potion(3);
+					potion2.setType(PotionType.INSTANT_DAMAGE);
+					potion2.setSplash(true);
+					potion2.setLevel(2);;
+					inv.setItem(chestPosition++, potion2.toItemStack(1));
+					break;
+				case 8:
+					item.setAmount(1);
+					item.setType(Material.BOW);
+					inv.setItem(chestPosition++, item);
+					item.setAmount(32);
+					item.setType(Material.ARROW);
+					inv.setItem(chestPosition++, item);
+					break;
 				}
 			}
 			
@@ -1457,7 +1476,10 @@ public class GameOfTaupes extends JavaPlugin
 					break;
 				case 3:
 					item.setAmount(1);
-					item.setType(Material.BOOK);
+					item.setType(Material.BOW);
+					inv.setItem(chestPosition++, item);
+					item.setAmount(32);
+					item.setType(Material.ARROW);
 					break;
 				case 4:
 					item.setAmount(24);
@@ -1472,8 +1494,7 @@ public class GameOfTaupes extends JavaPlugin
 					item.setType(Material.ARROW);
 					break;
 				}
-				inv.setItem(chestPosition, item);
-				chestPosition++;
+				inv.setItem(chestPosition++, item);
 			}
 		}	
 		else if(GameOfTaupes.this.chestLvl == 2)

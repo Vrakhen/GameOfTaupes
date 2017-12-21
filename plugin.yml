@@ -4,9 +4,15 @@ main: fr.vraken.gameoftaupes.GameOfTaupes
 description: Plugin de Game of Taupes
 name: VrakenGameOfTaupes
 commands:
-  start:
+  gotstart:
     description: Commencer la partie
-    usage: /start
+    usage: /gotstart
+  gotstop:
+    description: Arrêter la partie
+    usage: /gotstop
+  gotmeetup:
+    description: Rassembler les joueurs avant le lancement
+    usage: /gotmeetup
   t:
     description: Pour parler entre taupes !
     usage: /t
@@ -19,12 +25,9 @@ commands:
   superreveal:
     description: Pour vous reveler en tant que supertaupe !
     usage: /superreveal
-  duel:
-    description: Pour défier un autre spectateur en duel !
-    usage: /duel
-  accept:
-    description: Pour accepter une demande de duel !
-    usage: /accept
-  decline:
-    description: Pour refuser une demande de duel !
-    usage: /decline
+  gotspec:
+    description: Passer en mode spectateur
+    usage: /gotspec
+  gotlobby:
+    description: Passer en mode aventure dans le lobby
+    usage: /gotlobby

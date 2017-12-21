@@ -3,7 +3,6 @@ package fr.vraken.gameoftaupes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -12,13 +11,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftShapedRecipe;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,6 +34,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
@@ -53,9 +49,6 @@ import org.bukkit.scoreboard.Team;
 public class EventsClass implements Listener
 {
 	static GameOfTaupes plugin;
-	static boolean rushIsStart = false;
-	static boolean countdownIsStart = false;
-	static ArrayList<UUID> alive = new ArrayList<UUID>();
 	public static boolean pvp = false;
 	ItemStack playerSkull = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 
@@ -138,65 +131,6 @@ public class EventsClass implements Listener
 		p.openInventory(inv);
 	}
 
-	public static void CountDown(String name, int sec, int min)
-	{
-		if (!countdownIsStart) {
-			new BukkitRunnable()
-			{        
-				public void run()
-				{
-					throw new Error("Unresolved compilation problem: \n\tNo enclosing instance of the type EventsClass is accessible in scope\n");
-				}
-			}.runTaskTimer(plugin, 0L, 20L);
-		}
-	}
-
-	static void xpSound()
-	{
-		for(Team teams : plugin.s.getTeams())
-		{
-			for (OfflinePlayer p : teams.getPlayers()) 
-			{
-				p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.ORB_PICKUP, 1.0F, 0.0F);
-			} 
-		}   
-	}
-
-	public void ClearDrops(String world)
-	{
-		World w = Bukkit.getServer().getWorld(world);
-		if (w == null) {
-			return;
-		}
-		for (Entity e : w.getEntities()) {
-			if (e.getType() == EntityType.DROPPED_ITEM) {
-				e.remove();
-			}
-		}
-	}
-
-	static void xpLevel(int level)
-	{
-		for(Team teams : plugin.s.getTeams())
-		{
-			for (OfflinePlayer p : teams.getPlayers()) 
-			{
-				p.getPlayer().setLevel(level);
-			} 
-		}
-	}
-
-	static void witherSound()
-	{
-		for(Team teams : plugin.s.getTeams())
-		{
-			for (OfflinePlayer p : teams.getPlayers()) 
-			{
-				p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.WITHER_DEATH, 10.0F, 10.0F);
-			} 
-		} 
-	}
-	
 	@EventHandler
 	public void OnChatEvent(AsyncPlayerChatEvent e)
 	{
@@ -327,7 +261,7 @@ public class EventsClass implements Listener
 	}
 
 	@EventHandler
-	public void Regen(EntityRegainHealthEvent e)
+	public void CancelRegen(EntityRegainHealthEvent e)
 	{
 		if (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED)) {
 			e.setCancelled(true);
@@ -339,53 +273,143 @@ public class EventsClass implements Listener
 	{
 		Player p = e.getPlayer();
 
-		if (!rushIsStart)
+		if (!plugin.gameStarted)
 		{
-			plugin.getServer().createWorld(
-					new WorldCreator(plugin.getConfig().get("lobby.world")
-							.toString()));
-			p.teleport(new Location(Bukkit.getWorld(plugin.getConfig()
-					.get("lobby.world").toString()), plugin.getConfig().getInt(
-							"lobby.X"), plugin.getConfig().getInt("lobby.Y"), plugin
-					.getConfig().getInt("lobby.Z")));
-			p.getInventory().setItem(0, new ItemStack(Material.BANNER, 1));
+			/*plugin.getServer().createWorld(
+					new WorldCreator(plugin.getConfig().get("lobby.world").toString()));*/
+			if(plugin.meetUp)
+			{
+				p.teleport(plugin.meetupLocation);
+			}
+			else
+			{
+				p.teleport(plugin.lobbyLocation);
+			}
+			
 			p.setGameMode(GameMode.ADVENTURE);
-
+			
+			p.getInventory().setItem(0, new ItemStack(Material.BANNER, 1));
 			ItemMeta meta1 = p.getInventory().getItem(0).getItemMeta();
 			meta1.setDisplayName(ChatColor.GOLD + "Choisir " + plugin.teamChoiceString);
 			p.getInventory().getItem(0).setItemMeta(meta1);
 
-			e.setJoinMessage(ChatColor.BLUE + p.getName() + ChatColor.YELLOW + 
-					" a rejoint la partie  " + ChatColor.GRAY + "(" + 
+			e.setJoinMessage(ChatColor.BLUE + p.getName() + 
+					ChatColor.YELLOW + " a rejoint la partie  " + 
+					ChatColor.GRAY + "(" + 
 					ChatColor.YELLOW + Bukkit.getOnlinePlayers().size() + "/" + 
-					Bukkit.getMaxPlayers() + ChatColor.GRAY + ")");
-			if ((!countdownIsStart) && 
-					(plugin.getConfig().getBoolean("options.cooldown")))
+					Bukkit.getMaxPlayers() + 
+					ChatColor.GRAY + ")");
+
+			plugin.playersInLobby.add(p.getUniqueId());
+		}
+		else if (!plugin.gameEnd)
+		{		
+			if (!plugin.playersAlive.contains(p.getUniqueId()))
 			{
-				CountDown("GameOfTaupes", 60, 
-						plugin.getConfig().getInt("options.minplayers"));
-				countdownIsStart = true;
+				p.setGameMode(GameMode.SPECTATOR);
+				p.teleport(new Location(
+						Bukkit.getWorld(plugin.getConfig().getString("world")), 
+						0, 120, 0));					
+				
+				plugin.playersSpec.add(p.getUniqueId());
+				
+				e.setJoinMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + 
+						p.getName() + " a rejoint la partie  ");
 			}
 		}
-		else if (!alive.contains(p.getUniqueId()))
+		else if (plugin.gameEnd)
 		{
-			e.setJoinMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + 
-					p.getName() + " a rejoint la partie  ");
-			p.setGameMode(GameMode.SPECTATOR);
-			p.teleport(new Location(Bukkit.getWorld(EventsClass.plugin.getConfig().get("lobby.world").toString()), EventsClass.plugin.getConfig().getInt("lobby.X"), EventsClass.plugin.getConfig().getInt("lobby.Y"), EventsClass.plugin.getConfig().getInt("lobby.Z")));p.setGameMode(GameMode.SPECTATOR);
+			p.teleport(plugin.respawnLocation);
+			p.setGameMode(GameMode.ADVENTURE);
 
-			Title.sendTitle(p, "Pensez à vous mute sur Mumble !", "Par fairplay, assurez-vous que les joueurs en vie ne peuvent pas vous entendre !");
+			e.setJoinMessage(ChatColor.BLUE + p.getName() + 
+					ChatColor.YELLOW + " a rejoint la partie  " + 
+					ChatColor.GRAY + "(" + 
+					ChatColor.YELLOW + Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers() + 
+					ChatColor.GRAY + ")");
+
+			plugin.playersInLobby.add(p.getUniqueId());
 		}
 	}
 
+	
+	@EventHandler
+	public void OnPlayerDisconnect(PlayerQuitEvent e)
+	{
+		if(plugin.playersInLobby.contains(e.getPlayer().getUniqueId()))
+		{
+			plugin.playersInLobby.remove(e.getPlayer().getUniqueId());
+		}
+		else if(plugin.playersSpec.contains(e.getPlayer().getUniqueId()))
+		{
+			plugin.playersSpec.remove(e.getPlayer().getUniqueId());
+		}
+	}
+
+	
 	@EventHandler
 	public void OnPlayerRespawn(PlayerRespawnEvent e)
 	{
 		Player p = e.getPlayer();
-		Title.sendTitle(p, "Pensez à vous mute sur Mumble !", "Par fairplay, assurez-vous que les joueurs en vie ne peuvent pas vous entendre !");
+		if(!plugin.gameStarted)
+		{
+			if(plugin.meetUp)
+			{
+				p.teleport(plugin.meetupLocation);
+			}
+			else 
+			{
+				p.teleport(plugin.respawnLocation);
+			}
+			p.setGameMode(GameMode.ADVENTURE);
+			
+			p.getInventory().setItem(0, new ItemStack(Material.BANNER, 1));
+			ItemMeta meta1 = p.getInventory().getItem(0).getItemMeta();
+			meta1.setDisplayName(ChatColor.GOLD + "Choisir " + plugin.teamChoiceString);
+			p.getInventory().getItem(0).setItemMeta(meta1);
 
+			if(!plugin.playersInLobby.contains(p.getUniqueId()))
+			{
+				plugin.playersInLobby.add(p.getUniqueId());
+			}
+		}
+		else if(!plugin.gameEnd)
+		{
+			if(plugin.playersInLobby.contains(p.getUniqueId()))
+			{
+				p.setGameMode(GameMode.ADVENTURE);
+				p.teleport(plugin.respawnLocation);
+			}
+			else
+			{
+				p.setGameMode(GameMode.SPECTATOR);
+				p.teleport(new Location(
+						Bukkit.getWorld(plugin.getConfig().getString("world")), 
+						0, 120, 0));
+				
+				if(!plugin.playersSpec.contains(p.getUniqueId()))
+				{
+					plugin.playersSpec.add(p.getUniqueId());
+				}
+				
+				Title.sendTitle(p, 
+						"Pensez à vous mute sur Mumble !", 
+						"Par fairplay, assurez-vous que les joueurs en vie ne peuvent pas vous entendre !");
+			}
+		}
+		else if(plugin.gameEnd)
+		{
+			p.teleport(plugin.respawnLocation);
+			p.setGameMode(GameMode.ADVENTURE);
+			
+			if(!plugin.playersInLobby.contains(p.getUniqueId()))
+			{
+				plugin.playersInLobby.add(p.getUniqueId());
+			}
+		}
 	}
 
+	
 	@EventHandler
 	public void Options(PlayerInteractEvent e)
 	{
@@ -401,17 +425,27 @@ public class EventsClass implements Listener
 		}
 	}
 
+	
 	@EventHandler
-	public void PlayerImmunity(EntityDamageEvent e)
+	public void PlayerImmunityBeforeTaupes(EntityDamageEvent e)
 	{
+		if(!plugin.gameStarted || plugin.gameEnd)
+		{
+			return;
+		}
+		
 		if(plugin.taupessetup)
 		{
 			return;
 		}
 
-		try
+		if(e.getEntity() instanceof Player)
 		{
 			Player player = (Player)e.getEntity();
+			if(plugin.playersInLobby.contains(player.getUniqueId()))
+			{
+				return;
+			}
 			if(!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE))
 			{
 				boolean lethal = (player.getHealth() - e.getFinalDamage()) < 1;
@@ -422,11 +456,11 @@ public class EventsClass implements Listener
 				}
 			}
 		}
-		catch(Exception ex){}
 	}
 
+	
 	@EventHandler
-	public void PlayerDeath(PlayerDeathEvent e)
+	public void PlayerDeathInGame(PlayerDeathEvent e)
 	{
 		Player player = e.getEntity();
 
@@ -440,7 +474,7 @@ public class EventsClass implements Listener
 			}
 			catch (IOException e1) {}
 
-			alive.remove(player.getUniqueId());  
+			//alive.remove(player.getUniqueId());  
 			plugin.playersAlive.remove(player.getUniqueId());
 
 			e.getDrops().add(new ItemStack(Material.SKULL_ITEM));
@@ -491,6 +525,7 @@ public class EventsClass implements Listener
 				}
 			}.runTaskLater(plugin, 60);	
 		}
+		/*
 		else if(plugin.duelInProgress)
 		{
 			String victor;
@@ -517,9 +552,10 @@ public class EventsClass implements Listener
 			Bukkit.getPlayer(plugin.provoker).setGameMode(GameMode.SPECTATOR);
 			plugin.provoked = null;
 			plugin.provoker = null;
-		}
+		}*/
 	}
 
+	
 	@EventHandler
 	public void BrewCancel(BrewEvent e)
 	{
@@ -553,6 +589,8 @@ public class EventsClass implements Listener
 		}
 	}
 
+
+	/*
 	@EventHandler
 	public void RespawTp(PlayerRespawnEvent e)
 	{
@@ -564,18 +602,21 @@ public class EventsClass implements Listener
 				p.teleport(new Location(Bukkit.getWorld(EventsClass.plugin.getConfig().get("lobby.world").toString()), EventsClass.plugin.getConfig().getInt("lobby.X"), EventsClass.plugin.getConfig().getInt("lobby.Y"), EventsClass.plugin.getConfig().getInt("lobby.Z")));p.setGameMode(GameMode.SPECTATOR);
 			}
 		}.runTaskLater(plugin, 4L);
-	}
+	}*/
+	
 
 	@EventHandler
-	public void CancelDrop(PlayerDropItemEvent e)
+	public void CancelDropInLobby(PlayerDropItemEvent e)
 	{
 		Player p = e.getPlayer();
-		if (p.getWorld().equals(Bukkit.getWorld(plugin.getConfig().get("lobby.world").toString()))) {
+		if (p.getWorld().equals(Bukkit.getWorld(plugin.getConfig().get("lobby.world").toString()))) 
+		{
 			e.setCancelled(true);
 		}
 	}
 
-	@EventHandler
+	
+	/*@EventHandler
 	public void CancelPVP(EntityDamageEvent e)
 	{
 		if (e.getEntity().getWorld().equals(Bukkit.getWorld(plugin.getConfig().get("lobby.world").toString()))) 
@@ -585,17 +626,26 @@ public class EventsClass implements Listener
 				e.setCancelled(true);
 			}
 		}
-	}
+	}*/
+	
 
 	@EventHandler
-	public void CancelPVp2(EntityDamageByEntityEvent e)
-	{
-		if ((!pvp) && ((e.getDamager() instanceof Player)) && 
-				((e.getEntity() instanceof Player))) {
+	public void CancelPVPInGame(EntityDamageByEntityEvent e)
+	{		
+		if (!pvp && 
+				e.getDamager() instanceof Player && 
+				e.getEntity() instanceof Player) 
+		{
+			Player player = (Player)e.getEntity();
+			if(plugin.playersInLobby.contains(player.getUniqueId()))
+			{
+				return;
+			}
 			e.setCancelled(true);
 		}
 	}
 
+	
 	@EventHandler
 	public void CancelCraft(PrepareItemCraftEvent e)
 	{
@@ -625,6 +675,7 @@ public class EventsClass implements Listener
 		catch(Exception ex) {}
 	}
 
+	
 	@EventHandler
 	public void OnPlayerOpenTreasureChest(PlayerInteractEvent e)
 	{

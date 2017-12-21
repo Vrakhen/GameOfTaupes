@@ -150,6 +150,12 @@ public class FilesManager
 		plugin.getConfig().addDefault("lobby.X", Integer.valueOf(0));
 		plugin.getConfig().addDefault("lobby.Y", Integer.valueOf(100));
 		plugin.getConfig().addDefault("lobby.Z", Integer.valueOf(0));
+		plugin.getConfig().addDefault("lobby.respawnX", Integer.valueOf(0));
+		plugin.getConfig().addDefault("lobby.respawnY", Integer.valueOf(100));
+		plugin.getConfig().addDefault("lobby.respawnZ", Integer.valueOf(0));
+		plugin.getConfig().addDefault("lobby.meetupX", Integer.valueOf(0));
+		plugin.getConfig().addDefault("lobby.meetupY", Integer.valueOf(100));
+		plugin.getConfig().addDefault("lobby.meetupZ", Integer.valueOf(0));
 		plugin.getConfig().addDefault("chest.random", Boolean.valueOf(false));
 		plugin.getConfig().addDefault("chest.timer", Integer.valueOf(10));
 		plugin.getConfig().addDefault("chest.X", Integer.valueOf(0));

@@ -19,3 +19,5 @@ target/
 .classpath
 .project
 bin/
+META-INF/
+pom.xml

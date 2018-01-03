@@ -355,11 +355,11 @@ public class EventsClass implements Listener
 		{
 			if(plugin.meetUp)
 			{
-				p.teleport(plugin.meetupLocation);
+				e.setRespawnLocation(plugin.meetupLocation);
 			}
 			else 
 			{
-				p.teleport(plugin.respawnLocation);
+				e.setRespawnLocation(plugin.respawnLocation);
 			}
 			p.setGameMode(GameMode.ADVENTURE);
 			
@@ -378,12 +378,12 @@ public class EventsClass implements Listener
 			if(plugin.playersInLobby.contains(p.getUniqueId()))
 			{
 				p.setGameMode(GameMode.ADVENTURE);
-				p.teleport(plugin.respawnLocation);
+				e.setRespawnLocation(plugin.respawnLocation);
 			}
 			else
 			{
 				p.setGameMode(GameMode.SPECTATOR);
-				p.teleport(new Location(
+				e.setRespawnLocation(new Location(
 						Bukkit.getWorld(plugin.getConfig().getString("world")), 
 						0, 120, 0));
 				
@@ -399,7 +399,7 @@ public class EventsClass implements Listener
 		}
 		else if(plugin.gameEnd)
 		{
-			p.teleport(plugin.respawnLocation);
+			e.setRespawnLocation(plugin.respawnLocation);
 			p.setGameMode(GameMode.ADVENTURE);
 			
 			if(!plugin.playersInLobby.contains(p.getUniqueId()))

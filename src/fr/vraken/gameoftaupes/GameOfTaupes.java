@@ -694,11 +694,7 @@ public class GameOfTaupes extends JavaPlugin
 				GameOfTaupes.this.playersInLobby.add(p.getUniqueId());
 				
 				p.setGameMode(GameMode.ADVENTURE);
-				p.teleport(new Location(
-						Bukkit.getWorld(GameOfTaupes.this.getConfig().getString("lobby.world")), 
-						GameOfTaupes.this.getConfig().getInt("lobby.respawnX"), 
-						GameOfTaupes.this.getConfig().getInt("lobby.respawnXY"), 
-						GameOfTaupes.this.getConfig().getInt("lobby.respawnXZ")));
+				p.teleport(lobbyLocation);
 			}
 			
 			p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);

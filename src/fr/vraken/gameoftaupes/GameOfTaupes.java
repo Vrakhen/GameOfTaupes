@@ -936,7 +936,7 @@ public class GameOfTaupes extends JavaPlugin
 
 			//ADMIN MEETUP
 			//------------
-			if (cmd.getName().equalsIgnoreCase("gotmeetup") && player.isOp())
+			if (cmd.getName().equalsIgnoreCase("gotmeetup") && player.isOp() && !this.gameStarted)
 			{
 				this.meetUp = true;
 				for (Player p : Bukkit.getOnlinePlayers())
@@ -948,7 +948,7 @@ public class GameOfTaupes extends JavaPlugin
 
 			//ADMIN START
 			//-----------
-			if (cmd.getName().equalsIgnoreCase("gotstart") && player.isOp())
+			if (cmd.getName().equalsIgnoreCase("gotstart") && player.isOp() && !this.gameStarted)
 			{
 				startGame();
 				return true;
@@ -956,7 +956,7 @@ public class GameOfTaupes extends JavaPlugin
 
 			//ADMIN STOP
 			//----------
-			if (cmd.getName().equalsIgnoreCase("gotstop") && player.isOp())
+			if (cmd.getName().equalsIgnoreCase("gotstop") && player.isOp() && this.gameStarted)
 			{
 				stopGame();
 				return true;

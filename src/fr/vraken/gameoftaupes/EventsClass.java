@@ -127,6 +127,7 @@ public class EventsClass implements Listener
 		addItem(inv, ChatColor.AQUA, DyeColor.CYAN, plugin.teamf.getString("cyan.name"), 3);
 		addItem(inv, ChatColor.GREEN, DyeColor.GREEN, plugin.teamf.getString("verte.name"), 4);
 		addItem(inv, ChatColor.GRAY, DyeColor.GRAY, plugin.teamf.getString("grise.name"), 5);
+		addItem(inv, ChatColor.WHITE, DyeColor.WHITE, "Quitter son équipe", 6);
 
 		p.openInventory(inv);
 	}
@@ -156,8 +157,7 @@ public class EventsClass implements Listener
 			{
 				if (plugin.rose.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 				{
-					p.sendMessage(plugin.rose.getPrefix() + "ï¿½" + 
-							ChatColor.RESET + 
+					p.sendMessage(plugin.rose.getPrefix() + 
 							" Vous avez rejoint " + plugin.teamf.getString("rose.name"));
 					plugin.rose.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
@@ -167,14 +167,13 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette Ã©quipe est complÃ¨te !");
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.CYAN) {
 				if (plugin.cyan.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 				{
-					p.sendMessage(plugin.cyan.getPrefix() + "ï¿½" + 
-							ChatColor.RESET + 
+					p.sendMessage(plugin.cyan.getPrefix() + 
 							" Vous avez rejoint " + plugin.teamf.getString("cyan.name"));
 					plugin.cyan.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
@@ -184,14 +183,13 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette Ã©quipe est complÃ¨te !");
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.YELLOW) {
 				if (plugin.jaune.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 				{
-					p.sendMessage(plugin.jaune.getPrefix() + "ï¿½" + 
-							ChatColor.RESET + 
+					p.sendMessage(plugin.jaune.getPrefix() + 
 							" Vous avez rejoint " + plugin.teamf.getString("jaune.name"));
 					plugin.jaune.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
@@ -201,14 +199,13 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette Ã©quipe est complÃ¨te !");
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.PURPLE) {
 				if (plugin.violette.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 				{
-					p.sendMessage(plugin.violette.getPrefix() + "ï¿½" + 
-							ChatColor.RESET + 
+					p.sendMessage(plugin.violette.getPrefix() + 
 							" Vous avez rejoint " + plugin.teamf.getString("violette.name"));
 					plugin.violette.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
@@ -218,14 +215,13 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette Ã©quipe est complÃ¨te !");
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.GREEN) {
 				if (plugin.verte.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 				{
-					p.sendMessage(plugin.verte.getPrefix() + "ï¿½" + 
-							ChatColor.RESET + 
+					p.sendMessage(plugin.verte.getPrefix() + 
 							" Vous avez rejoint " + plugin.teamf.getString("verte.name"));
 					plugin.verte.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
@@ -235,14 +231,13 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette Ã©quipe est complÃ¨te !");
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.GRAY) {
 				if (plugin.grise.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
 				{
-					p.sendMessage(plugin.grise.getPrefix() + "ï¿½" + 
-							ChatColor.RESET + 
+					p.sendMessage(plugin.grise.getPrefix() +
 							" Vous avez rejoint " + plugin.teamf.getString("grise.name"));
 					plugin.grise.addPlayer(p);
 					if(!plugin.playersInTeam.contains(p.getUniqueId()))
@@ -252,7 +247,16 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette Ã©quipe est complÃ¨te !");
+					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+				}
+			}
+			if (banner.getBaseColor() == DyeColor.WHITE) 
+			{				
+				if(plugin.playersInTeam.contains(p.getUniqueId()))
+				{
+					plugin.playersInTeam.remove(p.getUniqueId());
+					plugin.s.getPlayerTeam(p).removePlayer(p);
+					p.sendMessage("Vous avez quitté votre équipe !");
 				}
 			}
 			e.setCancelled(true);
@@ -275,11 +279,39 @@ public class EventsClass implements Listener
 
 		if (!plugin.gameStarted)
 		{
-			/*plugin.getServer().createWorld(
-					new WorldCreator(plugin.getConfig().get("lobby.world").toString()));*/
 			if(plugin.meetUp)
 			{
-				p.teleport(plugin.meetupLocation);
+				if(plugin.playersInTeam.contains(p.getUniqueId()) && plugin.teamf.getBoolean("options.meetupteamtp"))
+				{
+					if(plugin.s.getPlayerTeam(p) == plugin.rose)
+					{
+						p.teleport(plugin.meetupl1);
+					}
+					else if(plugin.s.getPlayerTeam(p) == plugin.jaune)
+					{
+						p.teleport(plugin.meetupl2);
+					}
+					else if(plugin.s.getPlayerTeam(p) == plugin.violette)
+					{
+						p.teleport(plugin.meetupl3);
+					}
+					else if(plugin.s.getPlayerTeam(p) == plugin.cyan)
+					{
+						p.teleport(plugin.meetupl4);
+					}
+					else if(plugin.s.getPlayerTeam(p) == plugin.verte)
+					{
+						p.teleport(plugin.meetupl5);
+					}
+					else if(plugin.s.getPlayerTeam(p) == plugin.grise)
+					{
+						p.teleport(plugin.meetupl6);
+					}
+				}
+				else
+				{
+					p.teleport(plugin.meetupLocation);
+				}
 			}
 			else
 			{
@@ -331,7 +363,6 @@ public class EventsClass implements Listener
 			plugin.playersInLobby.add(p.getUniqueId());
 		}
 	}
-
 	
 	@EventHandler
 	public void OnPlayerDisconnect(PlayerQuitEvent e)
@@ -345,7 +376,6 @@ public class EventsClass implements Listener
 			plugin.playersSpec.remove(e.getPlayer().getUniqueId());
 		}
 	}
-
 	
 	@EventHandler
 	public void OnPlayerRespawn(PlayerRespawnEvent e)
@@ -409,7 +439,6 @@ public class EventsClass implements Listener
 		}
 	}
 
-	
 	@EventHandler
 	public void Options(PlayerInteractEvent e)
 	{
@@ -424,7 +453,6 @@ public class EventsClass implements Listener
 			openTeamInv(p);
 		}
 	}
-
 	
 	@EventHandler
 	public void PlayerImmunityBeforeTaupes(EntityDamageEvent e)
@@ -457,7 +485,6 @@ public class EventsClass implements Listener
 			}
 		}
 	}
-
 	
 	@EventHandler
 	public void PlayerDeathInGame(PlayerDeathEvent e)
@@ -544,7 +571,7 @@ public class EventsClass implements Listener
 			{
 				if(!plugin.playersAlive.contains(pl.getUniqueId()))
 				{
-					pl.sendMessage(victor + " a remportÃ© son duel contre " + loser + " !");
+					pl.sendMessage(victor + " a remporté son duel contre " + loser + " !");
 				}
 			}
 			plugin.duelInProgress = false;
@@ -554,7 +581,6 @@ public class EventsClass implements Listener
 			plugin.provoker = null;
 		}*/
 	}
-
 	
 	@EventHandler
 	public void BrewCancel(BrewEvent e)
@@ -584,11 +610,10 @@ public class EventsClass implements Listener
 			e.setCancelled(true);
 			for (HumanEntity player : bi.getViewers()) {
 				player.sendMessage(ChatColor.RED + 
-						"Les potions de rÃ©gÃ©nÃ©ration sont interdites !");
+						"Les potions de régénération sont interdites !");
 			}
 		}
 	}
-
 
 	/*
 	@EventHandler
@@ -604,7 +629,6 @@ public class EventsClass implements Listener
 		}.runTaskLater(plugin, 4L);
 	}*/
 	
-
 	@EventHandler
 	public void CancelDropInLobby(PlayerDropItemEvent e)
 	{
@@ -614,7 +638,6 @@ public class EventsClass implements Listener
 			e.setCancelled(true);
 		}
 	}
-
 	
 	/*@EventHandler
 	public void CancelPVP(EntityDamageEvent e)
@@ -628,7 +651,6 @@ public class EventsClass implements Listener
 		}
 	}*/
 	
-
 	@EventHandler
 	public void CancelPVPInGame(EntityDamageByEntityEvent e)
 	{		
@@ -644,7 +666,6 @@ public class EventsClass implements Listener
 			e.setCancelled(true);
 		}
 	}
-
 	
 	@EventHandler
 	public void CancelCraft(PrepareItemCraftEvent e)
@@ -668,13 +689,12 @@ public class EventsClass implements Listener
 			{
 				e.getInventory().setResult(new ItemStack(Material.AIR));
 				for (HumanEntity p : e.getViewers()) {
-					p.sendMessage("Ce craft a Ã©tÃ© modifiÃ© !");
+					p.sendMessage("Ce craft a été modifié !");
 				}
 			}
 		}
 		catch(Exception ex) {}
 	}
-
 	
 	@EventHandler
 	public void OnPlayerOpenTreasureChest(PlayerInteractEvent e)

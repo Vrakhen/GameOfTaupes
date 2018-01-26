@@ -119,6 +119,12 @@ public class GameOfTaupes extends JavaPlugin
 	Location l4;
 	Location l5;
 	Location l6;
+	Location meetupl1;
+	Location meetupl2;
+	Location meetupl3;
+	Location meetupl4;
+	Location meetupl5;
+	Location meetupl6;
 	Team rose;
 	Team jaune;
 	Team violette;
@@ -130,8 +136,8 @@ public class GameOfTaupes extends JavaPlugin
 	int revealEpisode;
 	int superrevealEpisode;
 	int restractEpisode;
-	String teamAnnounceString = "L'Ã©quipe ";
-	String teamChoiceString = "son Ã©quipe";
+	String teamAnnounceString = "L'équipe ";
+	String teamChoiceString = "son équipe";
 
 	/*//Duels
 	UUID provoker;
@@ -629,8 +635,8 @@ public class GameOfTaupes extends JavaPlugin
 				GameOfTaupes.this.hasChangedGS = true;        
 				GameOfTaupes.this.countdownObj = GameOfTaupes.this.objTxt + GameOfTaupes.this.objMinute + ":" + GameOfTaupes.this.objSecond;      
 
-				Bukkit.broadcastMessage("La carte est en train de rÃ©trÃ©cir ! "
-						+ "DÃ©pÃªchez-vous d'aller entre -" 
+				Bukkit.broadcastMessage("La carte est en train de rétrécir ! "
+						+ "Dépêchez-vous d'aller entre -" 
 						+ (int)(getConfig().getDouble("worldborder.finalsize") / 2)
 						+ " et " 
 						+ (int)(getConfig().getDouble("worldborder.finalsize") / 2) 
@@ -653,7 +659,7 @@ public class GameOfTaupes extends JavaPlugin
 				GameOfTaupes.this.s.resetScores(ChatColor.WHITE + GameOfTaupes.this.countdownObj);
 				GameOfTaupes.this.gameState++;     
 
-				Bukkit.broadcastMessage("RÃ©trÃ©cissement final de la carte ! Il ne restera bientÃ´t aucun endroit oÃ¹ se cacher !");
+				Bukkit.broadcastMessage("Rétrécissement final de la carte ! Il ne restera bientôt aucun endroit où se cacher !");
 
 				GameOfTaupes.this.finalZone = true;
 				
@@ -751,7 +757,7 @@ public class GameOfTaupes extends JavaPlugin
 					}
 				}
 				player.sendMessage(ChatColor.RED + 
-						"Vous n'Ãªtes pas une taupe !");
+						"Vous n'êtes pas une taupe !");
 				return true;
 			}	
 
@@ -767,7 +773,7 @@ public class GameOfTaupes extends JavaPlugin
 						if (this.showedtaupes.contains(player.getUniqueId()))
 						{
 							player.sendMessage(ChatColor.RED + 
-									"Vous vous Ãªtes dÃ©jÃ  rÃ©vÃ©lÃ© !");
+									"Vous vous êtes déjà révélé !");
 						}
 						else
 						{
@@ -780,7 +786,7 @@ public class GameOfTaupes extends JavaPlugin
 							{
 								online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
 							}
-							Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " a rÃ©vÃ©lÃ© qu'il Ã©tait une taupe !");
+							Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " a révélé qu'il était une taupe !");
 
 							unregisterTeam();
 							unregisterTaupeTeam();
@@ -791,7 +797,7 @@ public class GameOfTaupes extends JavaPlugin
 				} 
 					
 				player.sendMessage(ChatColor.RED + 
-						"Vous n'Ãªtes pas une taupe !");
+						"Vous n'êtes pas une taupe !");
 				return true;
 			}      
 
@@ -815,12 +821,12 @@ public class GameOfTaupes extends JavaPlugin
 					if (this.showedsupertaupes.contains(player.getUniqueId()))
 					{
 						player.sendMessage(ChatColor.RED + 
-								"Vous vous Ãªtes dÃ©jÃ  rÃ©vÃ©lÃ© !");
+								"Vous vous êtes déjà révélé !");
 					}
 					else if (!this.showedtaupes.contains(player.getUniqueId()))
 					{
 						player.sendMessage(ChatColor.RED + 
-								"Vous devez d'abord vous rÃ©vÃ©ler en tant que taupe !");
+								"Vous devez d'abord vous révéler en tant que taupe !");
 					}
 					else
 					{
@@ -835,7 +841,7 @@ public class GameOfTaupes extends JavaPlugin
 							online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
 							online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
 						}
-						Bukkit.broadcastMessage(ChatColor.DARK_RED + player.getName() + " a rÃ©vÃ©lÃ© qu'il Ã©tait une supertaupe !");
+						Bukkit.broadcastMessage(ChatColor.DARK_RED + player.getName() + " a révélé qu'il était une supertaupe !");
 
 						unregisterTeam();
 						unregisterTaupeTeam();
@@ -844,7 +850,7 @@ public class GameOfTaupes extends JavaPlugin
 					return true;
 				}
 				player.sendMessage(ChatColor.RED + 
-						"Vous n'Ãªtes pas la supertaupe !");
+						"Vous n'êtes pas la supertaupe !");
 				return true;
 			}
 
@@ -864,13 +870,13 @@ public class GameOfTaupes extends JavaPlugin
 						else
 						{
 							player.sendMessage(ChatColor.RED + 
-									"Vous avez dÃ©jÃ  claim votre kit de taupe !");
+									"Vous avez déjà claim votre kit de taupe !");
 						}
 						return true;
 					}
 				}
 				player.sendMessage(ChatColor.RED + 
-						"Vous n'Ãªtes pas une taupe !");
+						"Vous n'êtes pas une taupe !");
 				return true;
 			}
 /*
@@ -887,12 +893,12 @@ public class GameOfTaupes extends JavaPlugin
 					{
 						if(this.provoker != null)
 						{
-							Bukkit.getPlayer(this.provoked).sendMessage("Demande de duel expirÃ©e");
-							Bukkit.getPlayer(this.provoker).sendMessage("Demande de duel expirÃ©e");
+							Bukkit.getPlayer(this.provoked).sendMessage("Demande de duel expirée");
+							Bukkit.getPlayer(this.provoker).sendMessage("Demande de duel expirée");
 						}
 						this.provoked = provoked.getUniqueId();
 						this.provoker = player.getUniqueId();
-						provoked.sendMessage(player.getName() + " vous a dÃ©fiÃ© en duel ! /accept pour accepter ou /decline pour refuser !");
+						provoked.sendMessage(player.getName() + " vous a défié en duel ! /accept pour accepter ou /decline pour refuser !");
 					}
 				}
 			}
@@ -919,7 +925,7 @@ public class GameOfTaupes extends JavaPlugin
 				if(!this.playersAlive.contains(player.getUniqueId()) && 
 						this.provoked == player.getUniqueId())
 				{
-					Bukkit.getPlayer(provoker).sendMessage(player.getName() + " a refusÃ© le duel. Le lÃ¢che !");
+					Bukkit.getPlayer(provoker).sendMessage(player.getName() + " a refusé le duel. Le lÃ¢che !");
 					this.provoked = null;
 					this.provoker = null;
 				}
@@ -1029,10 +1035,38 @@ public class GameOfTaupes extends JavaPlugin
 				this.teamf.getInt("grise.X"), 
 				this.teamf.getInt("grise.Y"), 
 				this.teamf.getInt("grise.Z"));
+		
+		if(this.getConfig().getBoolean("options.meetupteamtp"))
+		{
+			this.meetupl1 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
+					this.teamf.getInt("rose.meetupX"), 
+					this.teamf.getInt("rose.meetupY"), 
+					this.teamf.getInt("rose.meetupZ"));
+			this.meetupl2 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
+					this.teamf.getInt("cyan.meetupX"), 
+					this.teamf.getInt("cyan.meetupY"), 
+					this.teamf.getInt("cyan.meetupZ"));
+			this.meetupl3 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
+					this.teamf.getInt("jaune.meetupX"), 
+					this.teamf.getInt("jaune.meetupY"), 
+					this.teamf.getInt("jaune.meetupZ"));
+			this.meetupl4 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
+					this.teamf.getInt("violette.meetupX"), 
+					this.teamf.getInt("violette.meetupY"), 
+					this.teamf.getInt("violette.meetupZ"));
+			this.meetupl5 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
+					this.teamf.getInt("verte.meetupX"), 
+					this.teamf.getInt("verte.meetupY"), 
+					this.teamf.getInt("verte.meetupZ"));
+			this.meetupl6 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
+					this.teamf.getInt("grise.meetupX"), 
+					this.teamf.getInt("grise.meetupY"), 
+					this.teamf.getInt("grise.meetupZ"));
+		}
 
 	}
-/*
-	public void setDuelSpawnLocations()
+
+	/*public void setDuelSpawnLocations()
 	{
 		this.duelSpawn1 = new Location(Bukkit.getWorld(getConfig().get("lobby.world").toString()), 
 				this.getConfig().getInt("duelspawn1.X"), this.getConfig().getInt("duelspawn1.Y"), this.getConfig().getInt("duelspawn1.Z"));
@@ -1071,7 +1105,7 @@ public class GameOfTaupes extends JavaPlugin
 		{
 			if(!this.playersInTeam.contains(p.getUniqueId()))
 			{
-				p.kickPlayer("Vous n'avez pas choisi d'Ã©quipe. Tant pis pour vous !");
+				p.kickPlayer("Vous n'avez pas choisi d'équipe. Tant pis pour vous !");
 				continue;
 			}
 			
@@ -1280,7 +1314,7 @@ public class GameOfTaupes extends JavaPlugin
 	{
 		if(team == null)
 		{
-			Bukkit.broadcastMessage("Toutes les Ã©quipes ont Ã©tÃ© Ã©liminÃ©es, personne n'a gagnÃ© ! ");
+			Bukkit.broadcastMessage("Toutes les équipes ont été éliminées, personne n'a gagné ! ");
 			Bukkit.getScheduler().cancelAllTasks();
 			return;
 		}
@@ -1289,7 +1323,7 @@ public class GameOfTaupes extends JavaPlugin
 				+ team.getPrefix() 
 				+ team.getName() 
 				+ ChatColor.RESET 
-				+ " a gagnÃ© ! ");
+				+ " a gagné ! ");
 
 		Bukkit.getScheduler().cancelAllTasks();
 		
@@ -1309,7 +1343,7 @@ public class GameOfTaupes extends JavaPlugin
 						+ teams.getPrefix() 
 						+ teams.getName() 
 						+ ChatColor.RESET 
-						+ " a Ã©tÃ© Ã©liminÃ©e ! ");
+						+ " a été éliminée ! ");
 				teams.unregister();
 			}       	
 		}	  
@@ -1340,7 +1374,7 @@ public class GameOfTaupes extends JavaPlugin
 					&& GameOfTaupes.this.taupes.get(i).size() == showed)
 			{
 				GameOfTaupes.this.isTaupesTeamDead.put(i, true);
-				Bukkit.broadcastMessage(ChatColor.RED + "L'Ã©quipe des taupes #" + i + " a Ã©tÃ© Ã©liminÃ©e ! ");
+				Bukkit.broadcastMessage(ChatColor.RED + "L'équipe des taupes #" + i + " a été éliminée ! ");
 				GameOfTaupes.this.taupesteam.get(i).unregister();
 			}
 			if (!GameOfTaupes.this.isSupertaupeDead.get(i)
@@ -1349,7 +1383,7 @@ public class GameOfTaupes extends JavaPlugin
 					&& GameOfTaupes.this.getConfig().getBoolean("options.supertaupe"))
 			{
 				GameOfTaupes.this.isSupertaupeDead.put(i, true);
-				Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe #" + i + " a Ã©tÃ© Ã©liminÃ©e ! ");
+				Bukkit.broadcastMessage(ChatColor.DARK_RED + "La supertaupe #" + i + " a été éliminée ! ");
 				GameOfTaupes.this.supertaupesteam.get(i).unregister();
 			}
 		}
@@ -1357,7 +1391,7 @@ public class GameOfTaupes extends JavaPlugin
 
 	public void spawnChest()
 	{
-		Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "Un trÃ©sor est apparu ! Allez vite le chercher avant que vos adversaires ne s'en emparent ! ");  
+		Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "Un trésor est apparu ! Allez vite le chercher avant que vos adversaires ne s'en emparent ! ");  
 		try 
 		{
 			Bukkit.getPlayer("Spec").performCommand("dmarker add chest icon:chest x:" + GameOfTaupes.this.chestLocation.getX() + " y:" + GameOfTaupes.this.chestLocation.getY() + " z:" + GameOfTaupes.this.chestLocation.getZ() + " world:" + GameOfTaupes.this.chestLocation.getWorld().getName());
@@ -1766,20 +1800,20 @@ public class GameOfTaupes extends JavaPlugin
 					taupe.getPlayer().sendMessage(ChatColor.RED + 
 							"-------Annonce IMPORTANTE------");
 					taupe.getPlayer().sendMessage(ChatColor.GOLD + 
-							"Vous Ãªtes une taupe de votre Ã©quipe !");
+							"Vous êtes une taupe de votre équipe !");
 					taupe.getPlayer().sendMessage(ChatColor.GOLD + 
-							"Pour parler avec les autres taupes, exÃ©cutez la commande /t < message>");
+							"Pour parler avec les autres taupes, exécutez la commande /t < message>");
 					taupe.getPlayer().sendMessage(ChatColor.GOLD + 
-							"Si vous voulez dÃ©voiler votre vraie identitÃ©, exÃ©cutez la commande /reveal");
+							"Si vous voulez dévoiler votre vraie identité, exécutez la commande /reveal");
 					taupe.getPlayer().sendMessage(ChatColor.GOLD + 
-							"Pour obtenir votre kit de taupe, exÃ©cutez la commande /claim");
+							"Pour obtenir votre kit de taupe, exécutez la commande /claim");
 					taupe.getPlayer().sendMessage(ChatColor.GOLD + "Votre but : " + 
 							ChatColor.DARK_RED + 
-							"Tuer les membres de votre \"Ã©quipe\"");
+							"Tuer les membres de votre \"équipe\"");
 					taupe.getPlayer().sendMessage(ChatColor.RED + 
 							"-------------------------------");
-					Title.sendTitle(taupe.getPlayer(), "Vous Ãªtes une taupe !", 
-							"Ne le dites Ã  personne !");
+					Title.sendTitle(taupe.getPlayer(), "Vous êtes une taupe !", 
+							"Ne le dites à personne !");
 
 				}
 			}
@@ -1803,16 +1837,16 @@ public class GameOfTaupes extends JavaPlugin
 				player.getPlayer().sendMessage(ChatColor.RED + 
 						"-------Annonce IMPORTANTE------");
 				player.getPlayer().sendMessage(ChatColor.GOLD + 
-						"Vous Ãªtes la supertaupe !");
+						"Vous êtes la supertaupe !");
 				player.getPlayer().sendMessage(ChatColor.GOLD + 
-						"Si vous voulez dÃ©voiler votre vraie identitÃ© exÃ©cutez la commande /superreveal");
+						"Si vous voulez dévoiler votre vraie identité exécutez la commande /superreveal");
 				player.getPlayer().sendMessage(ChatColor.GOLD + "Votre but : " + 
 						ChatColor.DARK_RED + 
 						"Tuer tous les autres joueurs !");
 				player.getPlayer().sendMessage(ChatColor.RED + 
 						"-------------------------------");
-				Title.sendTitle(player.getPlayer(), "Vous Ãªtes la supertaupe !", 
-						"Ne le dites Ã  personne !");	  		  
+				Title.sendTitle(player.getPlayer(), "Vous êtes la supertaupe !", 
+						"Ne le dites à personne !");	  		  
 			}
 		}
 		GameOfTaupes.this.supertaupessetup = true;
@@ -1830,7 +1864,7 @@ public class GameOfTaupes extends JavaPlugin
 					GameOfTaupes.this.showedtaupes.add(taupe);
 					Bukkit.broadcastMessage(ChatColor.RED 
 							+ Bukkit.getOfflinePlayer(taupe).getName() 
-							+ " a rÃ©vÃ©lÃ© qu'il Ã©tait une taupe !");
+							+ " a révélé qu'il était une taupe !");
 				}
 			}
 		}
@@ -1864,7 +1898,7 @@ public class GameOfTaupes extends JavaPlugin
 				GameOfTaupes.this.showedsupertaupes.add(uid);
 				Bukkit.broadcastMessage(ChatColor.DARK_RED 
 						+ Bukkit.getOfflinePlayer(uid).getName() 
-						+ " a rÃ©vÃ©lÃ© qu'il Ã©tait une supertaupe !");
+						+ " a révélé qu'il était une supertaupe !");
 			}
 		}
 
@@ -2058,7 +2092,7 @@ public class GameOfTaupes extends JavaPlugin
 
 		if(foundTeam)
 		{
-			Bukkit.broadcastMessage(ChatColor.GOLD + "Le Grand Oeil a dÃ©tectÃ© une armÃ©e en " 
+			Bukkit.broadcastMessage(ChatColor.GOLD + "Le Grand Oeil a détecté une armée en " 
 					+ (int)p.getLocation().getX() 
 					+ " / "
 					+ (int)p.getLocation().getZ()

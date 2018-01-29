@@ -4,11 +4,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class LoadManager 
 {
@@ -30,7 +36,6 @@ public class LoadManager
 	
 	public void loadGameInfos() throws FileNotFoundException, IOException, InvalidConfigurationException
 	{		
-		player.load(playerf);
 		game.load(gamef);
 		
 		//Game infos
@@ -39,6 +44,8 @@ public class LoadManager
 		plugin.hasChangedGS = false;
 		plugin.tmpBorder = game.getInt("border");
 		plugin.minute = game.getInt("minute");
+		plugin.retract = game.getBoolean("retract");
+		plugin.finalretract = game.getBoolean("finalretract");
 		
 		//Taupes infos
 		plugin.taupessetup = game.getBoolean("taupeSetup");
@@ -62,12 +69,6 @@ public class LoadManager
 		{
 		    String[] keyValue = pairs[i].split(":");
 		    plugin.taupesteam.put(Integer.parseInt(keyValue[0]), plugin.s.getTeam(keyValue[1]));
-		}
-
-		pairs = game.getString("taupesAlive").split(",");
-		for (int i=0; i < pairs.length; i++) 
-		{
-			plugin.aliveTaupes.add(UUID.fromString(pairs[i]));
 		}
 
 		pairs = game.getString("taupesShowed").split(",");
@@ -106,12 +107,6 @@ public class LoadManager
 		    plugin.supertaupesteam.put(Integer.parseInt(keyValue[0]), plugin.s.getTeam(keyValue[1]));
 		}
 
-		pairs = game.getString("supertaupesAlive").split(",");
-		for (int i=0; i < pairs.length; i++) 
-		{
-			plugin.aliveSupertaupes.add(UUID.fromString(pairs[i]));
-		}
-
 		pairs = game.getString("supertaupesShowed").split(",");
 		for (int i=0; i < pairs.length; i++) 
 		{
@@ -126,8 +121,48 @@ public class LoadManager
 		}
 	}
 	
-	public void loadPlayerInfos()
+	@SuppressWarnings("unchecked")
+	public void loadPlayerInfos() throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
+		player.load(playerf);
 		
+		for(Player p : Bukkit.getOnlinePlayers())
+		{
+			if(player.getString(p.getName() + ".name") == null)
+			{
+				p.kickPlayer("Vous n'étiez pas présent à la dernière partie ! ");
+				continue;
+			}
+
+			p.setGameMode(GameMode.SURVIVAL);
+			p.setHealth(player.getDouble(p.getName() + ".health"));
+			p.setHealth(player.getInt(p.getName() + ".food"));
+			p.setHealth(player.getDouble(p.getName() + ".exp"));
+			plugin.s.getTeam(player.getString(p.getName() + "team")).addPlayer(p);
+
+	        ItemStack[] content = ((List<ItemStack>) player.get("inventory.armor")).toArray(new ItemStack[0]);
+	        p.getInventory().setArmorContents(content);
+	        content = ((List<ItemStack>) player.get("inventory.content")).toArray(new ItemStack[0]);
+	        p.getInventory().setContents(content);
+			
+			p.teleport(new Location(Bukkit.getWorld(plugin.getConfig().get("world").toString()), 
+					player.getDouble(p.getName() + ".location.X"),
+					player.getDouble(p.getName() + ".location.Y"),
+					player.getDouble(p.getName() + ".location.Z")));
+			
+			plugin.playersAlive.add(p.getUniqueId());
+			
+			for(int i = 0; i < plugin.taupes.size(); ++i)
+			{
+				if(plugin.taupes.get(i).contains(p.getUniqueId()))
+				{
+					plugin.aliveTaupes.add(p.getUniqueId());
+					if(plugin.supertaupes.get(i) == p.getUniqueId())
+					{
+						plugin.aliveSupertaupes.add(p.getUniqueId());
+					}
+				}
+			}
+		}
 	}
 }

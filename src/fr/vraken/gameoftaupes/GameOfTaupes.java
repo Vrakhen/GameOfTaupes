@@ -93,6 +93,8 @@ public class GameOfTaupes extends JavaPlugin
 	//Scoreboard
 	int episode;
 	int minute;
+	boolean retract = false;
+	boolean finalretract = false;
 	ScoreboardManager sm;
 	Scoreboard s;
 	Objective obj;
@@ -729,39 +731,19 @@ public class GameOfTaupes extends JavaPlugin
 	}
 
 	public void loadGame() throws FileNotFoundException, IOException, InvalidConfigurationException
-	{
-		this.loadManager.loadGameInfos();
-		
+	{		
 		String world = getConfig().getString("world");
 		Boolean istimecycle = getConfig().getBoolean("options.timecycle");
 		Bukkit.getWorld(world).setGameRuleValue("doDaylightCycle", Boolean.valueOf(istimecycle).toString());
 		Bukkit.getWorld(getConfig().getString("world")).setStorm(false);
 		Bukkit.getWorld(getConfig().getString("world")).setThundering(false);
 		Bukkit.getWorld(getConfig().get("world").toString()).setTime(5000L);
+		
+		this.loadManager.loadGameInfos();
+		this.loadManager.loadPlayerInfos();
 
-		clearTeams();
-		
-		int nbTeams = this.s.getTeams().size() - getConfig().getInt("options.taupesteams");
-		if(getConfig().getBoolean("options.supertaupe"))
-		{
-			nbTeams -=  getConfig().getInt("options.taupesteams");
-		}
-		int taupesTot = nbTeams * getConfig().getInt("options.taupesperteam");
-		int taupesMin = taupesTot / getConfig().getInt("options.taupesteams");
-		int taupesLeft = taupesTot % getConfig().getInt("options.taupesteams");
-		
-		for(int i = 0; i < getConfig().getInt("options.taupesperteam"); i++)
-		{
-			if(taupesLeft > 0)
-			{
-				this.taupesperteam.put(i, taupesMin);
-				taupesLeft--;
-				continue;
-			}
-
-			this.taupesperteam.put(i, taupesMin);
-		}
-		
+		unregisterTeam();
+		unregisterTaupeTeam();		
 		
 		this.episode += 1;
 
@@ -777,28 +759,16 @@ public class GameOfTaupes extends JavaPlugin
 		this.chestLocation = new Location(Bukkit.getWorld(getConfig().get("world").toString()), getConfig().getInt("chest.X"), getConfig().getInt("chest.Y"), getConfig().getInt("chest.Z"));
 		this.redstoneLocation = new Location(Bukkit.getWorld(getConfig().get("world").toString()), getConfig().getInt("chest.X"), getConfig().getInt("chest.Y") - 5, getConfig().getInt("chest.Z"));
 		this.chestMinute = 0;
-
-
-		//TAUPES SETTING
-		//--------------
-		setTaupes();
-
-
-		//SUPERTAUPE SETTING
-		//------------------
-		setSuperTaupe();
-
-
-		//CLEARING INVENTORY AND STATUS OF EVERY PLAYER THEN TELEPORTING HIM TO HIS SPAWN
-		//-------------------------------------------------------------------------------
-		clearPlayers();
+		
+		int minuteTot = this.episode * 20 - this.minute;
+		int minuteToReveal = (minuteTot - 5) % 10;
 
 
 		//RUNNABLE TASKS DURING ALL GAME
 		//------------------------------
 		this.runnable = new BukkitRunnable()
 		{
-			int minutes = 20;
+			int minutes = GameOfTaupes.this.minute;
 			int seconds = 0;      
 
 			public void run()

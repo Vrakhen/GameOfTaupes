@@ -15,9 +15,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 import org.apache.commons.io.FileUtils;
-import fr.vraken.gameoftaupes.InventoryToBase64;
 
 public class SaveManager 
 {
@@ -71,6 +69,8 @@ public class SaveManager
 			}
 			
 			playerInfo.clear();
+			playerInfo.put(p.getName() + ".name", p.getName());
+			playerInfo.put(p.getName() + ".team", plugin.s.getPlayerTeam(p).getName());
 			playerInfo.put(p.getName() + ".location.X", p.getLocation().getX());
 			playerInfo.put(p.getName() + ".location.Y", p.getLocation().getY());
 			playerInfo.put(p.getName() + ".location.Z", p.getLocation().getZ());
@@ -79,13 +79,8 @@ public class SaveManager
 			playerInfo.put(p.getName() + ".food", p.getFoodLevel());
 			playerInfo.put(p.getName() + ".exp", p.getExp());
 
-			for(PotionEffect pot : p.getActivePotionEffects())
-			{
-				playerInfo.put(p.getName() + ".potion." + pot.getType().getName(), pot.getAmplifier());
-				playerInfo.put(p.getName() + ".potion." + pot.getType().getName(), pot.getDuration());
-			}
-
-			playerInfo.put(p.getName() + ".inventory", InventoryToBase64.toBase64(p.getInventory()));
+			playerInfo.put(p.getName() + ".armor", p.getInventory().getArmorContents());
+			playerInfo.put(p.getName() + ".inventory", p.getInventory().getContents());
 			
 			player.addDefaults(playerInfo);
 		}
@@ -99,8 +94,6 @@ public class SaveManager
 		game.load(gamef);
 		HashMap<String, Object> gameInfo = new HashMap<String, Object>();
 						
-		gameInfo.put("playersAlive", plugin.playersAlive.toString());
-		
 		//Taupes infos
 		gameInfo.put("taupeSetup", plugin.taupessetup);
 		
@@ -127,7 +120,6 @@ public class SaveManager
 		s = s.substring(0, s.length() - 1);		
 		gameInfo.put("taupesTeam", s);
 		
-		gameInfo.put("taupesAlive", plugin.aliveTaupes.toString());
 		gameInfo.put("taupesShowed", plugin.showedtaupes.toString());
 		gameInfo.put("taupesClaimed", plugin.claimedtaupes.toString());
 		
@@ -160,7 +152,6 @@ public class SaveManager
 		s = s.substring(0, s.length() - 1);		
 		gameInfo.put("supertaupesTeam", s);		
 
-		gameInfo.put("supertaupesAlive", plugin.aliveSupertaupes.toString());
 		gameInfo.put("supertaupesShowed", plugin.showedsupertaupes.toString());
 		gameInfo.put("isSupertaupeDead", plugin.isSupertaupeDead.toString());
 		
@@ -169,6 +160,8 @@ public class SaveManager
 		gameInfo.put("gamestate", plugin.gameState);
 		gameInfo.put("minute", plugin.minute);
 		gameInfo.put("border", plugin.tmpBorder);
+		gameInfo.put("retract", plugin.retract);
+		gameInfo.put("finalretract", plugin.finalretract);
 			
 		game.addDefaults(gameInfo);
 			

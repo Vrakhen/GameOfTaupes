@@ -7,6 +7,9 @@ commands:
   gotstart:
     description: Commencer la partie
     usage: /gotstart
+  gotload:
+    description: Charger une partie enregistree
+    usage: /gotload
   gotstop:
     description: Arrêter la partie
     usage: /gotstop

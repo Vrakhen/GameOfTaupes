@@ -105,10 +105,16 @@ public class SaveManager
 			{
 				s += uid.toString() + "/";						
 			}
-			s = s.substring(0, s.length() - 1);
+			if(!plugin.taupes.get(key).isEmpty())
+			{
+				s = s.substring(0, s.length() - 1);	
+			}
 			s += ",";
 		}
-		s = s.substring(0, s.length() - 1);		
+		if(!plugin.taupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
 		gameInfo.put("taupes", s);
 		
 		s = "";
@@ -117,7 +123,10 @@ public class SaveManager
 			s += key + ":" + plugin.taupesteam.get(key).getName();
 			s += ",";
 		}
-		s = s.substring(0, s.length() - 1);		
+		if(!plugin.taupesteam.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
 		gameInfo.put("taupesTeam", s);
 		
 		gameInfo.put("taupesShowed", plugin.showedtaupes.toString());
@@ -134,7 +143,10 @@ public class SaveManager
 			s = s.substring(0, s.length() - 1);
 			s += ",";
 		}
-		s = s.substring(0, s.length() - 1);		
+		if(!plugin.claimedkits.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
 		gameInfo.put("kitsClaimed", s);
 		
 		gameInfo.put("isTaupesTeamDead", plugin.isTaupesTeamDead.toString());
@@ -149,7 +161,10 @@ public class SaveManager
 			s += key + ":" + plugin.supertaupesteam.get(key).getName();
 			s += ",";
 		}
-		s = s.substring(0, s.length() - 1);		
+		if(!plugin.supertaupesteam.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
 		gameInfo.put("supertaupesTeam", s);		
 
 		gameInfo.put("supertaupesShowed", plugin.showedsupertaupes.toString());

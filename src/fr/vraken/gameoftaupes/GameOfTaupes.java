@@ -451,6 +451,34 @@ public class GameOfTaupes extends JavaPlugin
 						}
 					}
 
+					if(this.minutes == 10|| this.minutes == 5 || this.minutes == 15 || this.minutes == 0)
+					{
+						try 
+						{
+							GameOfTaupes.this.saveManager.saveGameInfos();
+						} 
+						catch (IOException | InvalidConfigurationException e) {}
+
+						try 
+						{
+							GameOfTaupes.this.saveManager.savePlayersInfos();
+						} 
+						catch (IOException | InvalidConfigurationException e) {}
+						 
+						// The world to copy
+						World source = Bukkit.getWorld("world");
+						File sourceFolder = source.getWorldFolder();
+						 
+						// The world to overwrite when copying
+						World target = Bukkit.getWorld("NewWorld");
+						File targetFolder = target.getWorldFolder();
+						
+						try 
+						{
+							GameOfTaupes.this.saveManager.copyMapFolder(sourceFolder,  targetFolder);
+						} 
+						catch (IOException e) {}
+					}
 
 					//EPISODE CHANGE ANNOUNCEMENT AT BEGINNING
 					//----------------------------------------

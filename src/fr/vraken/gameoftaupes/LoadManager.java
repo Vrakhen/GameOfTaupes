@@ -39,6 +39,7 @@ public class LoadManager
 		game.load(gamef);
 		
 		//Game infos
+		plugin.episode = game.getInt("episode");
 		plugin.gameStarted = true;
 		plugin.gameState = game.getInt("gamestate");
 		plugin.hasChangedGS = false;
@@ -51,74 +52,175 @@ public class LoadManager
 		plugin.taupessetup = game.getBoolean("taupeSetup");
 		
 		String[] pairs = game.getString("taupes").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		if(pairs[0] != "")
 		{
-		    String[] keyValue = pairs[i].split(":");
-		    ArrayList<UUID> taupes = new ArrayList<UUID>();
-		    String[] uids = keyValue[1].split("/");
-		    for(int j = 0; j < uids.length; ++j)
-		    {
-		    	taupes.add(UUID.fromString(uids[j]));
-		    }
-		    plugin.taupes.put(Integer.parseInt(keyValue[0]), taupes);
-		    taupes.clear();
+			for (int i = 0; i < pairs.length; ++i) 
+			{
+			    String[] keyValue = pairs[i].split(":");
+			    ArrayList<UUID> taupes = new ArrayList<UUID>();
+			    String[] uids = keyValue[1].split("/");
+			    for(int j = 0; j < uids.length; ++j)
+			    {
+			    	taupes.add(UUID.fromString(uids[j]));
+			    }
+			    plugin.taupes.put(Integer.parseInt(keyValue[0]), taupes);
+			}
 		}
 
 		pairs = game.getString("taupesTeam").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		if(pairs[0] != "")
 		{
-		    String[] keyValue = pairs[i].split(":");
-		    plugin.taupesteam.put(Integer.parseInt(keyValue[0]), plugin.s.getTeam(keyValue[1]));
+			for (int i=0; i < pairs.length; i++) 
+			{
+			    String[] keyValue = pairs[i].split(":");
+			    plugin.taupesteam.put(Integer.parseInt(keyValue[0]), plugin.s.getTeam(keyValue[1]));
+			}
 		}
 
-		pairs = game.getString("taupesShowed").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-			plugin.showedtaupes.add(UUID.fromString(pairs[i]));
+			pairs = game.getString("taupesShowed").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+					plugin.showedtaupes.add(UUID.fromString(pairs[i]));
+				}
+			}
 		}
+		catch (Exception ex) {}
 
-		pairs = game.getString("taupesClaimed").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-			plugin.claimedtaupes.add(UUID.fromString(pairs[i]));
+			pairs = game.getString("taupesAlive").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+					plugin.aliveTaupes.add(UUID.fromString(pairs[i]));
+				}
+			}
 		}
+		catch (Exception ex) {}
 
-		pairs = game.getString("isTaupesTeamDead").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-		    String[] keyValue = pairs[i].split(":");
-		    plugin.isTaupesTeamDead.put(Integer.parseInt(keyValue[0]), Boolean.valueOf(keyValue[1]));
+			pairs = game.getString("taupesClaimed").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+					plugin.claimedtaupes.add(UUID.fromString(pairs[i]));
+				}
+			}
 		}
+		catch (Exception ex) {}
+
+		try
+		{
+			pairs = game.getString("kitsClaimed").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+				    String[] keyValue = pairs[i].split(":");
+				    ArrayList<Integer> kits = new ArrayList<Integer>();
+				    String[] kit = keyValue[1].split("/");
+				    for(int j = 0; j < kit.length; ++j)
+				    {
+				    	kits.add(Integer.parseInt(kit[j]));
+				    }
+				    plugin.claimedkits.put(Integer.parseInt(keyValue[0]), kits);
+				    kits.clear();
+				}
+			}
+		}
+		catch (Exception ex) {}
+
+		try
+		{
+			pairs = game.getString("isTaupesTeamDead").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+				    String[] keyValue = pairs[i].split(":");
+				    plugin.isTaupesTeamDead.put(Integer.parseInt(keyValue[0]), Boolean.valueOf(keyValue[1]));
+				}
+			}
+		}
+		catch (Exception ex) {}
 
 		//Supertaupes infos
 		plugin.supertaupessetup = game.getBoolean("supertaupeSetup");
 
-		pairs = game.getString("supertaupes").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-		    String[] keyValue = pairs[i].split(":");
-		    plugin.supertaupes.put(Integer.parseInt(keyValue[0]), UUID.fromString(keyValue[1]));
+			pairs = game.getString("supertaupes").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+				    String[] keyValue = pairs[i].split(":");
+				    plugin.supertaupes.put(Integer.parseInt(keyValue[0]), UUID.fromString(keyValue[1]));
+				}
+			}
 		}
+		catch (Exception ex) {}
 
-		pairs = game.getString("supertaupesTeam").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-		    String[] keyValue = pairs[i].split(":");
-		    plugin.supertaupesteam.put(Integer.parseInt(keyValue[0]), plugin.s.getTeam(keyValue[1]));
+			pairs = game.getString("supertaupesTeam").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+				    String[] keyValue = pairs[i].split(":");
+				    plugin.supertaupesteam.put(Integer.parseInt(keyValue[0]), plugin.s.getTeam(keyValue[1]));
+				}
+			}
 		}
+		catch (Exception ex) {}
 
-		pairs = game.getString("supertaupesShowed").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-			plugin.showedsupertaupes.add(UUID.fromString(pairs[i]));
+			pairs = game.getString("supertaupesShowed").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+					plugin.showedsupertaupes.add(UUID.fromString(pairs[i]));
+				}
+			}
 		}
+		catch (Exception ex) {}
 
-		pairs = game.getString("isSupertaupeDead").split(",");
-		for (int i=0; i < pairs.length; i++) 
+		try
 		{
-		    String[] keyValue = pairs[i].split(":");
-		    plugin.isSupertaupeDead.put(Integer.parseInt(keyValue[0]), Boolean.valueOf(keyValue[1]));
+			pairs = game.getString("supertaupesAlive").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+					plugin.aliveSupertaupes.add(UUID.fromString(pairs[i]));
+				}
+			}
 		}
+		catch (Exception ex) {}
+
+		try
+		{
+			pairs = game.getString("isSupertaupeDead").split(",");
+			if(pairs[0] != "")
+			{
+				for (int i=0; i < pairs.length; i++) 
+				{
+				    String[] keyValue = pairs[i].split(":");
+				    plugin.isSupertaupeDead.put(Integer.parseInt(keyValue[0]), Boolean.valueOf(keyValue[1]));
+				}
+			}
+		}
+		catch (Exception ex) {}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -130,19 +232,20 @@ public class LoadManager
 		{
 			if(player.getString(p.getName() + ".name") == null)
 			{
-				p.kickPlayer("Vous n'étiez pas présent à la dernière partie ! ");
+				p.kickPlayer("Vous n'étiez pas présent à la dernière partie ou vous étiez mort ! ");
 				continue;
 			}
 
 			p.setGameMode(GameMode.SURVIVAL);
 			p.setHealth(player.getDouble(p.getName() + ".health"));
-			p.setHealth(player.getInt(p.getName() + ".food"));
-			p.setHealth(player.getDouble(p.getName() + ".exp"));
-			plugin.s.getTeam(player.getString(p.getName() + "team")).addPlayer(p);
+			p.setFoodLevel(player.getInt(p.getName() + ".food"));
+			p.setLevel(player.getInt(p.getName() + ".level"));
+			
+			plugin.s.getTeam(player.getString(p.getName() + ".team")).addPlayer(p);
 
-	        ItemStack[] content = ((List<ItemStack>) player.get("inventory.armor")).toArray(new ItemStack[0]);
+	        ItemStack[] content = ((List<ItemStack>) player.get(p.getName() + ".armor")).toArray(new ItemStack[0]);
 	        p.getInventory().setArmorContents(content);
-	        content = ((List<ItemStack>) player.get("inventory.content")).toArray(new ItemStack[0]);
+	        content = ((List<ItemStack>) player.get(p.getName() + ".inventory")).toArray(new ItemStack[0]);
 	        p.getInventory().setContents(content);
 			
 			p.teleport(new Location(Bukkit.getWorld(plugin.getConfig().get("world").toString()), 

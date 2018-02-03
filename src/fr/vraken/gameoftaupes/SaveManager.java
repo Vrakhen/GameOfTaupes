@@ -55,6 +55,9 @@ public class SaveManager
 	
 	public void savePlayersInfos() throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
+		playerf.delete();
+		playerf.createNewFile();
+		
 		player.load(playerf);
 		HashMap<String, Object> playerInfo = new HashMap<String, Object>();
 		Player p;
@@ -77,7 +80,7 @@ public class SaveManager
 
 			playerInfo.put(p.getName() + ".health", p.getHealth());
 			playerInfo.put(p.getName() + ".food", p.getFoodLevel());
-			playerInfo.put(p.getName() + ".exp", p.getExp());
+			playerInfo.put(p.getName() + ".level", p.getLevel());
 
 			playerInfo.put(p.getName() + ".armor", p.getInventory().getArmorContents());
 			playerInfo.put(p.getName() + ".inventory", p.getInventory().getContents());
@@ -91,12 +94,17 @@ public class SaveManager
 	
 	public void saveGameInfos() throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
+		gamef.delete();
+		gamef.createNewFile();
+		
 		game.load(gamef);
 		HashMap<String, Object> gameInfo = new HashMap<String, Object>();
 						
 		//Taupes infos
+		//------------
 		gameInfo.put("taupeSetup", plugin.taupessetup);
 		
+		//Taupes
 		String s = "";
 		for(Integer key : plugin.taupes.keySet())
 		{
@@ -117,6 +125,7 @@ public class SaveManager
 		}	
 		gameInfo.put("taupes", s);
 		
+		//Taupes teams
 		s = "";
 		for(Integer key : plugin.taupesteam.keySet())
 		{
@@ -129,16 +138,53 @@ public class SaveManager
 		}	
 		gameInfo.put("taupesTeam", s);
 		
-		gameInfo.put("taupesShowed", plugin.showedtaupes.toString());
-		gameInfo.put("taupesClaimed", plugin.claimedtaupes.toString());
+		//Taupes revealed
+		s = "";
+		for(UUID uid : plugin.showedtaupes)
+		{
+			s += uid;
+			s += ",";
+		}
+		if(!plugin.showedtaupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
+		gameInfo.put("taupesShowed", s);
 		
+		//Taupes alive
+		s = "";
+		for(UUID uid : plugin.aliveTaupes)
+		{
+			s += uid;
+			s += ",";
+		}
+		if(!plugin.aliveTaupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
+		gameInfo.put("taupesAlive", s);
+		
+		//Taupes claimed
+		s = "";
+		for(UUID uid : plugin.claimedtaupes)
+		{
+			s += uid;
+			s += ",";
+		}
+		if(!plugin.claimedtaupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
+		gameInfo.put("taupesClaimed", s);
+		
+		//Claimed kits
 		s = "";
 		for(Integer key : plugin.claimedkits.keySet())
 		{
 			s += key + ":";
 			for(Integer kit : plugin.claimedkits.get(key))
 			{
-				s += kit.toString() + "/";						
+				s += kit + "/";						
 			}
 			s = s.substring(0, s.length() - 1);
 			s += ",";
@@ -146,15 +192,41 @@ public class SaveManager
 		if(!plugin.claimedkits.isEmpty())
 		{
 			s = s.substring(0, s.length() - 1);	
-		}	
+		}
 		gameInfo.put("kitsClaimed", s);
 		
-		gameInfo.put("isTaupesTeamDead", plugin.isTaupesTeamDead.toString());
+		//Taupes teams dead
+		s = "";
+		for(Integer key : plugin.isTaupesTeamDead.keySet())
+		{
+			s += key + ":" + plugin.isTaupesTeamDead.get(key);
+			s += ",";
+		}
+		if(!plugin.isTaupesTeamDead.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}
+		gameInfo.put("isTaupesTeamDead", s);
+		
 		
 		//Supertaupes infos
+		//-----------------
 		gameInfo.put("supertaupeSetup", plugin.supertaupessetup);
-		gameInfo.put("supertaupes", plugin.supertaupes.toString());
 		
+		//Supertaupes
+		s = "";
+		for(Integer key : plugin.supertaupes.keySet())
+		{
+			s += key + ":" + plugin.supertaupes.get(key);
+			s += ",";
+		}
+		if(!plugin.supertaupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
+		gameInfo.put("supertaupes", s);
+		
+		//Supertaupes teams
 		s = "";
 		for(Integer key : plugin.supertaupesteam.keySet())
 		{
@@ -164,22 +236,60 @@ public class SaveManager
 		if(!plugin.supertaupesteam.isEmpty())
 		{
 			s = s.substring(0, s.length() - 1);	
+		}
+		gameInfo.put("supertaupesTeam", s);
+		
+		//Supertaupes revealed
+		s = "";
+		for(UUID uid : plugin.showedsupertaupes)
+		{
+			s += uid;
+			s += ",";
+		}
+		if(!plugin.showedsupertaupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
 		}	
-		gameInfo.put("supertaupesTeam", s);		
-
-		gameInfo.put("supertaupesShowed", plugin.showedsupertaupes.toString());
-		gameInfo.put("isSupertaupeDead", plugin.isSupertaupeDead.toString());
+		gameInfo.put("supertaupesShowed", s);
+		
+		//Supertaupes alive
+		s = "";
+		for(UUID uid : plugin.aliveSupertaupes)
+		{
+			s += uid;
+			s += ",";
+		}
+		if(!plugin.aliveSupertaupes.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}	
+		gameInfo.put("supertaupesAlive", s);
+		
+		//Supertaupes teams dead
+		s = "";
+		for(Integer key : plugin.isSupertaupeDead.keySet())
+		{
+			s += key + ":" + plugin.isSupertaupeDead.get(key);
+			s += ",";
+		}
+		if(!plugin.isSupertaupeDead.isEmpty())
+		{
+			s = s.substring(0, s.length() - 1);	
+		}
+		gameInfo.put("isSupertaupeDead", s);
+		
 		
 		//Scoreboard
+		//----------
 		gameInfo.put("episode", plugin.episode);
 		gameInfo.put("gamestate", plugin.gameState);
-		gameInfo.put("minute", plugin.minute);
+		gameInfo.put("minute", plugin.minute + 1);
 		gameInfo.put("border", plugin.tmpBorder);
 		gameInfo.put("retract", plugin.retract);
 		gameInfo.put("finalretract", plugin.finalretract);
 			
-		game.addDefaults(gameInfo);
-			
+		
+		game.addDefaults(gameInfo);			
 		game.options().copyDefaults(true);
 		game.save(gamef);
 	}
@@ -192,7 +302,7 @@ public class SaveManager
 	    	if(!dest.exists())
 	    	{
 	    	   dest.mkdir();
-	    	   System.out.println("Directory copied from " + src + "  to " + dest);
+	    	   //System.out.println("Directory copied from " + src + "  to " + dest);
 	    	}
 	    	else
 	    	{
@@ -229,7 +339,7 @@ public class SaveManager
 
    	        in.close();
 	    	out.close();
-	    	System.out.println("File copied from " + src + " to " + dest);
+	    	//System.out.println("File copied from " + src + " to " + dest);
 	    }
     }
 }

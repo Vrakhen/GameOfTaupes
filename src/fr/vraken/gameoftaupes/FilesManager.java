@@ -10,8 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class FilesManager
 {
-	public File configf, teamf, bossf, deathf;
-	private FileConfiguration config, team, boss, death;
+	public File configf, teamf, bossf, deathf, minigamef;
+	private FileConfiguration config, team, boss, death, minigame;
 	GameOfTaupes plugin;
 
 	public FilesManager(GameOfTaupes plugin) throws IOException, InvalidConfigurationException
@@ -21,6 +21,7 @@ public class FilesManager
 		addConfigDefault();
 		addTeamDefault();
 		addBossDefault();
+		addMinigameDefault();
 	}
 
 	public FileConfiguration getTeamConfig() 
@@ -38,12 +39,18 @@ public class FilesManager
 		return this.death;
 	}
 
+	public FileConfiguration getMinigameConfig() 
+	{
+		return this.minigame;
+	}
+
 	private void createFiles() throws IOException 
 	{
 		configf = new File(plugin.getDataFolder(), "config.yml");
 		teamf = new File(plugin.getDataFolder(), "team.yml");
 		bossf = new File(plugin.getDataFolder(), "boss.yml");
 		deathf = new File(plugin.getDataFolder(), "death.yml");
+		minigamef = new File(plugin.getDataFolder(), "minigame.yml");
 
 		if (!configf.exists()) 
 		{
@@ -61,11 +68,16 @@ public class FilesManager
 		{
 			deathf.createNewFile();
 		}
+		if (!minigamef.exists()) 
+		{
+			minigamef.createNewFile();
+		}
 
 		config = new YamlConfiguration();
 		team = new YamlConfiguration();
 		boss = new YamlConfiguration();
 		death = new YamlConfiguration();
+		minigame = new YamlConfiguration();
 	}
 
 	public void addTeamDefault() throws IOException, InvalidConfigurationException
@@ -210,5 +222,20 @@ public class FilesManager
 
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();
+	}
+	
+	public void addMinigameDefault() throws IOException, InvalidConfigurationException
+	{
+		minigame.load(minigamef);
+
+		minigame.addDefault("skywars.bound_min.X", 0);
+		minigame.addDefault("skywars.bound_min.Y", 0);
+		minigame.addDefault("skywars.bound_min.Z", 0);
+		minigame.addDefault("skywars.bound_max.X", 100);
+		minigame.addDefault("skywars.bound_max.Y", 100);
+		minigame.addDefault("skywars.bound_max.Z", 100);
+
+		minigame.options().copyDefaults(true);
+		minigame.save(minigamef);
 	}
 }

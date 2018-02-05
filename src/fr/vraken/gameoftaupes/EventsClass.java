@@ -127,7 +127,7 @@ public class EventsClass implements Listener
 		addItem(inv, ChatColor.AQUA, DyeColor.CYAN, plugin.teamf.getString("cyan.name"), 3);
 		addItem(inv, ChatColor.GREEN, DyeColor.GREEN, plugin.teamf.getString("verte.name"), 4);
 		addItem(inv, ChatColor.GRAY, DyeColor.GRAY, plugin.teamf.getString("grise.name"), 5);
-		addItem(inv, ChatColor.WHITE, DyeColor.WHITE, "Quitter son équipe", 6);
+		addItem(inv, ChatColor.WHITE, DyeColor.WHITE, "Quitter son ï¿½quipe", 6);
 
 		p.openInventory(inv);
 	}
@@ -167,7 +167,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+					p.sendMessage(ChatColor.RED + "Cette ï¿½quipe est complï¿½te !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.CYAN) {
@@ -183,7 +183,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+					p.sendMessage(ChatColor.RED + "Cette ï¿½quipe est complï¿½te !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.YELLOW) {
@@ -199,7 +199,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+					p.sendMessage(ChatColor.RED + "Cette ï¿½quipe est complï¿½te !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.PURPLE) {
@@ -215,7 +215,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+					p.sendMessage(ChatColor.RED + "Cette ï¿½quipe est complï¿½te !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.GREEN) {
@@ -231,7 +231,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+					p.sendMessage(ChatColor.RED + "Cette ï¿½quipe est complï¿½te !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.GRAY) {
@@ -247,7 +247,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette équipe est complète !");
+					p.sendMessage(ChatColor.RED + "Cette ï¿½quipe est complï¿½te !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.WHITE) 
@@ -256,7 +256,7 @@ public class EventsClass implements Listener
 				{
 					plugin.playersInTeam.remove(p.getUniqueId());
 					plugin.s.getPlayerTeam(p).removePlayer(p);
-					p.sendMessage("Vous avez quitté votre équipe !");
+					p.sendMessage("Vous avez quittï¿½ votre ï¿½quipe !");
 				}
 			}
 			e.setCancelled(true);
@@ -571,7 +571,7 @@ public class EventsClass implements Listener
 			{
 				if(!plugin.playersAlive.contains(pl.getUniqueId()))
 				{
-					pl.sendMessage(victor + " a remporté son duel contre " + loser + " !");
+					pl.sendMessage(victor + " a remportï¿½ son duel contre " + loser + " !");
 				}
 			}
 			plugin.duelInProgress = false;
@@ -610,7 +610,7 @@ public class EventsClass implements Listener
 			e.setCancelled(true);
 			for (HumanEntity player : bi.getViewers()) {
 				player.sendMessage(ChatColor.RED + 
-						"Les potions de régénération sont interdites !");
+						"Les potions de rï¿½gï¿½nï¿½ration sont interdites !");
 			}
 		}
 	}
@@ -635,7 +635,16 @@ public class EventsClass implements Listener
 		Player p = e.getPlayer();
 		if (p.getWorld().equals(Bukkit.getWorld(plugin.getConfig().get("lobby.world").toString()))) 
 		{
-			e.setCancelled(true);
+			Location loc = p.getLocation();
+			if(loc.getX() < plugin.minigamef.getInt("skywars.bound_min.X") 
+					|| loc.getX() > plugin.minigamef.getInt("skywars.bound_max.X")
+					|| loc.getY() < plugin.minigamef.getInt("skywars.bound_min.Y")
+					|| loc.getY() > plugin.minigamef.getInt("skywars.bound_max.Y")
+					|| loc.getZ() < plugin.minigamef.getInt("skywars.bound_min.Z")
+					|| loc.getZ() > plugin.minigamef.getInt("skywars.bound_max.Z"))
+			{
+				e.setCancelled(true);
+			}
 		}
 	}
 	
@@ -689,7 +698,7 @@ public class EventsClass implements Listener
 			{
 				e.getInventory().setResult(new ItemStack(Material.AIR));
 				for (HumanEntity p : e.getViewers()) {
-					p.sendMessage("Ce craft a été modifié !");
+					p.sendMessage("Ce craft a ï¿½tï¿½ modifiï¿½ !");
 				}
 			}
 		}

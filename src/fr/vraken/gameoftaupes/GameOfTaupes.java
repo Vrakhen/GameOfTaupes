@@ -480,7 +480,7 @@ public class GameOfTaupes extends JavaPlugin
 				}
 				else
 				{
-					if((this.minutes == 19|| this.minutes == 14 || this.minutes == 9 || this.minutes == 4)
+					/*if((this.minutes == 19|| this.minutes == 14 || this.minutes == 9 || this.minutes == 4)
 							&& this.seconds == 59)
 					{
 						try 
@@ -507,7 +507,7 @@ public class GameOfTaupes extends JavaPlugin
 							GameOfTaupes.this.saveManager.copyMapFolder(sourceFolder, savePath);
 						} 
 						catch (IOException e) {}
-					}
+					}*/
 					
 					this.seconds -= 1;
 				}    

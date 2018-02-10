@@ -148,8 +148,8 @@ public class GameOfTaupes extends JavaPlugin
 	int revealEpisode;
 	int superrevealEpisode;
 	int restractEpisode;
-	String teamAnnounceString = "L'ï¿½quipe ";
-	String teamChoiceString = "son ï¿½quipe";
+	String teamAnnounceString = "L'équipe ";
+	String teamChoiceString = "son équipe";
 
 	/*//Duels
 	UUID provoker;
@@ -1322,6 +1322,7 @@ public class GameOfTaupes extends JavaPlugin
 						if(this.supertaupes.get(i) == player.getUniqueId())
 						{
 							key = i;
+							break;
 						}
 					}
 					
@@ -1341,7 +1342,7 @@ public class GameOfTaupes extends JavaPlugin
 						inventory.addItem(new ItemStack[] { new ItemStack(Material.GOLDEN_APPLE, 2) });
 
 						this.aliveTaupes.remove(player.getUniqueId());
-						this.supertaupesteam.get(key).addPlayer(player);
+						this.supertaupesteam.get(key).addPlayer((OfflinePlayer)player);
 						this.showedsupertaupes.add(player.getUniqueId());
 						for (Player online : Bukkit.getOnlinePlayers())
 						{

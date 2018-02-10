@@ -256,7 +256,7 @@ public class EventsClass implements Listener
 				{
 					plugin.playersInTeam.remove(p.getUniqueId());
 					plugin.s.getPlayerTeam(p).removePlayer(p);
-					p.sendMessage("Vous avez quitté votre équipe !");
+					p.sendMessage("Vous avez quitte votre equipe !");
 				}
 			}
 			e.setCancelled(true);
@@ -423,7 +423,7 @@ public class EventsClass implements Listener
 				}
 				
 				Title.sendTitle(p, 
-						"Pensez à vous mute sur Mumble !", 
+						"Pensez a vous mute sur Mumble !", 
 						"Par fairplay, assurez-vous que les joueurs en vie ne puissent pas vous entendre !");
 			}
 		}
@@ -610,7 +610,7 @@ public class EventsClass implements Listener
 			e.setCancelled(true);
 			for (HumanEntity player : bi.getViewers()) {
 				player.sendMessage(ChatColor.RED + 
-						"Les potions de régénération sont interdites !");
+						"Les potions de regeneration sont interdites !");
 			}
 		}
 	}
@@ -698,7 +698,7 @@ public class EventsClass implements Listener
 			{
 				e.getInventory().setResult(new ItemStack(Material.AIR));
 				for (HumanEntity p : e.getViewers()) {
-					p.sendMessage("Ce craft a été modifié !");
+					p.sendMessage("Ce craft a ete modifie !");
 				}
 			}
 		}

@@ -627,7 +627,7 @@ public class GameOfTaupes extends JavaPlugin {
 
 				GameOfTaupes.this.retract = true;
 
-				Bukkit.broadcastMessage("La carte est en train de r�tr�cir ! " + "D�p�chez-vous d'aller entre -"
+				Bukkit.broadcastMessage("La carte est en train de retrecir ! " + "Depechez-vous d'aller entre -"
 						+ (int) (getConfig().getDouble("worldborder.finalsize") / 2) + " et "
 						+ (int) (getConfig().getDouble("worldborder.finalsize") / 2) + " ! ");
 
@@ -646,7 +646,7 @@ public class GameOfTaupes extends JavaPlugin {
 				GameOfTaupes.this.gameState++;
 
 				Bukkit.broadcastMessage(
-						"R�tr�cissement final de la carte ! Il ne restera bient�t aucun endroit o� se cacher !");
+						"Retrecissement final de la carte ! Il ne restera bientot aucun endroit ou se cacher !");
 
 				GameOfTaupes.this.finalZone = true;
 
@@ -896,7 +896,7 @@ public class GameOfTaupes extends JavaPlugin {
 
 					GameOfTaupes.this.retract = true;
 
-					Bukkit.broadcastMessage("La carte est en train de rétrécir ! " + "Dépêchez-vous d'aller entre -"
+					Bukkit.broadcastMessage("La carte est en train de retrecir ! " + "Depechez-vous d'aller entre -"
 							+ (int) (getConfig().getDouble("worldborder.finalsize") / 2) + " et "
 							+ (int) (getConfig().getDouble("worldborder.finalsize") / 2) + " ! ");
 
@@ -918,7 +918,7 @@ public class GameOfTaupes extends JavaPlugin {
 					GameOfTaupes.this.gameState++;
 
 					Bukkit.broadcastMessage(
-							"Rétrécissement final de la carte ! Il ne restera bientôt aucun endroit où se cacher !");
+							"Retrecissement final de la carte ! Il ne restera bientot aucun endroit ou se cacher !");
 
 					GameOfTaupes.this.finalZone = true;
 

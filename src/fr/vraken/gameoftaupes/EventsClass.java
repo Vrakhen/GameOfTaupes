@@ -541,6 +541,7 @@ public class EventsClass implements Listener
 				{	
 					plugin.unregisterTeam();
 					plugin.unregisterTaupeTeam();
+					plugin.unregisterHunterTeam();
 					plugin.checkVictory();
 					
 					try

@@ -197,6 +197,8 @@ public class FilesManager
 		plugin.getConfig().addDefault("world_nether", "world_nether");
 		plugin.getConfig().addDefault("options.taupesperteam", Integer.valueOf(1));
 		plugin.getConfig().addDefault("options.taupesteams", Integer.valueOf(1));
+		plugin.getConfig().addDefault("options.huntersperteam", Integer.valueOf(1));
+		plugin.getConfig().addDefault("options.huntersteams", Integer.valueOf(1));
 		plugin.getConfig().addDefault("options.nodamagetime", Integer.valueOf(20));
 		plugin.getConfig().addDefault("options.timecycle", Boolean.valueOf(false));
 		plugin.getConfig().addDefault("options.minplayers", Integer.valueOf(20));

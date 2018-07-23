@@ -1,4 +1,4 @@
-package fr.vraken.gameoftaupes;
+package fr.vraken.thepurgeofsalem;
 
 import net.minecraft.server.v1_8_R1.ChatSerializer;
 import net.minecraft.server.v1_8_R1.EnumTitleAction;

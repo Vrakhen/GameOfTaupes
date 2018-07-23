@@ -1,4 +1,4 @@
-package fr.vraken.gameoftaupes;
+package fr.vraken.thepurgeofsalem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,16 +45,18 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
+import fr.vraken.gameoftaupes.Title;
+
 
 public class EventsClass implements Listener
 {
-	static GameOfTaupes plugin;
+	static ThePurgeOfSalem plugin;
 	public static boolean pvp = false;
 	ItemStack playerSkull = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 
-	public EventsClass(GameOfTaupes gameoftaupes)
+	public EventsClass(ThePurgeOfSalem plugin)
 	{
-		plugin = gameoftaupes;
+		this.plugin = plugin;
 	}
 
 	public static void addItem(Inventory inv, ChatColor ccolor, DyeColor color, String Name, int slot)
@@ -279,44 +281,7 @@ public class EventsClass implements Listener
 
 		if (!plugin.gameStarted)
 		{
-			if(plugin.meetUp)
-			{
-				if(plugin.playersInTeam.contains(p.getUniqueId()) && plugin.teamf.getBoolean("options.meetupteamtp"))
-				{
-					if(plugin.s.getPlayerTeam(p) == plugin.rose)
-					{
-						p.teleport(plugin.meetupl1);
-					}
-					else if(plugin.s.getPlayerTeam(p) == plugin.jaune)
-					{
-						p.teleport(plugin.meetupl2);
-					}
-					else if(plugin.s.getPlayerTeam(p) == plugin.violette)
-					{
-						p.teleport(plugin.meetupl3);
-					}
-					else if(plugin.s.getPlayerTeam(p) == plugin.cyan)
-					{
-						p.teleport(plugin.meetupl4);
-					}
-					else if(plugin.s.getPlayerTeam(p) == plugin.verte)
-					{
-						p.teleport(plugin.meetupl5);
-					}
-					else if(plugin.s.getPlayerTeam(p) == plugin.grise)
-					{
-						p.teleport(plugin.meetupl6);
-					}
-				}
-				else
-				{
-					p.teleport(plugin.meetupLocation);
-				}
-			}
-			else
-			{
-				p.teleport(plugin.lobbyLocation);
-			}
+			p.teleport(plugin.lobbyLocation);
 			
 			p.setGameMode(GameMode.ADVENTURE);
 			
@@ -383,14 +348,8 @@ public class EventsClass implements Listener
 		Player p = e.getPlayer();
 		if(!plugin.gameStarted)
 		{
-			if(plugin.meetUp)
-			{
-				e.setRespawnLocation(plugin.meetupLocation);
-			}
-			else 
-			{
-				e.setRespawnLocation(plugin.respawnLocation);
-			}
+			e.setRespawnLocation(plugin.respawnLocation);
+
 			p.setGameMode(GameMode.ADVENTURE);
 			
 			p.getInventory().setItem(0, new ItemStack(Material.BANNER, 1));
@@ -553,34 +512,6 @@ public class EventsClass implements Listener
 				}
 			}.runTaskLater(plugin, 60);	
 		}
-		/*
-		else if(plugin.duelInProgress)
-		{
-			String victor;
-			String loser;
-			if(plugin.provoked == player.getUniqueId())
-			{
-				victor = Bukkit.getPlayer(plugin.provoker).getName();
-				loser = Bukkit.getPlayer(plugin.provoked).getName();
-			}
-			else
-			{
-				victor = Bukkit.getPlayer(plugin.provoked).getName();
-				loser = Bukkit.getPlayer(plugin.provoker).getName();
-			}
-			for (Player pl : Bukkit.getOnlinePlayers()) 
-			{
-				if(!plugin.playersAlive.contains(pl.getUniqueId()))
-				{
-					pl.sendMessage(victor + " a remport� son duel contre " + loser + " !");
-				}
-			}
-			plugin.duelInProgress = false;
-			Bukkit.getPlayer(plugin.provoked).setGameMode(GameMode.SPECTATOR);
-			Bukkit.getPlayer(plugin.provoker).setGameMode(GameMode.SPECTATOR);
-			plugin.provoked = null;
-			plugin.provoker = null;
-		}*/
 	}
 	
 	@EventHandler
@@ -615,51 +546,6 @@ public class EventsClass implements Listener
 			}
 		}
 	}
-
-	/*
-	@EventHandler
-	public void RespawTp(PlayerRespawnEvent e)
-	{
-		final Player p = e.getPlayer();
-		new BukkitRunnable()
-		{
-			public void run()
-			{
-				p.teleport(new Location(Bukkit.getWorld(EventsClass.plugin.getConfig().get("lobby.world").toString()), EventsClass.plugin.getConfig().getInt("lobby.X"), EventsClass.plugin.getConfig().getInt("lobby.Y"), EventsClass.plugin.getConfig().getInt("lobby.Z")));p.setGameMode(GameMode.SPECTATOR);
-			}
-		}.runTaskLater(plugin, 4L);
-	}*/
-	
-	@EventHandler
-	public void CancelDropInLobby(PlayerDropItemEvent e)
-	{
-		Player p = e.getPlayer();
-		if (p.getWorld().equals(Bukkit.getWorld(plugin.getConfig().get("lobby.world").toString()))) 
-		{
-			Location loc = p.getLocation();
-			if(loc.getX() < plugin.minigamef.getInt("skywars.bound_min.X") 
-					|| loc.getX() > plugin.minigamef.getInt("skywars.bound_max.X")
-					|| loc.getY() < plugin.minigamef.getInt("skywars.bound_min.Y")
-					|| loc.getY() > plugin.minigamef.getInt("skywars.bound_max.Y")
-					|| loc.getZ() < plugin.minigamef.getInt("skywars.bound_min.Z")
-					|| loc.getZ() > plugin.minigamef.getInt("skywars.bound_max.Z"))
-			{
-				e.setCancelled(true);
-			}
-		}
-	}
-	
-	/*@EventHandler
-	public void CancelPVP(EntityDamageEvent e)
-	{
-		if (e.getEntity().getWorld().equals(Bukkit.getWorld(plugin.getConfig().get("lobby.world").toString()))) 
-		{
-			if(!plugin.duelInProgress)
-			{
-				e.setCancelled(true);
-			}
-		}
-	}*/
 	
 	@EventHandler
 	public void CancelPVPInGame(EntityDamageByEntityEvent e)
@@ -704,119 +590,6 @@ public class EventsClass implements Listener
 			}
 		}
 		catch(Exception ex) {}
-	}
-	
-	@EventHandler
-	public void OnPlayerOpenTreasureChest(PlayerInteractEvent e)
-	{
-		if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getType() == Material.TRAPPED_CHEST)
-		{
-			if(e.getClickedBlock().getLocation().distance(plugin.chestLocation) <= 10.0f)
-			{
-				try
-				{
-					Bukkit.getPlayer("Spec").performCommand("dmarker delete chest");
-				}
-				catch(Exception ex) {}
-				
-				
-				if(plugin.getConfig().getBoolean("chest.random"))
-				{
-					Block redstoneBlock = e.getClickedBlock();
-					Location redstoneLocation = redstoneBlock.getLocation();
-					int x = (int)redstoneBlock.getLocation().getX();	
-					int y = 120;
-					int z = (int)redstoneBlock.getLocation().getZ();
-
-					redstoneBlock.setType(Material.AIR);
-					redstoneLocation.setY(y);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					
-					redstoneLocation.setY(y + 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x + 1);
-					redstoneLocation.setY(y + 1);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x - 1);
-					redstoneLocation.setY(y + 1);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 1);
-					redstoneLocation.setZ(z + 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 1);
-					redstoneLocation.setZ(z - 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x + 1);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x - 1);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z + 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z - 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x + 2);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x - 2);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z + 2);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z - 2);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x + 1);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z + 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x + 1);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z - 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x - 1);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z + 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setX(x - 1);
-					redstoneLocation.setY(y + 2);
-					redstoneLocation.setZ(z - 1);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					
-					redstoneLocation.setX(x);
-					redstoneLocation.setY(y + 3);
-					redstoneLocation.setZ(z);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setY(y + 4);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setY(y + 5);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-					redstoneLocation.setY(y + 6);
-					Bukkit.getWorld(plugin.getConfig().get("world").toString()).getBlockAt(redstoneLocation).setType(Material.AIR);
-				}
-			}
-		}
 	}
 	
 	@EventHandler

@@ -2,7 +2,11 @@ package fr.vraken.thepurgeofsalem;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -11,38 +15,38 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.Furnace;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftShapedRecipe;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.BrewEvent;
-import org.bukkit.event.inventory.FurnaceBurnEvent;
-import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Team;
 
 import fr.vraken.gameoftaupes.Title;
@@ -52,11 +56,54 @@ public class EventsClass implements Listener
 {
 	static ThePurgeOfSalem plugin;
 	public static boolean pvp = false;
-	ItemStack playerSkull = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+
+	ArrayList<ItemStack> loots = new ArrayList<ItemStack>();
+	HashMap<Integer, ArrayList<ItemStack>> specialLoots = new HashMap<Integer, ArrayList<ItemStack>>();
+	ArrayList<Integer> spawnedLoots = new ArrayList<Integer>();
+	
+	UUID capturingPlayer = null;
+	int capturingTimer = 0;
+	BukkitTask capturingTask;
+	BukkitTask capturedTask;
 
 	public EventsClass(ThePurgeOfSalem plugin)
 	{
-		this.plugin = plugin;
+		EventsClass.plugin = plugin;
+		
+		loots.add(new ItemStack(Material.IRON_BOOTS, 1));
+		loots.add(new ItemStack(Material.IRON_LEGGINGS, 1));
+		loots.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
+		loots.add(new ItemStack(Material.IRON_HELMET, 1));
+		loots.add(new ItemStack(Material.IRON_SWORD, 1));
+		loots.add(new ItemStack(Material.LEATHER_BOOTS, 1));
+		loots.add(new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		loots.add(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		loots.add(new ItemStack(Material.LEATHER_HELMET, 1));
+		loots.add(new ItemStack(Material.STONE_SWORD, 1));
+		loots.add(new ItemStack(Material.LEATHER_BOOTS, 1));
+		loots.add(new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		loots.add(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		loots.add(new ItemStack(Material.LEATHER_HELMET, 1));
+		loots.add(new ItemStack(Material.STONE_SWORD, 1));
+		loots.add(new ItemStack(Material.LEATHER_BOOTS, 1));
+		loots.add(new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		loots.add(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		loots.add(new ItemStack(Material.LEATHER_HELMET, 1));
+		loots.add(new ItemStack(Material.STONE_SWORD, 1));
+		loots.add(new ItemStack(Material.GOLDEN_APPLE, 1));
+		loots.add(new ItemStack(Material.BOW, 1));
+		loots.add(new ItemStack(Material.ARROW, 5));
+		loots.add(new ItemStack(Material.ARROW, 5));
+		loots.add(new ItemStack(Material.WATER_BUCKET, 1));
+		loots.add(new ItemStack(Material.MILK_BUCKET, 1));
+		loots.add(new ItemStack(Material.LAVA_BUCKET, 1));
+		loots.add(new ItemStack(Material.FLINT_AND_STEEL, 1));
+		loots.add(new ItemStack(Material.TNT, 2));
+		
+		int i = 0;
+		ArrayList<ItemStack> speLoot = new ArrayList<ItemStack>();
+		speLoot.add(new ItemStack(Material.BOW, 1));
+		specialLoots.put(i++ , speLoot);
 	}
 
 	public static void addItem(Inventory inv, ChatColor ccolor, DyeColor color, String Name, int slot)
@@ -104,14 +151,6 @@ public class EventsClass implements Listener
 			}
 			meta.setLore(lore);
 		}
-		else if (color.equals(DyeColor.GRAY))
-		{
-			List<String> lore = new ArrayList<String>();
-			for (OfflinePlayer pl : plugin.s.getTeam(plugin.teamf.getString("grise.name")).getPlayers()) {
-				lore.add(ChatColor.GRAY + "- " + pl.getName());
-			}
-			meta.setLore(lore);
-		}
 		meta.setBaseColor(color);
 
 		team.setItemMeta(meta);
@@ -121,14 +160,13 @@ public class EventsClass implements Listener
 	public static void openTeamInv(Player p)
 	{
 		Inventory inv = Bukkit.createInventory(p, 9, ChatColor.GOLD + 
-				"    Choisir " + plugin.teamChoiceString);
+				"    Choisir sa guilde");
 
 		addItem(inv, ChatColor.LIGHT_PURPLE, DyeColor.PINK, plugin.teamf.getString("rose.name"), 0);
 		addItem(inv, ChatColor.YELLOW, DyeColor.YELLOW, plugin.teamf.getString("jaune.name"), 1);
 		addItem(inv, ChatColor.DARK_PURPLE, DyeColor.PURPLE, plugin.teamf.getString("violette.name"), 2);
 		addItem(inv, ChatColor.AQUA, DyeColor.CYAN, plugin.teamf.getString("cyan.name"), 3);
 		addItem(inv, ChatColor.GREEN, DyeColor.GREEN, plugin.teamf.getString("verte.name"), 4);
-		addItem(inv, ChatColor.GRAY, DyeColor.GRAY, plugin.teamf.getString("grise.name"), 5);
 		addItem(inv, ChatColor.WHITE, DyeColor.WHITE, "Quitter son �quipe", 6);
 
 		p.openInventory(inv);
@@ -151,7 +189,7 @@ public class EventsClass implements Listener
         }
 		
 		Player p = (Player)e.getWhoClicked();
-		if (e.getInventory().getName().equals(ChatColor.GOLD + "    Choisir " + plugin.teamChoiceString) && e.getCurrentItem().getType() == Material.BANNER)
+		if (e.getInventory().getName().equals(ChatColor.GOLD + "    Choisir sa guilde ") && e.getCurrentItem().getType() == Material.BANNER)
 		{
 			BannerMeta banner = (BannerMeta)e.getCurrentItem().getItemMeta();
 
@@ -169,7 +207,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette �quipe est compl�te !");
+					p.sendMessage(ChatColor.RED + "Cette equipe est complete !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.CYAN) {
@@ -185,7 +223,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette �quipe est compl�te !");
+					p.sendMessage(ChatColor.RED + "Cette equipe est complete !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.YELLOW) {
@@ -201,7 +239,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette �quipe est compl�te !");
+					p.sendMessage(ChatColor.RED + "Cette equipe est complete !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.PURPLE) {
@@ -217,7 +255,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette �quipe est compl�te !");
+					p.sendMessage(ChatColor.RED + "Cette equipe est complete !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.GREEN) {
@@ -233,23 +271,7 @@ public class EventsClass implements Listener
 				}
 				else
 				{
-					p.sendMessage(ChatColor.RED + "Cette �quipe est compl�te !");
-				}
-			}
-			if (banner.getBaseColor() == DyeColor.GRAY) {
-				if (plugin.grise.getPlayers().size() < plugin.getConfig().getInt("options.playersperteam"))
-				{
-					p.sendMessage(plugin.grise.getPrefix() +
-							" Vous avez rejoint " + plugin.teamf.getString("grise.name"));
-					plugin.grise.addPlayer(p);
-					if(!plugin.playersInTeam.contains(p.getUniqueId()))
-					{
-						plugin.playersInTeam.add(p.getUniqueId());
-					}
-				}
-				else
-				{
-					p.sendMessage(ChatColor.RED + "Cette �quipe est compl�te !");
+					p.sendMessage(ChatColor.RED + "Cette equipe est complete !");
 				}
 			}
 			if (banner.getBaseColor() == DyeColor.WHITE) 
@@ -287,7 +309,7 @@ public class EventsClass implements Listener
 			
 			p.getInventory().setItem(0, new ItemStack(Material.BANNER, 1));
 			ItemMeta meta1 = p.getInventory().getItem(0).getItemMeta();
-			meta1.setDisplayName(ChatColor.GOLD + "Choisir " + plugin.teamChoiceString);
+			meta1.setDisplayName(ChatColor.GOLD + "Choisir sa guilde");
 			p.getInventory().getItem(0).setItemMeta(meta1);
 
 			e.setJoinMessage(ChatColor.BLUE + p.getName() + 
@@ -354,7 +376,7 @@ public class EventsClass implements Listener
 			
 			p.getInventory().setItem(0, new ItemStack(Material.BANNER, 1));
 			ItemMeta meta1 = p.getInventory().getItem(0).getItemMeta();
-			meta1.setDisplayName(ChatColor.GOLD + "Choisir " + plugin.teamChoiceString);
+			meta1.setDisplayName(ChatColor.GOLD + "Choisir sa guilde");
 			p.getInventory().getItem(0).setItemMeta(meta1);
 
 			if(!plugin.playersInLobby.contains(p.getUniqueId()))
@@ -406,7 +428,7 @@ public class EventsClass implements Listener
 		if ((a.equals(Action.RIGHT_CLICK_AIR)
 				|| a.equals(Action.RIGHT_CLICK_BLOCK))
 				&& p.getItemInHand().getType() == Material.BANNER
-				&& p.getItemInHand().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Choisir " + plugin.teamChoiceString))
+				&& p.getItemInHand().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Choisir sa guilde"))
 		{
 			e.setCancelled(true);      
 			openTeamInv(p);
@@ -460,10 +482,8 @@ public class EventsClass implements Listener
 			}
 			catch (IOException e1) {}
 
-			//alive.remove(player.getUniqueId());  
 			plugin.playersAlive.remove(player.getUniqueId());
 
-			e.getDrops().add(new ItemStack(Material.SKULL_ITEM));
 			e.getDrops().add(new ItemStack(Material.GOLDEN_APPLE));
 
 			Team team = player.getScoreboard().getPlayerTeam(player);
@@ -477,21 +497,34 @@ public class EventsClass implements Listener
 			{
 				pl.playSound(pl.getLocation(), Sound.WITHER_DEATH, 10.0F, 10.0F);
 			}
-
-			for(int i = 0; i < plugin.taupes.size(); i++)
+			
+			if (plugin.taupes.containsKey(player.getUniqueId())) 
 			{
-				if (plugin.taupes.get(i).contains(player.getUniqueId())) 
+				plugin.aliveTaupes.remove(player.getUniqueId());
+				
+				if(plugin.taupes.get(player.getUniqueId()) == 2)
 				{
-					plugin.aliveTaupes.remove(player.getUniqueId());
+					plugin.assassinPotionUsed = true;
 				}
 			}
-
-			for(int i = 0; i < plugin.supertaupes.size(); i++)
+			
+			if (plugin.hunters.containsKey(player.getUniqueId())) 
 			{
-				if (plugin.supertaupes.get(i) == player.getUniqueId()) 
+				plugin.aliveHunters.remove(player.getUniqueId());
+				
+				if(plugin.hunters.get(player.getUniqueId()) == 4)
 				{
-					plugin.aliveSupertaupes.remove(player.getUniqueId());
+					if(player.getKiller() != null)
+					{
+						plugin.cursedTeam = plugin.s.getPlayerTeam(player.getKiller());
+					}
 				}
+			}
+			
+			if(plugin.supertaupe == player.getUniqueId())
+			{
+				plugin.supertaupeConsumed = false;
+				plugin.supertaupeDeath();
 			}
 
 			new BukkitRunnable()
@@ -501,49 +534,10 @@ public class EventsClass implements Listener
 					plugin.unregisterTeam();
 					plugin.unregisterTaupeTeam();
 					plugin.unregisterHunterTeam();
+					plugin.unregisterSupertaupeTeam();
 					plugin.checkVictory();
-					
-					try
-					{
-						Bukkit.getPlayer("Spec").performCommand("dynmap hide " + player.getName());
-						Bukkit.getPlayer("Spec").performCommand("tp " + player.getName() + " 0 500 0");
-					}
-					catch(Exception ex) {}
 				}
 			}.runTaskLater(plugin, 60);	
-		}
-	}
-	
-	@EventHandler
-	public void BrewCancel(BrewEvent e)
-	{
-		BrewerInventory bi = e.getContents();
-		if ((bi.getIngredient().getType().equals(Material.GLOWSTONE_DUST)) && 
-				(!plugin.getConfig().getBoolean("potions.allowglowstone")))
-		{
-			for (HumanEntity player : bi.getViewers()) {
-				player.sendMessage(ChatColor.RED + 
-						"Les potions de niveau 2 sont interdites !");
-			}
-			e.setCancelled(true);
-		}
-		else if ((bi.getIngredient().getType().equals(Material.BLAZE_POWDER)) && 
-				(!plugin.getConfig().getBoolean("potions.strength")))
-		{
-			e.setCancelled(true);
-			for (HumanEntity player : bi.getViewers()) {
-				player.sendMessage(ChatColor.RED + 
-						"Les potions de force sont interdites !");
-			}
-		}
-		else if ((bi.getIngredient().getType().equals(Material.GHAST_TEAR)) && 
-				(!plugin.getConfig().getBoolean("potions.regeneration")))
-		{
-			e.setCancelled(true);
-			for (HumanEntity player : bi.getViewers()) {
-				player.sendMessage(ChatColor.RED + 
-						"Les potions de regeneration sont interdites !");
-			}
 		}
 	}
 	
@@ -562,94 +556,452 @@ public class EventsClass implements Listener
 			e.setCancelled(true);
 		}
 	}
+
+	@EventHandler
+	public void OnAssassinDrinkInvisibilityPotion(PlayerItemConsumeEvent e)
+	{
+		UUID uid = e.getPlayer().getUniqueId();
+		
+		if(plugin.taupes.get(uid) != 2)
+		{
+			return;
+		}
+		
+		if(plugin.assassinPotionUsed)
+		{
+			return;
+		}
+		
+		if(e.getItem().getType().equals(Material.POTION))
+		{
+			Potion potion = Potion.fromItemStack(e.getItem());
+			PotionType type = potion.getType();
+			
+			if(type.equals(PotionType.INVISIBILITY))
+			{
+				plugin.assassinTeam.addPlayer(Bukkit.getOfflinePlayer(uid));
+				
+				new BukkitRunnable()
+				{
+					public void run()
+					{
+						if(!plugin.assassinPotionUsed)
+						{
+							plugin.taupesTeam.addPlayer(Bukkit.getOfflinePlayer(uid));
+							plugin.assassinPotionUsed = true;
+							plugin.unregisterTaupeTeam();
+						}
+					}
+				}.runTaskLater(plugin, 20 * 60 * 8);	
+			}
+		}
+	}
+
+	@EventHandler
+	public void OnWolfSpawned(CreatureSpawnEvent e)
+	{
+		if(!e.getSpawnReason().equals(SpawnReason.SPAWNER_EGG))
+		{
+			return;
+		}
+		
+		if(!e.getEntityType().equals(EntityType.WOLF))
+		{
+			return;
+		}
+		
+		Wolf wolf = (Wolf) e.getEntity();
+
+		UUID uid = null;
+		boolean angry = false;
+		
+		for(UUID id : plugin.taupes.keySet())
+		{
+			uid = id;
+			if(plugin.taupes.get(id) == 4)
+			{
+				if(!plugin.aliveTaupes.contains(uid))
+				{
+					angry = true;
+				}
+				break;
+			}
+		}
+
+		wolf.setAdult();
+		if(angry)
+		{
+			wolf.setAngry(true);
+		}
+		else
+		{
+			wolf.setAngry(false);
+			wolf.setOwner(Bukkit.getOfflinePlayer(uid));
+		}
+	}
 	
 	@EventHandler
-	public void CancelCraft(PrepareItemCraftEvent e)
+	public void OnCursedTeamTakingDamage(EntityDamageByEntityEvent e)
 	{
-		CraftShapedRecipe craft = new CraftShapedRecipe(new ItemStack(Material.SPECKLED_MELON));
-		craft.shape(new String[] { "abc", "def", "ghi" });
-		craft.setIngredient('a', Material.GOLD_NUGGET);
-		craft.setIngredient('b', Material.GOLD_NUGGET);
-		craft.setIngredient('c', Material.GOLD_NUGGET);
-		craft.setIngredient('d', Material.GOLD_NUGGET);
-		craft.setIngredient('f', Material.GOLD_NUGGET);
-		craft.setIngredient('g', Material.GOLD_NUGGET);
-		craft.setIngredient('h', Material.GOLD_NUGGET);
-		craft.setIngredient('i', Material.GOLD_NUGGET);
-		craft.setIngredient('e', Material.MELON);
-		Bukkit.addRecipe(craft);
-		
-		try
+		if (e.getDamager() instanceof Player 
+				&& e.getEntity() instanceof Player) 
 		{
-			if (((CraftShapedRecipe)e.getRecipe()).getIngredientMap().equals(craft.getIngredientMap()))
+			Player damaged = (Player) e.getEntity();
+			Player damager = (Player) e.getDamager();
+			
+			if(plugin.s.getPlayerTeam(damager) == plugin.huntersTeam)
 			{
-				e.getInventory().setResult(new ItemStack(Material.AIR));
-				for (HumanEntity p : e.getViewers()) {
-					p.sendMessage("Ce craft a ete modifie !");
+				if(plugin.s.getPlayerTeam(damaged) == plugin.cursedTeam)
+				{
+					e.setDamage(e.getDamage() * 1.5);
 				}
 			}
 		}
-		catch(Exception ex) {}
+	}
+
+	@EventHandler
+	public void OnBlacksmithTeamDamaged(EntityDamageByEntityEvent e)
+	{
+		if (e.getDamager() instanceof Player 
+				&& e.getEntity() instanceof Player) 
+		{
+			Player damaged = (Player) e.getEntity();
+			
+			if(plugin.s.getPlayerTeam(damaged) == plugin.cyan)
+			{
+				e.setDamage(e.getDamage() * 0.8);
+			}
+		}
+	}
+
+	@EventHandler
+	public void OnMiliciaTeamDamage(EntityDamageByEntityEvent e)
+	{
+		if (e.getDamager() instanceof Player 
+				&& e.getEntity() instanceof Player) 
+		{
+			Player damager = (Player) e.getDamager();
+			
+			if(plugin.s.getPlayerTeam(damager) == plugin.rose
+					&& damager.getItemInHand().getType() == Material.IRON_SWORD)
+			{
+				e.setDamage(e.getDamage() * 1.2);
+			}
+		}
+	}
+
+	@EventHandler
+	public void OnHunterTeamDamage(EntityDamageByEntityEvent e)
+	{
+		if (e.getDamager() instanceof Player 
+				&& e.getEntity() instanceof Player) 
+		{
+			Player damager = (Player) e.getDamager();
+			
+			if(plugin.s.getPlayerTeam(damager) == plugin.verte
+					&& damager.getItemInHand().getType() == Material.BOW)
+			{
+				e.setDamage(e.getDamage() * 1.2);
+			}
+		}
 	}
 	
 	@EventHandler
-	public void OnPlayerMineRessource(BlockBreakEvent e)
+	public void OnPlayerStepOnPressurePlate(PlayerInteractEvent e)
 	{
-		if(!plugin.getConfig().getBoolean("options.autosmelting"))
-			return;
-		
-		if(e.getBlock().getType() == Material.IRON_ORE)
+		if(e.getAction().equals(Action.PHYSICAL))
 		{
-			e.getBlock().setType(Material.AIR);
-			e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT, 1));
-			e.setExpToDrop(1);
+			if(e.getClickedBlock().getType() == Material.GOLD_PLATE)
+			{
+				if(capturingPlayer == null)
+				{
+					capturingPlayer = e.getPlayer().getUniqueId();
+					
+					Bukkit.broadcastMessage(plugin.s.getPlayerTeam(e.getPlayer()).getPrefix() 
+							+ e.getPlayer().getName() 
+							+ ChatColor.GOLD
+							+ " a commence a capturer le Graal ! ");
+					Bukkit.broadcastMessage(ChatColor.GOLD 
+							+ "Depechez-vous de l'arreter avant qu'il ne soit trop tard ! ");
+					
+					capturingTask = new BukkitRunnable() 
+					{
+						public void run() 
+						{		
+							if(capturingTimer % 10 == 0)
+							{
+								int time = plugin.getConfig().getInt("options.graaltimetocapture") - capturingTimer;
+								Bukkit.broadcastMessage(ChatColor.GOLD 
+										+ "Le Graal sera capture dans "
+										+ time
+										+ " secondes ! ");
+							}
+							
+							++capturingTimer;
+						}
+					}.runTaskTimer(plugin, 0, 20);
+					
+					capturedTask = new BukkitRunnable() 
+					{
+						public void run() 
+						{
+							Bukkit.broadcastMessage(plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(capturingPlayer)).getPrefix() 
+									+ Bukkit.getOfflinePlayer(capturingPlayer).getName() 
+									+ ChatColor.GOLD
+									+ " a capture le Graal ! ");
+							
+							Team team = plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(capturingPlayer));
+							
+							plugin.announceWinner(team);
+						}
+					}.runTaskLater(plugin, 20 * plugin.getConfig().getInt("options.graaltimetocapture"));
+				}
+			}
 		}
-		else if(e.getBlock().getType() == Material.GOLD_ORE)
+	}
+
+	@EventHandler
+	public void OnPlayerLeavePressurePlate(PlayerMoveEvent e)
+	{
+		if(capturingPlayer == null)
 		{
-			e.getBlock().setType(Material.AIR);
-			e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
-			e.setExpToDrop(1);
+			return;
+		}
+		
+		if(e.getPlayer().getUniqueId() == capturingPlayer)
+		{
+			Location loc = e.getTo();
+			loc.setY(loc.getY() - 1);
+			if(loc.getWorld().getBlockAt(loc).getType() != Material.GOLD_PLATE)
+			{
+				capturingPlayer = null;
+				capturingTimer = 0;
+				capturingTask.cancel();
+				capturedTask.cancel();
+				
+				Bukkit.broadcastMessage(ChatColor.GOLD 
+						+ "La capture du Graal a ete interrompue ! ");
+			}
+		}
+	}
+
+	@EventHandler
+	public void OnPlayerDisconnectFromPressurePlate(PlayerQuitEvent e)
+	{
+		if(capturingPlayer == null)
+		{
+			return;
+		}
+		
+		if(e.getPlayer().getUniqueId() == capturingPlayer)
+		{
+			capturingPlayer = null;
+			capturingTimer = 0;
+			capturingTask.cancel();
+			capturedTask.cancel();
+				
+			Bukkit.broadcastMessage(ChatColor.GOLD 
+					+ "La capture du Graal a ete interrompue ! ");
+		}
+	}
+
+	@EventHandler
+	public void OnInnkeeperEatGoldenApple(PlayerItemConsumeEvent e)
+	{
+		UUID uid = e.getPlayer().getUniqueId();
+		
+		if(plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(uid)) == plugin.violette)
+		{
+			if(e.getItem().getType().equals(Material.GOLDEN_APPLE))
+			{
+				Bukkit.getPlayer(uid).setHealth(Bukkit.getPlayer(uid).getHealth() + 2);
+			}
+		}
+	}
+
+	@EventHandler
+    public void OnPlayerOpenLootChest(InventoryOpenEvent e)
+	{
+        if (e.getInventory().getHolder() instanceof Chest)
+        {
+        	Random rdm = new Random();
+        	int kit;
+        	int max = 3;
+        	
+        	if(plugin.s.getPlayerTeam((OfflinePlayer) e.getPlayer()) == plugin.jaune)
+        	{
+        		++max;
+        	}
+        	
+        	for(int i = 0; i < max; ++i)
+        	{
+        		kit = rdm.nextInt(loots.size());
+        		e.getInventory().addItem(loots.get(kit));
+        	}
+        	
+        	Chest chest = (Chest) e.getInventory().getHolder();
+        	chest.getBlock().breakNaturally();
+        }
+    }
+
+	@EventHandler
+    public void OnPlayerOpenSpecialLootChest(InventoryOpenEvent e)
+	{
+        if (e.getInventory().getHolder() instanceof DoubleChest)
+        {
+        	Random rdm = new Random();
+        	int kit;
+        	
+        	while(true)
+        	{
+        		kit = rdm.nextInt(specialLoots.size());
+        		
+        		if(!spawnedLoots.contains(kit))
+        		{
+        			break;
+        		}
+        	}
+        	
+        	for(int i = 0; i < specialLoots.get(kit).size(); ++i)
+        	{
+        		e.getInventory().addItem(specialLoots.get(kit).get(i));
+        	}
+        	
+        	DoubleChest chest = (DoubleChest) e.getInventory().getHolder();
+        	Chest lchest = (Chest) chest.getLeftSide().getInventory().getHolder();
+        	Chest rchest = (Chest) chest.getRightSide().getInventory().getHolder();
+        	
+        	lchest.getBlock().breakNaturally();
+        	rchest.getBlock().breakNaturally();
+        	
+        	Team team = plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(e.getPlayer().getUniqueId()));
+        	
+        	for(OfflinePlayer player : team.getPlayers())
+        	{
+        		plugin.forbiddenPlayers.add(player.getUniqueId());
+        	}
+        }
+    }
+
+	@EventHandler
+	public void OnForbiddenPlayerInteract(PlayerInteractEvent e)
+	{
+		if(!e.getAction().equals(Action.PHYSICAL))
+		{
+			return;
+		}
+		
+		if(!e.getClickedBlock().getType().equals(Material.STONE_PLATE))
+		{
+			return;
+		}
+		
+		if(plugin.forbiddenPlayers.contains(e.getPlayer().getUniqueId()))
+		{
+			e.getPlayer().sendMessage(ChatColor.RED 
+					+ "Vous avez déjà profité de la bénédiction d'un temple ! ");
+			
+			e.setCancelled(true);
 		}
 	}
 	
 	@EventHandler
-    public void FurnaceBurnEvent(FurnaceBurnEvent e) 
+	public void OnPlayerCaptureGraal(PlayerInteractEvent e)
 	{
-		if(!plugin.getConfig().getBoolean("options.fastcooking"))
+		if(!e.getAction().equals(Action.PHYSICAL))
 		{
 			return;
 		}
 		
-        Furnace furnace = (Furnace) e.getBlock().getState();
-        furnace.setCookTime((short)100);
-    }
- 
-    @EventHandler
-    public void FurnaceSmeltEvent(FurnaceSmeltEvent e) 
-    {
-		if(!plugin.getConfig().getBoolean("options.fastcooking"))
+		if(!e.getClickedBlock().getType().equals(Material.GOLD_PLATE))
 		{
 			return;
 		}
 		
-        Furnace furnace = (Furnace) e.getBlock().getState();
-        furnace.setCookTime((short)100);
-    }
- 
-    @EventHandler
-    public void OnInventoryClick(BlockPlaceEvent e) 
-    {
-		if(!plugin.getConfig().getBoolean("options.fastcooking"))
+		if(capturingPlayer == null)
+		{
+			capturingPlayer = e.getPlayer().getUniqueId();
+			capturingTimer = 0;
+			
+			Bukkit.broadcastMessage(plugin.s.getPlayerTeam(e.getPlayer()).getPrefix()
+					+ e.getPlayer().getName()
+					+ ChatColor.GOLD
+					+ " a commence a capturer le Graal ! ");			
+			Bukkit.broadcastMessage("Depechez-vous de l'en empecher ! ");
+			
+			capturingTask = new BukkitRunnable()
+			{
+				public void run()
+				{
+					if(capturingTimer % 10 == 0)
+					{
+						int time = plugin.getConfig().getInt("options.graaltimetocapture") - capturingTimer;
+						Bukkit.broadcastMessage("Temps restant : " + time + " secondes ! ");
+					}
+					
+					++capturingTimer;
+				}
+			}.runTaskTimer(plugin, 0, 20);
+			
+			capturedTask = new BukkitRunnable() 
+			{
+				public void run()
+				{
+					Bukkit.broadcastMessage(plugin.s.getPlayerTeam(e.getPlayer()).getPrefix()
+							+ e.getPlayer().getName()
+							+ ChatColor.GOLD
+							+ " a capture le Graal ! ");
+					
+					plugin.announceWinner(plugin.s.getPlayerTeam(e.getPlayer()));
+				}
+			}.runTaskLater(plugin, 20 * plugin.getConfig().getInt("options.graaltimetocapture"));
+		}
+	}
+
+	@EventHandler
+	public void OnPlayerCapturingMove(PlayerMoveEvent e)
+	{
+		if(capturingPlayer == null)
 		{
 			return;
 		}
 		
-    	Block block = e.getBlock();
-    	
-    	if(block.getType() == Material.FURNACE || block.getType() == Material.BURNING_FURNACE)
-    	{
-    		Furnace furnace = (Furnace) block.getState();
-            furnace.setCookTime((short)100);
-    	}
-    }
+		if(e.getPlayer().getUniqueId() != capturingPlayer)
+		{
+			return;
+		}
+		
+		Location loc = e.getTo();
+		loc.setY(loc.getY() - 1);
+		
+		if(!loc.getBlock().getType().equals(Material.GOLD_PLATE))
+		{
+			capturingPlayer = null;
+			capturingTimer = 0;
+			
+			capturingTask.cancel();
+			capturedTask.cancel();
+		}
+	}
+
+	@EventHandler
+	public void OnPlayerCapturingDisconnect(PlayerQuitEvent e)
+	{
+		if(capturingPlayer == null)
+		{
+			return;
+		}
+		
+		if(e.getPlayer().getUniqueId() != capturingPlayer)
+		{
+			return;
+		}
+			
+		capturingPlayer = null;
+		capturingTimer = 0;
+			
+		capturingTask.cancel();
+		capturedTask.cancel();
+	}
+	
 }

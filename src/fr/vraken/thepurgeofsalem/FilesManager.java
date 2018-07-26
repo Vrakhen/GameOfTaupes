@@ -60,11 +60,11 @@ public class FilesManager
 	{
 		team.load(teamf);
 
-		team.addDefault("rose.name", "rose");
-		team.addDefault("cyan.name", "cyan");
-		team.addDefault("jaune.name", "jaune");
-		team.addDefault("violette.name", "violette");
-		team.addDefault("verte.name", "verte");
+		team.addDefault("rose.name", "Miliciens");
+		team.addDefault("cyan.name", "Forgerons");
+		team.addDefault("jaune.name", "Marchands");
+		team.addDefault("violette.name", "Taverniers");
+		team.addDefault("verte.name", "Chasseurs");
 		team.addDefault("s1.X", Integer.valueOf(500));
 		team.addDefault("s1.Y", Integer.valueOf(250));
 		team.addDefault("s1.Z", Integer.valueOf(500));
@@ -101,16 +101,18 @@ public class FilesManager
 		plugin.getConfig().addDefault("lobby.meetupY", Integer.valueOf(100));
 		plugin.getConfig().addDefault("lobby.meetupZ", Integer.valueOf(0));
 		plugin.getConfig().addDefault("world", "world");
-		plugin.getConfig().addDefault("options.nodamagetime", Integer.valueOf(20));
 		plugin.getConfig().addDefault("options.timecycle", Boolean.valueOf(false));
 		plugin.getConfig().addDefault("options.minplayers", Integer.valueOf(20));
-		plugin.getConfig().addDefault("options.pvptime", Integer.valueOf(20));
 		plugin.getConfig().addDefault("options.cooldown", Boolean.valueOf(false));
 		plugin.getConfig().addDefault("options.playersperteam", Integer.valueOf(4));
+		plugin.getConfig().addDefault("options.nodamagetime", Integer.valueOf(20));
+		plugin.getConfig().addDefault("options.pvptime", Integer.valueOf(20));
 		plugin.getConfig().addDefault("options.settaupesafter", Integer.valueOf(30));
 		plugin.getConfig().addDefault("options.forcereveal", Integer.valueOf(70));
 		plugin.getConfig().addDefault("options.superreveal", Integer.valueOf(90));
 		plugin.getConfig().addDefault("options.graal", Integer.valueOf(100));
+		plugin.getConfig().addDefault("options.supertaupelifetime", Integer.valueOf(5));
+		plugin.getConfig().addDefault("options.graaltimetocapture", Integer.valueOf(90));
 
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();

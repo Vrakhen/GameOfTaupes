@@ -49,7 +49,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Team;
 
-import fr.vraken.gameoftaupes.Title;
+import fr.vraken.thepurgeofsalem.Title;
 
 
 public class EventsClass implements Listener

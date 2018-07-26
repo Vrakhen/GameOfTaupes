@@ -877,6 +877,18 @@ public class ThePurgeOfSalem extends JavaPlugin
 			p.getInventory().setBoots(null);
 			p.setExp(0.0f);
 			p.setLevel(0);
+			
+			ItemStack stuff = new ItemStack(Material.IRON_PICKAXE, 1);			
+			stuff.addEnchantment(Enchantment.DURABILITY, 5);
+			p.getInventory().addItem(stuff);
+			
+			stuff.setType(Material.IRON_AXE);	
+			stuff.addEnchantment(Enchantment.DURABILITY, 5);
+			p.getInventory().addItem(stuff);
+			
+			stuff.setType(Material.IRON_SPADE);	
+			stuff.addEnchantment(Enchantment.DURABILITY, 5);
+			p.getInventory().addItem(stuff);			
 
 			for (PotionEffect potion : p.getActivePotionEffects())
 			{

@@ -1,8 +1,8 @@
 version: 0.5
 author: Vraken
-main: fr.vraken.gameoftaupes.GameOfTaupes
-description: Plugin de Game of Taupes
-name: VrakenGameOfTaupes
+main: fr.vraken.thepurgeofsalem.ThePurgeOfSalem
+description: Plugin de The Purge of Salem
+name: VrakenThePurgeOfSalem
 commands:
   gotstart:
     description: Commencer la partie
@@ -25,9 +25,6 @@ commands:
   claim:
     description: Pour réclamer votre kit de taupe !
     usage: /claim
-  superreveal:
-    description: Pour vous reveler en tant que supertaupe !
-    usage: /superreveal
   gotspec:
     description: Passer en mode spectateur
     usage: /gotspec

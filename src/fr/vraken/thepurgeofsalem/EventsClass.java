@@ -16,7 +16,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -24,6 +23,8 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -103,79 +104,73 @@ public class EventsClass implements Listener
 		loots.add(new ItemStack(Material.TNT, 2));
 		
 		int i = 0;
-		ArrayList<ItemStack> speLoot = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> speLoot0 = new ArrayList<ItemStack>();
 		ItemStack bow = new ItemStack(Material.BOW, 1);
 		bow.addEnchantment(Enchantment.ARROW_DAMAGE, 1);
-		speLoot.add(bow);
-		speLoot.add(bow);
-		speLoot.add(bow);
-		speLoot.add(bow);
-		speLoot.add(bow);
-		speLoot.add(new ItemStack(Material.ARROW, 64));
-		speLoot.add(new ItemStack(Material.ARROW, 64));
-		speLoot.add(new ItemStack(Material.ARROW, 64));
-		speLoot.add(new ItemStack(Material.ARROW, 64));
-		speLoot.add(new ItemStack(Material.ARROW, 64));
-		specialLoots.put(i++ , speLoot);
-		
-		speLoot.clear();
+		speLoot0.add(bow);
+		speLoot0.add(bow);
+		speLoot0.add(bow);
+		speLoot0.add(bow);
+		speLoot0.add(bow);
+		speLoot0.add(new ItemStack(Material.ARROW, 64));
+		speLoot0.add(new ItemStack(Material.ARROW, 64));
+		speLoot0.add(new ItemStack(Material.ARROW, 64));
+		speLoot0.add(new ItemStack(Material.ARROW, 64));
+		speLoot0.add(new ItemStack(Material.ARROW, 64));
+		specialLoots.put(i++ , speLoot0);
+
+		ArrayList<ItemStack> speLoot1 = new ArrayList<ItemStack>();
 		ItemStack sword = new ItemStack(Material.IRON_SWORD, 1);
-		bow.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-		speLoot.add(sword);
-		speLoot.add(sword);
-		speLoot.add(sword);
-		speLoot.add(sword);
-		speLoot.add(sword);
-		specialLoots.put(i++ , speLoot);
-		
-		speLoot.clear();
+		sword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
+		speLoot1.add(sword);
+		speLoot1.add(sword);
+		speLoot1.add(sword);
+		speLoot1.add(sword);
+		speLoot1.add(sword);
+		specialLoots.put(i++ , speLoot1);
+
+		ArrayList<ItemStack> speLoot2 = new ArrayList<ItemStack>();
 		ItemStack chest = new ItemStack(Material.IRON_CHESTPLATE, 1);
-		bow.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-		speLoot.add(chest);
-		speLoot.add(chest);
-		speLoot.add(chest);
-		speLoot.add(chest);
-		speLoot.add(chest);
-		specialLoots.put(i++ , speLoot);
-		
-		speLoot.clear();
-		speLoot.add(new ItemStack(Material.GOLDEN_APPLE, 20));
-		specialLoots.put(i++ , speLoot);
-		
-		speLoot.clear();
-		speLoot.add(new ItemStack(Material.IRON_BOOTS, 1));
-		speLoot.add(new ItemStack(Material.IRON_LEGGINGS, 1));
-		speLoot.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
-		speLoot.add(new ItemStack(Material.IRON_HELMET, 1));
-		speLoot.add(new ItemStack(Material.IRON_SWORD, 1));
-		speLoot.add(new ItemStack(Material.BOW, 1));
-		speLoot.add(new ItemStack(Material.ARROW, 10));
-		speLoot.add(new ItemStack(Material.GOLDEN_APPLE, 1));
-		speLoot.add(new ItemStack(Material.IRON_BOOTS, 1));
-		speLoot.add(new ItemStack(Material.IRON_LEGGINGS, 1));
-		speLoot.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
-		speLoot.add(new ItemStack(Material.IRON_HELMET, 1));
-		speLoot.add(new ItemStack(Material.IRON_SWORD, 1));
-		speLoot.add(new ItemStack(Material.BOW, 1));
-		speLoot.add(new ItemStack(Material.ARROW, 10));
-		speLoot.add(new ItemStack(Material.GOLDEN_APPLE, 1));
-		speLoot.add(new ItemStack(Material.IRON_BOOTS, 1));
-		speLoot.add(new ItemStack(Material.IRON_LEGGINGS, 1));
-		speLoot.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
-		speLoot.add(new ItemStack(Material.IRON_HELMET, 1));
-		speLoot.add(new ItemStack(Material.IRON_SWORD, 1));
-		speLoot.add(new ItemStack(Material.BOW, 1));
-		speLoot.add(new ItemStack(Material.ARROW, 10));
-		speLoot.add(new ItemStack(Material.GOLDEN_APPLE, 1));
-		speLoot.add(new ItemStack(Material.IRON_BOOTS, 1));
-		speLoot.add(new ItemStack(Material.IRON_LEGGINGS, 1));
-		speLoot.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
-		speLoot.add(new ItemStack(Material.IRON_HELMET, 1));
-		speLoot.add(new ItemStack(Material.IRON_SWORD, 1));
-		speLoot.add(new ItemStack(Material.BOW, 1));
-		speLoot.add(new ItemStack(Material.ARROW, 10));
-		speLoot.add(new ItemStack(Material.GOLDEN_APPLE, 1));
-		specialLoots.put(i++ , speLoot);
+		chest.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+		speLoot2.add(chest);
+		speLoot2.add(chest);
+		speLoot2.add(chest);
+		speLoot2.add(chest);
+		speLoot2.add(chest);
+		specialLoots.put(i++ , speLoot2);
+
+		ArrayList<ItemStack> speLoot3 = new ArrayList<ItemStack>();
+		speLoot3.add(new ItemStack(Material.GOLDEN_APPLE, 20));
+		specialLoots.put(i++ , speLoot3);
+
+		ArrayList<ItemStack> speLoot4 = new ArrayList<ItemStack>();
+		speLoot4.add(new ItemStack(Material.IRON_BOOTS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_LEGGINGS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
+		speLoot4.add(new ItemStack(Material.IRON_HELMET, 1));
+		speLoot4.add(new ItemStack(Material.IRON_SWORD, 1));
+		speLoot4.add(new ItemStack(Material.BOW, 1));
+		speLoot4.add(new ItemStack(Material.ARROW, 40));
+		speLoot4.add(new ItemStack(Material.GOLDEN_APPLE, 4));
+		speLoot4.add(new ItemStack(Material.IRON_BOOTS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_LEGGINGS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
+		speLoot4.add(new ItemStack(Material.IRON_HELMET, 1));
+		speLoot4.add(new ItemStack(Material.IRON_SWORD, 1));
+		speLoot4.add(new ItemStack(Material.BOW, 1));
+		speLoot4.add(new ItemStack(Material.IRON_BOOTS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_LEGGINGS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
+		speLoot4.add(new ItemStack(Material.IRON_HELMET, 1));
+		speLoot4.add(new ItemStack(Material.IRON_SWORD, 1));
+		speLoot4.add(new ItemStack(Material.BOW, 1));
+		speLoot4.add(new ItemStack(Material.IRON_BOOTS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_LEGGINGS, 1));
+		speLoot4.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
+		speLoot4.add(new ItemStack(Material.IRON_HELMET, 1));
+		speLoot4.add(new ItemStack(Material.IRON_SWORD, 1));
+		speLoot4.add(new ItemStack(Material.BOW, 1));
+		specialLoots.put(i++ , speLoot4);
 	}
 
 	public static void addItem(Inventory inv, ChatColor ccolor, DyeColor color, String Name, int slot)
@@ -261,7 +256,7 @@ public class EventsClass implements Listener
         }
 		
 		Player p = (Player)e.getWhoClicked();
-		if (e.getInventory().getName().equals(ChatColor.GOLD + "    Choisir sa guilde ") && e.getCurrentItem().getType() == Material.BANNER)
+		if (e.getInventory().getName().equals(ChatColor.GOLD + "    Choisir sa guilde") && e.getCurrentItem().getType() == Material.BANNER)
 		{
 			BannerMeta banner = (BannerMeta)e.getCurrentItem().getItemMeta();
 
@@ -681,7 +676,8 @@ public class EventsClass implements Listener
 		{
 			return;
 		}
-		
+
+		Bukkit.broadcastMessage("spawn loup");
 		Wolf wolf = (Wolf) e.getEntity();
 
 		UUID uid = null;
@@ -707,6 +703,7 @@ public class EventsClass implements Listener
 		}
 		else
 		{
+			Bukkit.broadcastMessage("owner : " + Bukkit.getOfflinePlayer(uid).getName());
 			wolf.setAngry(false);
 			wolf.setOwner(Bukkit.getOfflinePlayer(uid));
 		}
@@ -896,6 +893,13 @@ public class EventsClass implements Listener
 	{
         if (e.getInventory().getHolder() instanceof Chest)
         {
+        	Chest chest = (Chest) e.getInventory().getHolder();
+        	
+        	if(chest.getBlock().getType() == Material.TRAPPED_CHEST)
+        	{
+        		return;
+        	}
+        	
         	Random rdm = new Random();
         	int kit;
         	int max = 3;
@@ -911,16 +915,31 @@ public class EventsClass implements Listener
         		e.getInventory().addItem(loots.get(kit));
         	}
         	
-        	Chest chest = (Chest) e.getInventory().getHolder();
         	chest.getBlock().breakNaturally();
         }
     }
 
 	@EventHandler
+    public void OnChestPlaced(BlockPlaceEvent e)
+	{
+		if(e.getBlock().getType() == Material.CHEST || e.getBlock().getType() == Material.TRAPPED_CHEST)
+		{
+			e.setCancelled(true);
+		}
+    }
+	
+	@EventHandler
     public void OnPlayerOpenSpecialLootChest(InventoryOpenEvent e)
 	{
-        if (e.getInventory().getHolder() instanceof DoubleChest)
+        if (e.getInventory().getHolder() instanceof Chest)
         {
+        	Chest chest = (Chest) e.getInventory().getHolder();
+        	
+        	if(chest.getBlock().getType() != Material.TRAPPED_CHEST)
+        	{
+        		return;
+        	}
+        	
         	Random rdm = new Random();
         	int kit;
         	
@@ -930,6 +949,7 @@ public class EventsClass implements Listener
         		
         		if(!spawnedLoots.contains(kit))
         		{
+        			spawnedLoots.add(kit);
         			break;
         		}
         	}
@@ -939,12 +959,8 @@ public class EventsClass implements Listener
         		e.getInventory().addItem(specialLoots.get(kit).get(i));
         	}
         	
-        	DoubleChest chest = (DoubleChest) e.getInventory().getHolder();
-        	Chest lchest = (Chest) chest.getLeftSide().getInventory().getHolder();
-        	Chest rchest = (Chest) chest.getRightSide().getInventory().getHolder();
         	
-        	lchest.getBlock().breakNaturally();
-        	rchest.getBlock().breakNaturally();
+        	chest.getBlock().breakNaturally();
         	
         	Team team = plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(e.getPlayer().getUniqueId()));
         	
@@ -1048,6 +1064,8 @@ public class EventsClass implements Listener
 		
 		if(!loc.getBlock().getType().equals(Material.GOLD_PLATE))
 		{
+			Bukkit.broadcastMessage("La capture du Graal a ete interrompue ! ");
+			
 			capturingPlayer = null;
 			capturingTimer = 0;
 			

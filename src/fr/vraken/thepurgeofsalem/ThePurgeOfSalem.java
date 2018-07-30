@@ -198,7 +198,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		this.supertaupeTeam.setSuffix(ChatColor.WHITE.toString());
 
 		this.huntersTeam = this.s.registerNewTeam("Repurgateurs");
-		this.huntersTeam.setPrefix(ChatColor.RED.toString());
+		this.huntersTeam.setPrefix(ChatColor.WHITE.toString());
 		this.huntersTeam.setSuffix(ChatColor.WHITE.toString());
 		
 		this.isTaupesTeamDead = false;
@@ -335,15 +335,16 @@ public class ThePurgeOfSalem extends JavaPlugin
 			public void run() 
 			{
 				taupeAnnouncement();
+				hunterAnnouncement();
 
 				// Updating scoreboard status
 				ThePurgeOfSalem.this.s.resetScores(ChatColor.WHITE + ThePurgeOfSalem.this.countdownObj);
 				ThePurgeOfSalem.this.gameState++;
 				ThePurgeOfSalem.this.objMinute = objFormatter
-						.format(ThePurgeOfSalem.this.getConfig().getInt("options.setsupertaupesafter")
+						.format(ThePurgeOfSalem.this.getConfig().getInt("options.forcereveal")
 								- ThePurgeOfSalem.this.getConfig().getInt("options.settaupesafter") - 1);
 				ThePurgeOfSalem.this.objSecond = "59";
-				ThePurgeOfSalem.this.objTxt = "Support de Satan : ";
+				ThePurgeOfSalem.this.objTxt = "Revelation des roles : ";
 				ThePurgeOfSalem.this.hasChangedGS = true;
 				ThePurgeOfSalem.this.countdownObj = ThePurgeOfSalem.this.objTxt + ThePurgeOfSalem.this.objMinute + ":"
 						+ ThePurgeOfSalem.this.objSecond;
@@ -361,16 +362,12 @@ public class ThePurgeOfSalem extends JavaPlugin
 				// Updating scoreboard status
 				ThePurgeOfSalem.this.s.resetScores(ChatColor.WHITE + ThePurgeOfSalem.this.countdownObj);
 				ThePurgeOfSalem.this.gameState++;
-				if (!ThePurgeOfSalem.this.getConfig().getBoolean("options.supertaupe")) 
-				{
-					return;
-				}
 				
 				ThePurgeOfSalem.this.objMinute = objFormatter
 						.format(ThePurgeOfSalem.this.getConfig().getInt("options.superreveal")
 								- ThePurgeOfSalem.this.getConfig().getInt("options.forcereveal") - 1);
 				ThePurgeOfSalem.this.objSecond = "59";
-				ThePurgeOfSalem.this.objTxt = "Supertaupe reveal : ";
+				ThePurgeOfSalem.this.objTxt = "Suppot de Satan : ";
 				ThePurgeOfSalem.this.hasChangedGS = true;
 				ThePurgeOfSalem.this.countdownObj = ThePurgeOfSalem.this.objTxt + ThePurgeOfSalem.this.objMinute + ":"
 						+ ThePurgeOfSalem.this.objSecond;
@@ -512,7 +509,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 								+ player.getName();
 
 						if (!ThePurgeOfSalem.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(taupe.getKey())).getName()
-								.contains("aupe")) 
+								.contains("eretique")) 
 						{
 							content += "(" + player.getScoreboard().getPlayerTeam(player).getName() + ")";
 						}
@@ -557,7 +554,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 								+ player.getName();
 
 						if (!ThePurgeOfSalem.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(hunter.getKey())).getName()
-								.contains("unter")) 
+								.contains("epurgateur")) 
 						{
 							content += "(" + player.getScoreboard().getPlayerTeam(player).getName() + ")";
 						}
@@ -781,7 +778,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 
 	public void setSpawnLocations()
 	{
-		for(int i = 0; i < 6; ++i)
+		for(int i = 0; i < 5; ++i)
 		{
 			Location l = new Location(Bukkit.getWorld(getConfig().get("world").toString()),
 					this.teamf.getInt("s"+ i + ".X"),
@@ -796,11 +793,11 @@ public class ThePurgeOfSalem extends JavaPlugin
 		Random rdm = new Random();
 		int l;
 		
-		for(int i = 0; i < 6; ++i)
+		for(int i = 0; i < 5; ++i)
 		{
 			while(true)
 			{
-				l = rdm.nextInt(6);
+				l = rdm.nextInt(5);
 				if(!loc.contains(l))
 				{
 					break;
@@ -879,15 +876,15 @@ public class ThePurgeOfSalem extends JavaPlugin
 			p.setLevel(0);
 			
 			ItemStack stuff = new ItemStack(Material.IRON_PICKAXE, 1);			
-			stuff.addEnchantment(Enchantment.DURABILITY, 5);
+			stuff.addEnchantment(Enchantment.DURABILITY, 3);
 			p.getInventory().addItem(stuff);
 			
 			stuff.setType(Material.IRON_AXE);	
-			stuff.addEnchantment(Enchantment.DURABILITY, 5);
+			stuff.addEnchantment(Enchantment.DURABILITY, 3);
 			p.getInventory().addItem(stuff);
 			
 			stuff.setType(Material.IRON_SPADE);	
-			stuff.addEnchantment(Enchantment.DURABILITY, 5);
+			stuff.addEnchantment(Enchantment.DURABILITY, 3);
 			p.getInventory().addItem(stuff);			
 
 			for (PotionEffect potion : p.getActivePotionEffects())
@@ -928,17 +925,25 @@ public class ThePurgeOfSalem extends JavaPlugin
 	
 	public void clearTeams()
 	{
+		Bukkit.broadcastMessage(this.taupesTeam.getName() + "");
+		Bukkit.broadcastMessage(this.huntersTeam.getName() + "");
+		Bukkit.broadcastMessage(this.supertaupeTeam.getName() + "");
+		Bukkit.broadcastMessage(this.assassinTeam.getName() + "");
+		
 		for (Team teams : this.s.getTeams())
 		{
-			if (teams != this.taupesTeam 
-					&& teams != this.huntersTeam
-					&& teams != this.supertaupeTeam
-					&& teams != this.assassinTeam)
+			if (teams.getName().contains("eretique")
+					|| teams.getName().contains("uppot")
+					|| teams.getName().contains("epurgateur")
+					|| teams.getName().contains("pectre"))
 			{
-				if(teams.getSize() == 0)
-				{
-					teams.unregister();
-				}
+				continue;
+			}
+
+			if(teams.getSize() == 0)
+			{
+				Bukkit.broadcastMessage(teams.getName() + " unregistered");
+				teams.unregister();
 			}
 		}
 	}
@@ -968,7 +973,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 				
 				while (true)
 				{
-					rsize = random.nextInt(6);
+					rsize = random.nextInt(5);
 					if (!this.taupes.containsValue(rsize))
 					{
 						break;
@@ -1011,7 +1016,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 					
 				while (true)
 				{
-					rsize = random.nextInt(6);
+					rsize = random.nextInt(5);
 					if (!this.hunters.containsValue(rsize))
 					{
 						break;
@@ -1046,10 +1051,10 @@ public class ThePurgeOfSalem extends JavaPlugin
 			
 			for(Team team : ThePurgeOfSalem.this.s.getTeams())
 			{
-				if(team!= ThePurgeOfSalem.this.taupesTeam
-						&& team!= ThePurgeOfSalem.this.huntersTeam
-						&& team!= ThePurgeOfSalem.this.supertaupeTeam
-						&& team!= ThePurgeOfSalem.this.assassinTeam)
+				if(!team.getName().contains("eretique")
+						&& !team.getName().contains("uppot")
+						&& !team.getName().contains("epurgateur")
+						&& !team.getName().contains("pectre"))
 				{
 					teams.add(team);
 				}
@@ -1091,10 +1096,10 @@ public class ThePurgeOfSalem extends JavaPlugin
 			
 			for(Team team : ThePurgeOfSalem.this.s.getTeams())
 			{
-				if(team!= ThePurgeOfSalem.this.taupesTeam
-						&& team!= ThePurgeOfSalem.this.huntersTeam
-						&& team!= ThePurgeOfSalem.this.supertaupeTeam
-						&& team!= ThePurgeOfSalem.this.assassinTeam)
+				if(!team.getName().contains("eretique")
+						&& !team.getName().contains("uppot")
+						&& !team.getName().contains("epurgateur")
+						&& !team.getName().contains("pectre"))
 				{
 					teams.add(team);
 				}
@@ -1162,16 +1167,17 @@ public class ThePurgeOfSalem extends JavaPlugin
 
 	public void unregisterTeam() 
 	{
-		for (Team teams : ThePurgeOfSalem.this.s.getTeams()) 
+		for (Team team : ThePurgeOfSalem.this.s.getTeams()) 
 		{
-			if (teams.getSize() == 0 
-					&& !teams.getName().contains("eretique")
-					&& !teams.getName().contains("epurgateur")
-					&& !teams.getName().contains("uppot")) 
+			if (team.getSize() == 0 
+					&& !team.getName().contains("eretique")
+					&& !team.getName().contains("uppot")
+					&& !team.getName().contains("epurgateur")
+					&& !team.getName().contains("pectre"))
 			{
-				Bukkit.broadcastMessage("La guilde des " + teams.getPrefix() + teams.getName()
+				Bukkit.broadcastMessage("La guilde des " + team.getPrefix() + team.getName()
 						+ ChatColor.RESET + " a ete eliminee ! ");
-				teams.unregister();
+				team.unregister();
 			}
 		}
 	}
@@ -1705,7 +1711,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 			for(UUID taupe : ThePurgeOfSalem.this.aliveTaupes)
 			{
 				Team team = ThePurgeOfSalem.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(taupe));
-				if(team == ThePurgeOfSalem.this.inquisitorInitialTeam)
+				if(team.getName() == ThePurgeOfSalem.this.inquisitorInitialTeam.getName())
 				{
 					continue;
 				}
@@ -1722,7 +1728,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 					new PotionEffect(
 							PotionEffectType.INCREASE_DAMAGE,
 							20 * 10, 
-							1));
+							0));
 			}
 			break;
 		case 2:
@@ -1730,9 +1736,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 			{				
 				Bukkit.getPlayer(hunter).addPotionEffect(
 					new PotionEffect(
-							PotionEffectType.DAMAGE_RESISTANCE,
+							PotionEffectType.REGENERATION,
 							20 * 10, 
-							2));
+							1));
 			}			
 			break;
 		case 3:
@@ -1740,9 +1746,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 			{				
 				Bukkit.getPlayer(hunter).addPotionEffect(
 					new PotionEffect(
-							PotionEffectType.REGENERATION,
+							PotionEffectType.DAMAGE_RESISTANCE,
 							20 * 10, 
-							2));
+							1));
 			}	
 			break;
 		}

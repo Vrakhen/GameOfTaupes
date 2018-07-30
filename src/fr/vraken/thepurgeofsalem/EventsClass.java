@@ -30,6 +30,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -38,6 +39,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
@@ -358,9 +360,16 @@ public class EventsClass implements Listener
 	@EventHandler
 	public void CancelRegen(EntityRegainHealthEvent e)
 	{
-		if (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED)) {
+		if (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED))
+		{
 			e.setCancelled(true);
 		}
+	}
+	
+	@EventHandler
+	public void CancelFoodLevelChange(FoodLevelChangeEvent e)
+	{
+		e.setCancelled(true);
 	}
 
 	@EventHandler
@@ -590,7 +599,6 @@ public class EventsClass implements Listener
 			
 			if(plugin.supertaupe == player.getUniqueId())
 			{
-				plugin.supertaupeConsumed = false;
 				plugin.supertaupeDeath();
 			}
 
@@ -630,6 +638,11 @@ public class EventsClass implements Listener
 		UUID uid = e.getPlayer().getUniqueId();
 		
 		if(plugin.taupes.get(uid) != 2)
+		{
+			return;
+		}
+		
+		if(!plugin.aliveTaupes.contains(uid))
 		{
 			return;
 		}
@@ -704,6 +717,7 @@ public class EventsClass implements Listener
 		else
 		{
 			Bukkit.broadcastMessage("owner : " + Bukkit.getOfflinePlayer(uid).getName());
+			wolf.setTamed(true);
 			wolf.setAngry(false);
 			wolf.setOwner(Bukkit.getOfflinePlayer(uid));
 		}
@@ -776,105 +790,6 @@ public class EventsClass implements Listener
 	}
 	
 	@EventHandler
-	public void OnPlayerStepOnPressurePlate(PlayerInteractEvent e)
-	{
-		if(e.getAction().equals(Action.PHYSICAL))
-		{
-			if(e.getClickedBlock().getType() == Material.GOLD_PLATE)
-			{
-				if(capturingPlayer == null)
-				{
-					capturingPlayer = e.getPlayer().getUniqueId();
-					
-					Bukkit.broadcastMessage(plugin.s.getPlayerTeam(e.getPlayer()).getPrefix() 
-							+ e.getPlayer().getName() 
-							+ ChatColor.GOLD
-							+ " a commence a capturer le Graal ! ");
-					Bukkit.broadcastMessage(ChatColor.GOLD 
-							+ "Depechez-vous de l'arreter avant qu'il ne soit trop tard ! ");
-					
-					capturingTask = new BukkitRunnable() 
-					{
-						public void run() 
-						{		
-							if(capturingTimer % 10 == 0)
-							{
-								int time = plugin.getConfig().getInt("options.graaltimetocapture") - capturingTimer;
-								Bukkit.broadcastMessage(ChatColor.GOLD 
-										+ "Le Graal sera capture dans "
-										+ time
-										+ " secondes ! ");
-							}
-							
-							++capturingTimer;
-						}
-					}.runTaskTimer(plugin, 0, 20);
-					
-					capturedTask = new BukkitRunnable() 
-					{
-						public void run() 
-						{
-							Bukkit.broadcastMessage(plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(capturingPlayer)).getPrefix() 
-									+ Bukkit.getOfflinePlayer(capturingPlayer).getName() 
-									+ ChatColor.GOLD
-									+ " a capture le Graal ! ");
-							
-							Team team = plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(capturingPlayer));
-							
-							plugin.announceWinner(team);
-						}
-					}.runTaskLater(plugin, 20 * plugin.getConfig().getInt("options.graaltimetocapture"));
-				}
-			}
-		}
-	}
-
-	@EventHandler
-	public void OnPlayerLeavePressurePlate(PlayerMoveEvent e)
-	{
-		if(capturingPlayer == null)
-		{
-			return;
-		}
-		
-		if(e.getPlayer().getUniqueId() == capturingPlayer)
-		{
-			Location loc = e.getTo();
-			loc.setY(loc.getY() - 1);
-			if(loc.getWorld().getBlockAt(loc).getType() != Material.GOLD_PLATE)
-			{
-				capturingPlayer = null;
-				capturingTimer = 0;
-				capturingTask.cancel();
-				capturedTask.cancel();
-				
-				Bukkit.broadcastMessage(ChatColor.GOLD 
-						+ "La capture du Graal a ete interrompue ! ");
-			}
-		}
-	}
-
-	@EventHandler
-	public void OnPlayerDisconnectFromPressurePlate(PlayerQuitEvent e)
-	{
-		if(capturingPlayer == null)
-		{
-			return;
-		}
-		
-		if(e.getPlayer().getUniqueId() == capturingPlayer)
-		{
-			capturingPlayer = null;
-			capturingTimer = 0;
-			capturingTask.cancel();
-			capturedTask.cancel();
-				
-			Bukkit.broadcastMessage(ChatColor.GOLD 
-					+ "La capture du Graal a ete interrompue ! ");
-		}
-	}
-
-	@EventHandler
 	public void OnInnkeeperEatGoldenApple(PlayerItemConsumeEvent e)
 	{
 		UUID uid = e.getPlayer().getUniqueId();
@@ -888,6 +803,23 @@ public class EventsClass implements Listener
 		}
 	}
 
+	@EventHandler
+	public void OnSupertaupeDamage(EntityDamageByEntityEvent e)
+	{
+		if (e.getDamager() instanceof Player 
+				&& e.getEntity() instanceof Player) 
+		{
+			Player damager = (Player) e.getDamager();
+			
+			if(damager.getUniqueId() == plugin.supertaupe)
+			{
+				Player damaged = (Player) e.getEntity();
+				
+				damaged.setFireTicks(2);
+			}
+		}
+	}
+	
 	@EventHandler
     public void OnPlayerOpenLootChest(InventoryOpenEvent e)
 	{
@@ -919,10 +851,19 @@ public class EventsClass implements Listener
         }
     }
 
-	@EventHandler
+	/*@EventHandler
     public void OnChestPlaced(BlockPlaceEvent e)
 	{
 		if(e.getBlock().getType() == Material.CHEST || e.getBlock().getType() == Material.TRAPPED_CHEST)
+		{
+			e.setCancelled(true);
+		}
+    }*/
+	
+	@EventHandler
+    public void OnChestPickedUp(PlayerPickupItemEvent e)
+	{
+		if(e.getItem().getItemStack().getType() == Material.CHEST || e.getItem().getItemStack().getType() == Material.TRAPPED_CHEST)
 		{
 			e.setCancelled(true);
 		}
@@ -987,7 +928,7 @@ public class EventsClass implements Listener
 		if(plugin.forbiddenPlayers.contains(e.getPlayer().getUniqueId()))
 		{
 			e.getPlayer().sendMessage(ChatColor.RED 
-					+ "Vous avez déjà profité de la bénédiction d'un temple ! ");
+					+ "Vous avez deja profite de la benediction d'un temple ! ");
 			
 			e.setCancelled(true);
 		}
@@ -996,6 +937,11 @@ public class EventsClass implements Listener
 	@EventHandler
 	public void OnPlayerCaptureGraal(PlayerInteractEvent e)
 	{
+		if(plugin.gameEnd)
+		{
+			return;
+		}
+		
 		if(!e.getAction().equals(Action.PHYSICAL))
 		{
 			return;
@@ -1015,7 +961,7 @@ public class EventsClass implements Listener
 					+ e.getPlayer().getName()
 					+ ChatColor.GOLD
 					+ " a commence a capturer le Graal ! ");			
-			Bukkit.broadcastMessage("Depechez-vous de l'en empecher ! ");
+			Bukkit.broadcastMessage("Depechez-vous de l'en empecher avant qu'il ne soit trop tard ! ");
 			
 			capturingTask = new BukkitRunnable()
 			{
@@ -1024,7 +970,10 @@ public class EventsClass implements Listener
 					if(capturingTimer % 10 == 0)
 					{
 						int time = plugin.getConfig().getInt("options.graaltimetocapture") - capturingTimer;
-						Bukkit.broadcastMessage("Temps restant : " + time + " secondes ! ");
+						Bukkit.broadcastMessage(ChatColor.GOLD 
+								+ "Le Graal sera capture dans "
+								+ time
+								+ " secondes ! ");
 					}
 					
 					++capturingTimer;
@@ -1060,7 +1009,7 @@ public class EventsClass implements Listener
 		}
 		
 		Location loc = e.getTo();
-		loc.setY(loc.getY() - 1);
+		loc.setY(loc.getY());
 		
 		if(!loc.getBlock().getType().equals(Material.GOLD_PLATE))
 		{
@@ -1092,6 +1041,9 @@ public class EventsClass implements Listener
 			
 		capturingTask.cancel();
 		capturedTask.cancel();
+		
+		Bukkit.broadcastMessage(ChatColor.GOLD 
+			+ "La capture du Graal a ete interrompue ! ");
 	}
 	
 }

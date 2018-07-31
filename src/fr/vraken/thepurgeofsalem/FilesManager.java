@@ -10,8 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class FilesManager
 {
-	public File configf, teamf, deathf;
-	private FileConfiguration config, team, death;
+	public File configf, teamf, deathf, lootf;
+	private FileConfiguration config, team, death, loot;
 	ThePurgeOfSalem plugin;
 
 	public FilesManager(ThePurgeOfSalem plugin) throws IOException, InvalidConfigurationException
@@ -20,6 +20,7 @@ public class FilesManager
 		createFiles();
 		addConfigDefault();
 		addTeamDefault();
+		addLootDefault();
 	}
 
 	public FileConfiguration getTeamConfig() 
@@ -32,11 +33,17 @@ public class FilesManager
 		return this.death;
 	}
 
+	public FileConfiguration getLootConfig() 
+	{
+		return this.loot;
+	}
+
 	private void createFiles() throws IOException 
 	{
 		configf = new File(plugin.getDataFolder(), "config.yml");
 		teamf = new File(plugin.getDataFolder(), "team.yml");
 		deathf = new File(plugin.getDataFolder(), "death.yml");
+		lootf = new File(plugin.getDataFolder(), "loot.yml");
 
 		if (!configf.exists()) 
 		{
@@ -50,10 +57,15 @@ public class FilesManager
 		{
 			deathf.createNewFile();
 		}
+		if (!lootf.exists()) 
+		{
+			lootf.createNewFile();
+		}
 
 		config = new YamlConfiguration();
 		team = new YamlConfiguration();
 		death = new YamlConfiguration();
+		loot = new YamlConfiguration();
 	}
 
 	public void addTeamDefault() throws IOException, InvalidConfigurationException
@@ -116,5 +128,102 @@ public class FilesManager
 
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();
+	}
+	
+	public void addLootDefault() throws FileNotFoundException, IOException, InvalidConfigurationException
+	{
+		loot.load(lootf);;
+		
+		loot.addDefault("items.sword", Integer.valueOf(0));
+		loot.addDefault("items.bow", Integer.valueOf(0));
+		loot.addDefault("items.arrow", Integer.valueOf(0));
+		loot.addDefault("items.boots", Integer.valueOf(0));
+		loot.addDefault("items.leggings", Integer.valueOf(0));
+		loot.addDefault("items.chestplate", Integer.valueOf(0));
+		loot.addDefault("items.helmet", Integer.valueOf(0));
+		loot.addDefault("items.axe", Integer.valueOf(0));
+		loot.addDefault("items.bucket", Integer.valueOf(0));
+		loot.addDefault("items.tnt", Integer.valueOf(0));
+		loot.addDefault("items.flintnsteel", Integer.valueOf(0));
+		loot.addDefault("items.potion", Integer.valueOf(0));
+		loot.addDefault("items.golden_apple", Integer.valueOf(0));
+		loot.addDefault("items.pickaxe", Integer.valueOf(0));
+		
+		
+		loot.addDefault("hand.type.wood", Integer.valueOf(0));
+		loot.addDefault("hand.type.stone", Integer.valueOf(0));
+		loot.addDefault("hand.type.iron", Integer.valueOf(0));
+		loot.addDefault("hand.type.diamond", Integer.valueOf(0));
+		
+		loot.addDefault("hand.sword.sharpness", Integer.valueOf(0));
+		loot.addDefault("hand.sword.knockback", Integer.valueOf(0));
+		loot.addDefault("hand.sword.unbreaking", Integer.valueOf(0));
+		loot.addDefault("hand.sword.bane_of_anthropods", Integer.valueOf(0));
+		loot.addDefault("hand.sword.smite", Integer.valueOf(0));
+		loot.addDefault("hand.sword.fire_aspect", Integer.valueOf(0));
+		
+		loot.addDefault("hand.tool.efficiency", Integer.valueOf(0));
+		loot.addDefault("hand.tool.unbreaking", Integer.valueOf(0));
+		
+		
+		loot.addDefault("bow.power", Integer.valueOf(0));
+		loot.addDefault("bow.punch", Integer.valueOf(0));
+		loot.addDefault("bow.unbreaking", Integer.valueOf(0));
+		loot.addDefault("bow.infinity", Integer.valueOf(0));
+		loot.addDefault("bow.flame", Integer.valueOf(0));
+		
+		
+		loot.addDefault("armor.type.leather", Integer.valueOf(0));
+		loot.addDefault("armor.type.chain", Integer.valueOf(0));
+		loot.addDefault("armor.type.iron", Integer.valueOf(0));
+		loot.addDefault("armor.type.diamond", Integer.valueOf(0));
+		
+		loot.addDefault("armor.enchant.protection", Integer.valueOf(0));
+		loot.addDefault("armor.enchant.projectile_protection", Integer.valueOf(0));
+		loot.addDefault("armor.enchant.blast_protection", Integer.valueOf(0));
+		loot.addDefault("armor.enchant.unbreaking", Integer.valueOf(0));
+		loot.addDefault("armor.enchant.fire_resistance", Integer.valueOf(0));
+		
+		
+		loot.addDefault("bucket.water", Integer.valueOf(0));
+		loot.addDefault("bucket.lava", Integer.valueOf(0));
+		loot.addDefault("bucket.milk", Integer.valueOf(0));
+		
+		
+		loot.addDefault("enchanted.0", Integer.valueOf(0));
+		loot.addDefault("enchanted.1", Integer.valueOf(0));
+		loot.addDefault("enchanted.2", Integer.valueOf(0));
+		loot.addDefault("enchanted.3", Integer.valueOf(0));
+		
+		loot.addDefault("enchant_level.1", Integer.valueOf(0));
+		loot.addDefault("enchant_level.2", Integer.valueOf(0));
+		loot.addDefault("enchant_level.3", Integer.valueOf(0));
+		loot.addDefault("enchant_level.4", Integer.valueOf(0));
+		loot.addDefault("enchant_level.5", Integer.valueOf(0));
+		
+		
+		loot.addDefault("potion.type.speed", Integer.valueOf(0));
+		loot.addDefault("potion.type.slowness", Integer.valueOf(0));
+		loot.addDefault("potion.type.regeneration", Integer.valueOf(0));
+		loot.addDefault("potion.type.strength", Integer.valueOf(0));
+		loot.addDefault("potion.type.instant_health", Integer.valueOf(0));
+		loot.addDefault("potion.type.instant_damage", Integer.valueOf(0));
+		loot.addDefault("potion.type.fire_resistance", Integer.valueOf(0));
+		loot.addDefault("potion.type.invisibility", Integer.valueOf(0));
+		loot.addDefault("potion.type.weakness", Integer.valueOf(0));
+		loot.addDefault("potion.type.poison", Integer.valueOf(0));
+		loot.addDefault("potion.type.absorption", Integer.valueOf(0));
+		
+		loot.addDefault("potion.splash.true", Integer.valueOf(0));
+		loot.addDefault("potion.splash.false", Integer.valueOf(0));
+		
+		loot.addDefault("potion.extended.true", Integer.valueOf(0));
+		loot.addDefault("potion.extended.false", Integer.valueOf(0));
+		
+		loot.addDefault("potion.level.1", Integer.valueOf(0));
+		loot.addDefault("potion.level.2", Integer.valueOf(0));
+
+		loot.options().copyDefaults(true);
+		loot.save(lootf);
 	}
 }

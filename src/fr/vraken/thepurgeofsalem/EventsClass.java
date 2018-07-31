@@ -61,7 +61,6 @@ public class EventsClass implements Listener
 	static ThePurgeOfSalem plugin;
 	public static boolean pvp = false;
 
-	ArrayList<ItemStack> loots = new ArrayList<ItemStack>();
 	HashMap<Integer, ArrayList<ItemStack>> specialLoots = new HashMap<Integer, ArrayList<ItemStack>>();
 	ArrayList<Integer> spawnedLoots = new ArrayList<Integer>();
 	
@@ -73,37 +72,6 @@ public class EventsClass implements Listener
 	public EventsClass(ThePurgeOfSalem plugin)
 	{
 		EventsClass.plugin = plugin;
-		
-		loots.add(new ItemStack(Material.LEATHER_BOOTS, 1));
-		loots.add(new ItemStack(Material.LEATHER_BOOTS, 1));
-		loots.add(new ItemStack(Material.LEATHER_BOOTS, 1));
-		loots.add(new ItemStack(Material.IRON_BOOTS, 1));
-		loots.add(new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		loots.add(new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		loots.add(new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		loots.add(new ItemStack(Material.IRON_LEGGINGS, 1));
-		loots.add(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		loots.add(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		loots.add(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		loots.add(new ItemStack(Material.IRON_CHESTPLATE, 1));
-		loots.add(new ItemStack(Material.LEATHER_HELMET, 1));
-		loots.add(new ItemStack(Material.LEATHER_HELMET, 1));
-		loots.add(new ItemStack(Material.LEATHER_HELMET, 1));
-		loots.add(new ItemStack(Material.IRON_HELMET, 1));
-		loots.add(new ItemStack(Material.STONE_SWORD, 1));
-		loots.add(new ItemStack(Material.STONE_SWORD, 1));
-		loots.add(new ItemStack(Material.STONE_SWORD, 1));
-		loots.add(new ItemStack(Material.IRON_SWORD, 1));
-		loots.add(new ItemStack(Material.BOW, 1));
-		loots.add(new ItemStack(Material.ARROW, 5));
-		loots.add(new ItemStack(Material.ARROW, 5));
-		loots.add(new ItemStack(Material.GOLDEN_APPLE, 1));
-		loots.add(new ItemStack(Material.GOLDEN_APPLE, 1));
-		loots.add(new ItemStack(Material.WATER_BUCKET, 1));
-		loots.add(new ItemStack(Material.MILK_BUCKET, 1));
-		loots.add(new ItemStack(Material.LAVA_BUCKET, 1));
-		loots.add(new ItemStack(Material.FLINT_AND_STEEL, 1));
-		loots.add(new ItemStack(Material.TNT, 2));
 		
 		int i = 0;
 		ArrayList<ItemStack> speLoot0 = new ArrayList<ItemStack>();
@@ -831,11 +799,8 @@ public class EventsClass implements Listener
         	{
         		return;
         	}
-        	
-        	Random rdm = new Random();
-        	int kit;
-        	int max = 3;
-        	
+
+        	int max = 3;        	
         	if(plugin.s.getPlayerTeam((OfflinePlayer) e.getPlayer()) == plugin.jaune)
         	{
         		++max;
@@ -843,22 +808,12 @@ public class EventsClass implements Listener
         	
         	for(int i = 0; i < max; ++i)
         	{
-        		kit = rdm.nextInt(loots.size());
-        		e.getInventory().addItem(loots.get(kit));
+        		e.getInventory().addItem(plugin.lootManager.getLoot());
         	}
         	
         	chest.getBlock().breakNaturally();
         }
     }
-
-	/*@EventHandler
-    public void OnChestPlaced(BlockPlaceEvent e)
-	{
-		if(e.getBlock().getType() == Material.CHEST || e.getBlock().getType() == Material.TRAPPED_CHEST)
-		{
-			e.setCancelled(true);
-		}
-    }*/
 	
 	@EventHandler
     public void OnChestPickedUp(PlayerPickupItemEvent e)

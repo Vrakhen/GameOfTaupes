@@ -46,10 +46,13 @@ import org.bukkit.enchantments.Enchantment;
 
 public class ThePurgeOfSalem extends JavaPlugin 
 {
+	LootManager lootManager;
+	
 	// Files
 	FilesManager filesManager;
 	FileConfiguration teamf;
 	FileConfiguration deathf;
+	FileConfiguration lootf;
 
 	// Players
 	ArrayList<UUID> playersInTeam = new ArrayList<UUID>();
@@ -135,6 +138,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		System.out.println("+-------------VrakenThePurgeOfSalem--------------+");
 		System.out.println("|             Plugin cree par Vraken             |");
 		System.out.println("+------------------------------------------------+");
+		
 		try 
 		{
 			filesManager = new FilesManager(this);
@@ -143,6 +147,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 
 		teamf = filesManager.getTeamConfig();
 		deathf = filesManager.getDeathConfig();
+		lootf = filesManager.getLootConfig();
+		
+		lootManager = new LootManager(this, filesManager);
 
 		this.sm = Bukkit.getScoreboardManager();
 		this.s = this.sm.getMainScoreboard();
@@ -154,6 +161,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		getConfig().options().copyDefaults(true);
 		teamf.options().copyDefaults(true);
 		deathf.options().copyDefaults(true);
+		lootf.options().copyDefaults(true);
 		saveConfig();
 
 		Bukkit.createWorld(new WorldCreator(getConfig().getString("lobby.world")));

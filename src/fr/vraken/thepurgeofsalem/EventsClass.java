@@ -700,9 +700,9 @@ public class EventsClass implements Listener
 			Player damaged = (Player) e.getEntity();
 			Player damager = (Player) e.getDamager();
 			
-			if(plugin.s.getPlayerTeam(damager) == plugin.huntersTeam)
+			if(plugin.s.getPlayerTeam(damager).getName() == plugin.huntersTeam.getName())
 			{
-				if(plugin.s.getPlayerTeam(damaged) == plugin.cursedTeam)
+				if(plugin.s.getPlayerTeam(damaged).getName() == plugin.cursedTeam.getName())
 				{
 					e.setDamage(e.getDamage() * 1.5);
 				}
@@ -718,7 +718,7 @@ public class EventsClass implements Listener
 		{
 			Player damaged = (Player) e.getEntity();
 			
-			if(plugin.s.getPlayerTeam(damaged) == plugin.cyan)
+			if(plugin.s.getPlayerTeam(damaged).getName() == plugin.cyan.getName())
 			{
 				e.setDamage(e.getDamage() * 0.8);
 			}
@@ -733,7 +733,7 @@ public class EventsClass implements Listener
 		{
 			Player damager = (Player) e.getDamager();
 			
-			if(plugin.s.getPlayerTeam(damager) == plugin.rose
+			if(plugin.s.getPlayerTeam(damager).getName() == plugin.rose.getName()
 					&& damager.getItemInHand().getType() == Material.IRON_SWORD)
 			{
 				e.setDamage(e.getDamage() * 1.2);
@@ -749,7 +749,7 @@ public class EventsClass implements Listener
 		{
 			Player damager = (Player) e.getDamager();
 			
-			if(plugin.s.getPlayerTeam(damager) == plugin.verte
+			if(plugin.s.getPlayerTeam(damager).getName() == plugin.verte.getName()
 					&& damager.getItemInHand().getType() == Material.BOW)
 			{
 				e.setDamage(e.getDamage() * 1.2);
@@ -762,7 +762,7 @@ public class EventsClass implements Listener
 	{
 		UUID uid = e.getPlayer().getUniqueId();
 		
-		if(plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(uid)) == plugin.violette)
+		if(plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(uid)).getName() == plugin.violette.getName())
 		{
 			if(e.getItem().getType().equals(Material.GOLDEN_APPLE))
 			{
@@ -801,7 +801,7 @@ public class EventsClass implements Listener
         	}
 
         	int max = 3;        	
-        	if(plugin.s.getPlayerTeam((OfflinePlayer) e.getPlayer()) == plugin.jaune)
+        	if(plugin.s.getPlayerTeam((OfflinePlayer) e.getPlayer()).getName() == plugin.jaune.getName())
         	{
         		++max;
         	}

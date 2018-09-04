@@ -13,7 +13,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftShapedRecipe;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +28,6 @@ import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -422,7 +420,7 @@ public class EventsClass implements Listener
 					plugin.playersSpec.add(p.getUniqueId());
 				}
 				
-				Title.sendTitle(p, 
+				p.sendTitle(
 						"Pensez a vous mute sur Mumble !", 
 						"Par fairplay, assurez-vous que les joueurs en vie ne puissent pas vous entendre !");
 			}
@@ -516,7 +514,7 @@ public class EventsClass implements Listener
 
 			for (Player pl : Bukkit.getOnlinePlayers()) 
 			{
-				pl.playSound(pl.getLocation(), Sound.WITHER_DEATH, 10.0F, 10.0F);
+				pl.playSound(pl.getLocation(), Sound.ENTITY_WITHER_DEATH, 10.0F, 10.0F);
 			}
 
 			for(int i = 0; i < plugin.taupes.size(); i++)
@@ -674,35 +672,6 @@ public class EventsClass implements Listener
 			}
 			e.setCancelled(true);
 		}
-	}
-	
-	@EventHandler
-	public void CancelCraft(PrepareItemCraftEvent e)
-	{
-		CraftShapedRecipe craft = new CraftShapedRecipe(new ItemStack(Material.SPECKLED_MELON));
-		craft.shape(new String[] { "abc", "def", "ghi" });
-		craft.setIngredient('a', Material.GOLD_NUGGET);
-		craft.setIngredient('b', Material.GOLD_NUGGET);
-		craft.setIngredient('c', Material.GOLD_NUGGET);
-		craft.setIngredient('d', Material.GOLD_NUGGET);
-		craft.setIngredient('f', Material.GOLD_NUGGET);
-		craft.setIngredient('g', Material.GOLD_NUGGET);
-		craft.setIngredient('h', Material.GOLD_NUGGET);
-		craft.setIngredient('i', Material.GOLD_NUGGET);
-		craft.setIngredient('e', Material.MELON);
-		Bukkit.addRecipe(craft);
-		
-		try
-		{
-			if (((CraftShapedRecipe)e.getRecipe()).getIngredientMap().equals(craft.getIngredientMap()))
-			{
-				e.getInventory().setResult(new ItemStack(Material.AIR));
-				for (HumanEntity p : e.getViewers()) {
-					p.sendMessage("Ce craft a ete modifie !");
-				}
-			}
-		}
-		catch(Exception ex) {}
 	}
 	
 	@EventHandler

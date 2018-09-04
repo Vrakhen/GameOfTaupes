@@ -822,11 +822,11 @@ public class BossEvents implements Listener
 		}
 		else
 		{
-			Bukkit.broadcastMessage(bossName + " est mort de manière indigne ! Personne ne profitera donc de ses récompenses ! ");
+			Bukkit.broadcastMessage(bossName + " est mort de maniÃ¨re indigne ! Personne ne profitera donc de ses rï¿½compenses ! ");
 		}
 		for (Player online : Bukkit.getOnlinePlayers())
         {
-          online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 10.0F, -10.0F);
+          online.playSound(online.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 10.0F, -10.0F);
         }
 	}
 }

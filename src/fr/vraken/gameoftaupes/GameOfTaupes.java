@@ -1133,7 +1133,7 @@ public class GameOfTaupes extends JavaPlugin {
 							this.taupesteam.get(i).addPlayer(player);
 							this.showedtaupes.add(player.getUniqueId());
 							for (Player online : Bukkit.getOnlinePlayers()) {
-								online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
+								online.playSound(online.getLocation(), Sound.ENTITY_GHAST_SCREAM, 10.0F, -10.0F);
 							}
 							Bukkit.broadcastMessage(
 									ChatColor.RED + player.getName() + " a revele qu'il etait une taupe !");
@@ -1175,8 +1175,8 @@ public class GameOfTaupes extends JavaPlugin {
 						this.supertaupesteam.get(key).addPlayer((OfflinePlayer) player);
 						this.showedsupertaupes.add(player.getUniqueId());
 						for (Player online : Bukkit.getOnlinePlayers()) {
-							online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
-							online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
+							online.playSound(online.getLocation(), Sound.ENTITY_GHAST_SCREAM, 10.0F, -10.0F);
+							online.playSound(online.getLocation(), Sound.ENTITY_GHAST_SCREAM, 10.0F, -10.0F);
 						}
 						Bukkit.broadcastMessage(
 								ChatColor.DARK_RED + player.getName() + " a revele qu'il etait une supertaupe !");
@@ -2016,7 +2016,7 @@ public class GameOfTaupes extends JavaPlugin {
 					taupe.getPlayer().sendMessage(ChatColor.GOLD + "Votre but : " + ChatColor.DARK_RED
 							+ "Tuer les membres de votre \"equipe\"");
 					taupe.getPlayer().sendMessage(ChatColor.RED + "-------------------------------");
-					Title.sendTitle(taupe.getPlayer(), "Vous etes une taupe !", "Ne le dites a personne !");
+					taupe.getPlayer().sendTitle("Vous etes une taupe !", "Ne le dites a personne !");
 
 				}
 			}
@@ -2040,7 +2040,7 @@ public class GameOfTaupes extends JavaPlugin {
 				player.getPlayer().sendMessage(
 						ChatColor.GOLD + "Votre but : " + ChatColor.DARK_RED + "Tuer tous les autres joueurs !");
 				player.getPlayer().sendMessage(ChatColor.RED + "-------------------------------");
-				Title.sendTitle(player.getPlayer(), "Vous etes la supertaupe !", "Ne le dites a personne !");
+				player.getPlayer().sendTitle("Vous etes la supertaupe !", "Ne le dites a personne !");
 			}
 		}
 		GameOfTaupes.this.supertaupessetup = true;
@@ -2059,7 +2059,7 @@ public class GameOfTaupes extends JavaPlugin {
 		}
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
+			online.playSound(online.getLocation(), Sound.ENTITY_GHAST_SCREAM, 10.0F, -10.0F);
 		}
 
 		GameOfTaupes.this.taupessetup = true;
@@ -2086,8 +2086,8 @@ public class GameOfTaupes extends JavaPlugin {
 		}
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
-			online.playSound(online.getLocation(), Sound.GHAST_SCREAM, 10.0F, -10.0F);
+			online.playSound(online.getLocation(), Sound.ENTITY_GHAST_SCREAM, 10.0F, -10.0F);
+			online.playSound(online.getLocation(), Sound.ENTITY_GHAST_SCREAM, 10.0F, -10.0F);
 		}
 
 		GameOfTaupes.this.supertaupessetup = true;

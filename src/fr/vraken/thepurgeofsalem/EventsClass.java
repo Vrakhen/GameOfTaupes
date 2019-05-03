@@ -23,8 +23,6 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -33,7 +31,9 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -47,6 +47,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -525,6 +526,52 @@ public class EventsClass implements Listener
 				plugin.deathf.save(plugin.filesManager.deathf);
 			}
 			catch (IOException e1) {}
+			
+			if(plugin.salvation && plugin.hunters.containsKey(player.getUniqueId()))
+			{
+				if(player.getKiller() instanceof Player)
+				{
+					Player killer = (Player) player.getKiller();
+					if(plugin.hunters.containsKey(killer.getUniqueId()))
+					{
+						plugin.redemption -= plugin.getConfig().getInt("options.playersperteam") - 2;
+						
+						if(plugin.redemption < 0)
+						{
+							plugin.redemption = 0;
+							
+							for(UUID hunter : plugin.aliveHunters)
+							{	
+								if(hunter == player.getUniqueId())
+									continue;
+								
+								Bukkit.getPlayer(hunter).setHealth(Bukkit.getPlayer(hunter).getHealth() - 2f);
+							}
+						}
+					}
+				}
+				
+				player.setHealth(10f);
+				player.getInventory().clear();
+				player.getInventory().setHelmet(null);
+				player.getInventory().setChestplate(null);
+				player.getInventory().setLeggings(null);
+				player.getInventory().setBoots(null);
+				player.setExp(0.0f);
+				player.setLevel(0);
+
+				for (PotionEffect potion : player.getActivePotionEffects())
+				{
+					player.removePotionEffect(potion.getType());
+				}
+				
+				if(plugin.hunters.get(player.getUniqueId()) == 4)
+				{
+					plugin.redemption += plugin.getConfig().getInt("options.playersperteam") - 2;
+				}
+				
+				return;
+			}
 
 			plugin.playersAlive.remove(player.getUniqueId());
 
@@ -550,17 +597,80 @@ public class EventsClass implements Listener
 				{
 					plugin.assassinPotionUsed = true;
 				}
-			}
-			
-			if (plugin.hunters.containsKey(player.getUniqueId())) 
+				
+				if(player.getKiller() instanceof Player)
+				{
+					Player killer = (Player) player.getKiller();
+					if(plugin.hunters.containsKey(killer.getUniqueId()))
+					{
+						plugin.redemption += plugin.getConfig().getInt("options.playersperteam") - 2;
+					}
+				}
+			}			
+			else if (plugin.hunters.containsKey(player.getUniqueId())) 
 			{
 				plugin.aliveHunters.remove(player.getUniqueId());
 				
 				if(plugin.hunters.get(player.getUniqueId()) == 4)
 				{
-					if(player.getKiller() != null)
+					if(player.getKiller() instanceof Player)
 					{
-						plugin.cursedTeam = plugin.s.getPlayerTeam(player.getKiller());
+						Player killer = (Player) player.getKiller();
+						
+						for(OfflinePlayer p : plugin.s.getPlayerTeam(killer).getPlayers())
+						{
+							p.getPlayer().setHealth(p.getPlayer().getHealth() - 2f); 
+						}
+					}
+					plugin.redemption += plugin.getConfig().getInt("options.playersperteam") - 2;
+				}
+				
+				if(player.getKiller() instanceof Player)
+				{
+					Player killer = (Player) player.getKiller();
+					if((plugin.taupes.containsKey(killer.getUniqueId()) && !plugin.supertaupesetup)
+							|| (plugin.taupes.containsKey(killer.getUniqueId()) && killer.getUniqueId() != plugin.supertaupe))
+					{
+						plugin.evilPower -= plugin.getConfig().getInt("options.playersperteam") - 2;
+
+						if(plugin.evilPower < 0)
+						{
+							plugin.evilPower = 0;
+							
+							for(UUID taupe : plugin.aliveTaupes)
+							{	
+								if(taupe == player.getUniqueId())
+									continue;
+								
+								Bukkit.getPlayer(taupe).setHealth(Bukkit.getPlayer(taupe).getHealth() - 2f);
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				if(player.getKiller() instanceof Player)
+				{
+					Player killer = (Player) player.getKiller();
+					if(plugin.taupes.containsKey(killer.getUniqueId()))
+					{
+						plugin.evilPower++;
+					}
+					else if(plugin.hunters.containsKey(killer.getUniqueId()))
+					{
+						if(--plugin.redemption < 0)
+						{
+							plugin.redemption = 0;
+							
+							for(UUID hunter : plugin.aliveHunters)
+							{	
+								if(hunter == player.getUniqueId())
+									continue;
+								
+								Bukkit.getPlayer(hunter).setHealth(Bukkit.getPlayer(hunter).getHealth() - 2f);
+							}
+						}
 					}
 				}
 			}
@@ -568,6 +678,15 @@ public class EventsClass implements Listener
 			if(plugin.supertaupe == player.getUniqueId())
 			{
 				plugin.supertaupeDeath();
+				
+				if(player.getKiller() instanceof Player)
+				{
+					Player killer = (Player) player.getKiller();
+					if(plugin.hunters.containsKey(killer.getUniqueId()))
+					{
+						plugin.redemption += plugin.playersAlive.size();
+					}
+				}
 			}
 
 			new BukkitRunnable()
@@ -791,29 +910,56 @@ public class EventsClass implements Listener
 	@EventHandler
     public void OnPlayerOpenLootChest(InventoryOpenEvent e)
 	{
-        if (e.getInventory().getHolder() instanceof Chest)
+        if (!(e.getInventory().getHolder() instanceof Chest))
+        	return;
+        
+        Chest chest = (Chest) e.getInventory().getHolder();
+        	
+        if(chest.getBlock().getType() == Material.TRAPPED_CHEST)
+        	return;
+        
+        OfflinePlayer player = (OfflinePlayer) e.getPlayer();
+        int max = plugin.s.getPlayerTeam(player).getName() == plugin.jaune.getName() ? 4 : 3;        	
+        	
+        for(int i = 0; i < max; ++i)
         {
-        	Chest chest = (Chest) e.getInventory().getHolder();
-        	
-        	if(chest.getBlock().getType() == Material.TRAPPED_CHEST)
-        	{
-        		return;
-        	}
-
-        	int max = 3;        	
-        	if(plugin.s.getPlayerTeam((OfflinePlayer) e.getPlayer()).getName() == plugin.jaune.getName())
-        	{
-        		++max;
-        	}
-        	
-        	for(int i = 0; i < max; ++i)
-        	{
-        		e.getInventory().addItem(plugin.lootManager.getLoot());
-        	}
-        	
-        	chest.getBlock().breakNaturally();
+        	e.getInventory().addItem(plugin.lootManager.getLoot());
         }
     }
+	
+	@EventHandler 
+	public void OnPlayerCloseChest(InventoryCloseEvent e)
+	{
+		if (!(e.getInventory().getHolder() instanceof Chest) 
+				|| e.getInventory().getViewers().size() != 0)
+			return;
+
+        Chest chest = (Chest) e.getInventory().getHolder();
+        chest.getBlock().breakNaturally();
+	}
+	
+	@EventHandler 
+	public void OnGrayTeamSwitchItem(InventoryClickEvent e)
+	{
+		if(!plugin.gameStarted || !(e.getWhoClicked() instanceof Player))
+			return;
+		
+		Player player = (Player) e.getWhoClicked();
+		
+		if(plugin.s.getPlayerTeam((OfflinePlayer) player).getName() != plugin.grise.getName()
+        		|| plugin.grayTeamCooldown.get(player.getUniqueId()) > 0)
+			return;
+		
+		Inventory top = e.getView().getTopInventory();
+        Inventory bottom = e.getView().getBottomInventory();
+
+        if(top.getType() != InventoryType.CHEST || bottom.getType() != InventoryType.PLAYER
+        		|| e.getCurrentItem() == null || e.getRawSlot() != top.getSize())
+        	return;
+        
+        e.setCurrentItem(plugin.lootManager.switchLoot(e.getCurrentItem()));
+        plugin.grayTeamCooldown.put(player.getUniqueId(), plugin.getConfig().getInt("options.grayteamcooldown"));
+	}
 	
 	@EventHandler
     public void OnChestPickedUp(PlayerPickupItemEvent e)

@@ -161,6 +161,63 @@ public class LootManager
 		
 		return loot;
 	}	
+
+	public ItemStack switchLoot(ItemStack loot)
+	{
+		loot = new ItemStack(Material.AIR, 1);
+		
+		String it = getRandomEntry(this.items);
+		
+		switch(it)
+		{
+		case "sword":
+			loot = getSword();
+			break;
+		case "pickaxe":
+			loot = getPickaxe();
+			break;
+		case "axe":
+			loot = getAxe();
+			break;
+		case "bow":
+			loot = getBow();
+			break;
+		case "arrow":
+			loot.setType(Material.ARROW);
+			loot.setAmount(5);
+			break;
+		case "bucket":
+			loot = getBucket();
+			break;
+		case "boots":
+			loot = getBoots();
+			break;
+		case "leggings":
+			loot = getLeggings();
+			break;
+		case "chestplate":
+			loot = getChestplate();
+			break;
+		case "helmet":
+			loot = getHelmet();
+			break;
+		case "flintnsteel":
+			loot.setType(Material.FLINT_AND_STEEL);
+			break;
+		case "tnt":
+			loot.setType(Material.TNT);
+			loot.setAmount(2);
+			break;
+		case "potion":
+			loot = getPotion();
+			break;
+		case "golden_apple":
+			loot.setType(Material.GOLDEN_APPLE);
+			break;
+		}
+		
+		return loot;
+	}	
 	
 	public ItemStack getSword()
 	{

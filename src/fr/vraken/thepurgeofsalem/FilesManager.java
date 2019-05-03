@@ -77,6 +77,7 @@ public class FilesManager
 		team.addDefault("jaune.name", "Marchands");
 		team.addDefault("violette.name", "Taverniers");
 		team.addDefault("verte.name", "Chasseurs");
+		team.addDefault("grise.name", "Bourgeois");
 		team.addDefault("s0.X", Integer.valueOf(500));
 		team.addDefault("s0.Y", Integer.valueOf(250));
 		team.addDefault("s0.Z", Integer.valueOf(500));
@@ -92,6 +93,9 @@ public class FilesManager
 		team.addDefault("s4.X", Integer.valueOf(0));
 		team.addDefault("s4.Y", Integer.valueOf(250));
 		team.addDefault("s4.Z", Integer.valueOf(0));
+		team.addDefault("s5.X", Integer.valueOf(0));
+		team.addDefault("s5.Y", Integer.valueOf(250));
+		team.addDefault("s5.Z", Integer.valueOf(0));
 
 		team.options().copyDefaults(true);
 		team.save(teamf);
@@ -125,6 +129,7 @@ public class FilesManager
 		plugin.getConfig().addDefault("options.graal", Integer.valueOf(100));
 		plugin.getConfig().addDefault("options.supertaupelifetime", Integer.valueOf(5));
 		plugin.getConfig().addDefault("options.graaltimetocapture", Integer.valueOf(90));
+		plugin.getConfig().addDefault("options.grayteamcooldown", Integer.valueOf(60));
 
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();

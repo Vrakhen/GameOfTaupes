@@ -71,6 +71,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 	Team assassinTeam;
 	boolean assassinPotionUsed;
 	boolean assassinTeamUnregistered;
+	int evilPower;
 
 	// Hunters
 	Team huntersTeam;
@@ -81,7 +82,10 @@ public class ThePurgeOfSalem extends JavaPlugin
 	ArrayList<UUID> showedHunters = new ArrayList<UUID>();
 	ArrayList<UUID> claimedHunters = new ArrayList<UUID>();
 	Team inquisitorInitialTeam;
+	Team seerInitialTeam;
 	Team cursedTeam;
+	int redemption;
+	boolean salvation;
 	
 	// Supertaupe & Superhunter
 	Team supertaupeTeam;
@@ -124,6 +128,8 @@ public class ThePurgeOfSalem extends JavaPlugin
 	Team violette;		// Taverniers
 	Team cyan;			// Forgerons
 	Team verte;			// Chasseurs
+	Team grise;			// Bourgeois
+	HashMap<UUID, Integer> grayTeamCooldown = new HashMap<UUID, Integer>();
 	
 	// Meetup
 	boolean graalSpawned = false;
@@ -191,6 +197,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 		this.verte = this.s.registerNewTeam(teamf.getString("verte.name"));
 		this.verte.setPrefix(ChatColor.GREEN.toString());
 		this.verte.setSuffix(ChatColor.WHITE.toString());
+		this.grise = this.s.registerNewTeam(teamf.getString("grise.name"));
+		this.grise.setPrefix(ChatColor.GRAY.toString());
+		this.grise.setSuffix(ChatColor.WHITE.toString());
 
 		this.taupesTeam = this.s.registerNewTeam("Heretiques");
 		this.taupesTeam.setPrefix(ChatColor.RED.toString());
@@ -253,7 +262,14 @@ public class ThePurgeOfSalem extends JavaPlugin
 		Bukkit.getWorld(getConfig().getString("world")).setThundering(false);
 		Bukkit.getWorld(getConfig().get("world").toString()).setTime(5000L);
 
-		clearTeams();
+		clearTeams();		
+
+		
+		for(OfflinePlayer player : grise.getPlayers())
+		{
+			grayTeamCooldown.put(player.getUniqueId(), 0);	
+		}
+		
 
 		// SCOREBOARD INITIALIZATION
 		// -------------------------
@@ -306,6 +322,14 @@ public class ThePurgeOfSalem extends JavaPlugin
 				// WRITING SCOREBOARD
 				// ------------------
 				writeScoreboard(this.minutes, this.seconds);
+				
+				
+				for(UUID uid : grayTeamCooldown.keySet())
+				{
+					if(grayTeamCooldown.get(uid) > 0)
+						grayTeamCooldown.put(uid, grayTeamCooldown.get(uid) - 1);
+				}
+				
 			}
 		}.runTaskTimer(this, 0L, 20L);
 
@@ -791,7 +815,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 
 	public void setSpawnLocations()
 	{
-		for(int i = 0; i < 5; ++i)
+		for(int i = 0; i < 6; ++i)
 		{
 			Location l = new Location(Bukkit.getWorld(getConfig().get("world").toString()),
 					this.teamf.getInt("s"+ i + ".X"),
@@ -806,7 +830,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		Random rdm = new Random();
 		int l;
 		
-		for(int i = 0; i < 5; ++i)
+		for(int i = 0; i < 6; ++i)
 		{
 			while(true)
 			{
@@ -924,6 +948,10 @@ public class ThePurgeOfSalem extends JavaPlugin
 			else if (this.s.getPlayerTeam(p).getName().equals(teamf.getString("verte.name")))
 			{
 				p.teleport(this.spawnLocations.get(4));
+			}
+			else if (this.s.getPlayerTeam(p).getName().equals(teamf.getString("grise.name")))
+			{
+				p.teleport(this.spawnLocations.get(5));
 			}
 			
 			p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,
@@ -1303,35 +1331,44 @@ public class ThePurgeOfSalem extends JavaPlugin
 				{
 					Player player = Bukkit.getPlayer(uid);
 					
-					player.sendMessage(ChatColor.RED + "-------Annonce IMPORTANTE------");
+					player.sendMessage(ChatColor.RED + "-------Annonce importante------");
 					
 					switch(ThePurgeOfSalem.this.taupes.get(uid))
 					{
 					case 0:
-						player.sendMessage(ChatColor.GOLD + "Vous etes un heretique : la sorciere !");
+						Title.sendTitle(player, "HERETIQUE", "Sorciere");	
+						player.sendMessage(ChatColor.GOLD + "Vous etes la sorciere !");
 						break;
 					case 1:
-						player.sendMessage(ChatColor.GOLD + "Vous etes un heretique : l'alchimiste !");
+						Title.sendTitle(player, "HERETIQUE", "Alchimiste");
+						player.sendMessage(ChatColor.GOLD + "Vous etes l'alchimiste !");
 						break;
 					case 2:
-						player.sendMessage(ChatColor.GOLD + "Vous etes un heretique : l'assassin !");
+						Title.sendTitle(player, "HERETIQUE", "Assassin");
+						player.sendMessage(ChatColor.GOLD + "Vous etes l'assassin !");
 						break;
 					case 3:
-						player.sendMessage(ChatColor.GOLD + "Vous etes un heretique : le mercenaire !");
+						Title.sendTitle(player, "HERETIQUE", "Mercenaire");
+						player.sendMessage(ChatColor.GOLD + "Vous etes le mercenaire !");
 						break;
 					case 4:
-						player.sendMessage(ChatColor.GOLD + "Vous etes un heretique : le druide !");
+						Title.sendTitle(player, "HERETIQUE", "Chaman");
+						player.sendMessage(ChatColor.GOLD + "Vous etes le chaman !");
 						break;
+					case 5:
+						Title.sendTitle(player, "HERETIQUE", "Voyante");
+						player.sendMessage(ChatColor.GOLD + "Vous etes la voyante !");
+						break;
+					}					
+
+					if(ThePurgeOfSalem.this.taupes.get(uid) != 5)
+					{
+						player.sendMessage(ChatColor.GOLD + "Pour parler avec les autres heretiques, executez la commande /t < message>");
 					}
 
-					player.sendMessage(ChatColor.GOLD + "Pour parler avec les autres heretiques, executez la commande /t < message>");
 					player.sendMessage(ChatColor.GOLD + "Si vous voulez devoiler votre vraie identite, executez la commande /reveal");
-					player.sendMessage(ChatColor.GOLD + "Pour obtenir votre kit d'heretique, executez la commande /claim");
-					player.sendMessage(ChatColor.GOLD + "Votre but : " + ChatColor.DARK_RED + "Tuer les membres de votre \"equipe\"");
-					
+					player.sendMessage(ChatColor.GOLD + "Pour obtenir votre kit d'heretique ou activer votre pouvoir, executez la commande /claim");
 					player.sendMessage(ChatColor.RED + "-------------------------------");	
-					
-					Title.sendTitle(player, "Vous etes un heretique !", "Ne le dites a personne !");	
 				}
 			}
 		}
@@ -1357,25 +1394,34 @@ public class ThePurgeOfSalem extends JavaPlugin
 					switch(ThePurgeOfSalem.this.hunters.get(uid))
 					{
 					case 0:
+						Title.sendTitle(player, "REPURGATEUR", "Inquisiteur");
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : l'inquisiteur !");
 						break;
 					case 1:
+						Title.sendTitle(player, "REPURGATEUR", "Venguer");
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : le vengeur !");
 						break;
 					case 2:
+						Title.sendTitle(player, "REPURGATEUR", "Guerisseur");
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : le guerisseur !");
 						break;
 					case 3:
+						Title.sendTitle(player, "REPURGATEUR", "Protecteur");
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : le protecteur !");
 						break;
 					case 4:
+						Title.sendTitle(player, "REPURGATEUR", "Martyre");
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : le martyre !");
+						break;
+					case 5:
+						Title.sendTitle(player, "REPURGATEUR", "Salvateur");
+						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : le salvateur !");
 						break;
 					}
 
 					if(ThePurgeOfSalem.this.hunters.get(uid) != 0)
 					{
-						player.sendMessage(ChatColor.GOLD + "Pour parler avec les autres heretiques, executez la commande /t < message>");
+						player.sendMessage(ChatColor.GOLD + "Pour parler avec les autres repurgateurs, executez la commande /t < message>");
 					}
 					
 					player.sendMessage(ChatColor.GOLD + "Si vous voulez devoiler votre vraie identite, executez la commande /reveal");
@@ -1384,12 +1430,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 					{
 						player.sendMessage(ChatColor.GOLD + "Pour utiliser votre pouvoir divin, executez la commande /claim");
 					}
-					
-					player.sendMessage(ChatColor.GOLD + "Votre but : " + ChatColor.DARK_RED + "Tuer les membres de votre \"equipe\"");
-					
+										
 					player.sendMessage(ChatColor.RED + "-------------------------------");	
-					
-					Title.sendTitle(player, "Vous etes un repurgateur !", "Ne le dites a personne !");	
+						
 				}
 			}
 		}
@@ -1469,7 +1512,11 @@ public class ThePurgeOfSalem extends JavaPlugin
 					break;
 				case 4:
 					Bukkit.broadcastMessage(ChatColor.RED + Bukkit.getOfflinePlayer(entry.getKey()).getName()
-							+ " a revele qu'il etait un heretique : le druide !");
+							+ " a revele qu'il etait un heretique : le chaman !");
+					break;
+				case 5:
+					Bukkit.broadcastMessage(ChatColor.RED + Bukkit.getOfflinePlayer(entry.getKey()).getName()
+							+ " a revele qu'il etait un heretique : la voyante !");
 					break;
 				}
 			}
@@ -1503,6 +1550,10 @@ public class ThePurgeOfSalem extends JavaPlugin
 				case 4:
 					Bukkit.broadcastMessage(ChatColor.WHITE + Bukkit.getOfflinePlayer(entry.getKey()).getName()
 							+ " a revele qu'il etait un repurgateur : le martyre !");
+					break;
+				case 5:
+					Bukkit.broadcastMessage(ChatColor.WHITE + Bukkit.getOfflinePlayer(entry.getKey()).getName()
+							+ " a revele qu'il etait un repurgateur : le salvateur !");
 					break;
 				}
 			}
@@ -1708,6 +1759,27 @@ public class ThePurgeOfSalem extends JavaPlugin
 			kit.setDurability((short) 95);
 			player.getWorld().dropItemNaturally(loc, kit);
 			break;
+		case 5:
+			String repurgators = ChatColor.WHITE + "Les repurgateurs sont :";
+			
+			player.addPotionEffect(
+					new PotionEffect(
+							PotionEffectType.BLINDNESS,
+							20 * 5, 
+							1));
+			for(UUID hunter : ThePurgeOfSalem.this.aliveHunters)
+			{
+				Team team = ThePurgeOfSalem.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(hunter));
+				if(team.getName() == ThePurgeOfSalem.this.seerInitialTeam.getName())
+				{
+					continue;
+				}
+				repurgators += " " + team.getPrefix() + Bukkit.getOfflinePlayer(hunter).getName() 
+						+ ChatColor.WHITE + ",";
+			}
+			repurgators = repurgators.substring(0, repurgators.length() - 1);
+			player.sendMessage(repurgators);
+			break;
 		}
 		
 		this.claimedtaupes.add(player.getUniqueId());
@@ -1746,7 +1818,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 					new PotionEffect(
 							PotionEffectType.INCREASE_DAMAGE,
 							20 * 10, 
-							0));
+							0,
+							hunter == player.getUniqueId(),
+							hunter == player.getUniqueId()));
 			}
 			break;
 		case 2:
@@ -1756,7 +1830,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 					new PotionEffect(
 							PotionEffectType.REGENERATION,
 							20 * 10, 
-							1));
+							1,
+							hunter == player.getUniqueId(),
+							hunter == player.getUniqueId()));
 			}			
 			break;
 		case 3:
@@ -1766,10 +1842,34 @@ public class ThePurgeOfSalem extends JavaPlugin
 					new PotionEffect(
 							PotionEffectType.DAMAGE_RESISTANCE,
 							20 * 10, 
-							1));
+							1,
+							hunter == player.getUniqueId(),
+							hunter == player.getUniqueId()));
 			}	
 			break;
+		case 5:
+			player.addPotionEffect(
+					new PotionEffect(
+							PotionEffectType.BLINDNESS,
+							20 * 5, 
+							1));
+			preventRepurgatorDeath();
+			break;
 		}
+	}
+	
+	
+	public void preventRepurgatorDeath()
+	{
+		salvation = true;
+		
+		new BukkitRunnable() 
+		{
+			public void run() 
+			{
+				ThePurgeOfSalem.this.salvation = false;
+			}
+		}.runTaskLater(this, 20 * 30);
 	}
 
 

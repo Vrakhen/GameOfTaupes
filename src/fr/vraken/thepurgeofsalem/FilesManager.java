@@ -96,6 +96,8 @@ public class FilesManager
 		team.addDefault("s5.X", Integer.valueOf(0));
 		team.addDefault("s5.Y", Integer.valueOf(250));
 		team.addDefault("s5.Z", Integer.valueOf(0));
+		team.addDefault("heretics", Integer.valueOf(0));
+		team.addDefault("repurgators", Integer.valueOf(0));
 
 		team.options().copyDefaults(true);
 		team.save(teamf);

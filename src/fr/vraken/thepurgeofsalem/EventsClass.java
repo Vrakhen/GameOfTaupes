@@ -344,6 +344,7 @@ public class EventsClass implements Listener
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
+		System.out.println("Player joining");
 		Player p = e.getPlayer();
 
 		if (!plugin.gameStarted)
@@ -550,6 +551,13 @@ public class EventsClass implements Listener
 						}
 					}
 				}
+
+				Team team = player.getScoreboard().getPlayerTeam(player);
+				e.setDeathMessage(team.getPrefix() 
+						+ e.getEntity().getName() 
+						+ " est mort !");
+				
+				plugin.huntersTeam.addPlayer(player);
 				
 				player.setHealth(10f);
 				player.getInventory().clear();
@@ -566,8 +574,43 @@ public class EventsClass implements Listener
 				}
 				
 				if(plugin.hunters.get(player.getUniqueId()) == 4)
+					plugin.redemption += plugin.getConfig().getInt("options.playersperteam") - 2;				
+
+				if(plugin.aliveHunters.size() == 1)
 				{
-					plugin.redemption += plugin.getConfig().getInt("options.playersperteam") - 2;
+					player.teleport(Bukkit.getWorld(plugin.getConfig().getString("world"))
+							.getHighestBlockAt(new Location(Bukkit.getWorld(plugin.getConfig().getString("world")), .0, .0, .0))
+							.getLocation());
+					
+					return;
+				}
+				
+				boolean salvator = false;
+				UUID salvatorUuid = null;
+				for(UUID uid : plugin.aliveHunters)
+				{
+					if(plugin.hunters.get(uid) == 5)
+					{
+						salvator = true;
+						salvatorUuid = uid;
+						break;
+					}
+				}
+				
+				if(salvator && player.getUniqueId() != salvatorUuid)
+					player.teleport(Bukkit.getPlayer(salvatorUuid).getLocation());
+				else
+				{
+					while (true)
+					{
+						Random random = new Random(System.currentTimeMillis());
+						UUID p = plugin.aliveHunters.get(random.nextInt(plugin.aliveHunters.size()));
+						if(player.getUniqueId() == p)
+							continue;
+
+						player.teleport(Bukkit.getPlayer(p).getLocation());
+						break;
+					}
 				}
 				
 				return;
@@ -594,17 +637,13 @@ public class EventsClass implements Listener
 				plugin.aliveTaupes.remove(player.getUniqueId());
 				
 				if(plugin.taupes.get(player.getUniqueId()) == 2)
-				{
 					plugin.assassinPotionUsed = true;
-				}
 				
 				if(player.getKiller() instanceof Player)
 				{
 					Player killer = (Player) player.getKiller();
 					if(plugin.hunters.containsKey(killer.getUniqueId()))
-					{
 						plugin.redemption += plugin.getConfig().getInt("options.playersperteam") - 2;
-					}
 				}
 			}			
 			else if (plugin.hunters.containsKey(player.getUniqueId())) 
@@ -683,9 +722,7 @@ public class EventsClass implements Listener
 				{
 					Player killer = (Player) player.getKiller();
 					if(plugin.hunters.containsKey(killer.getUniqueId()))
-					{
 						plugin.redemption += plugin.playersAlive.size();
-					}
 				}
 			}
 
@@ -712,9 +749,8 @@ public class EventsClass implements Listener
 		{
 			Player player = (Player)e.getEntity();
 			if(plugin.playersInLobby.contains(player.getUniqueId()))
-			{
 				return;
-			}
+			
 			e.setCancelled(true);
 		}
 	}
@@ -725,19 +761,13 @@ public class EventsClass implements Listener
 		UUID uid = e.getPlayer().getUniqueId();
 		
 		if(plugin.taupes.get(uid) != 2)
-		{
 			return;
-		}
 		
 		if(!plugin.aliveTaupes.contains(uid))
-		{
 			return;
-		}
 		
 		if(plugin.assassinPotionUsed)
-		{
 			return;
-		}
 		
 		if(e.getItem().getType().equals(Material.POTION))
 		{
@@ -768,16 +798,11 @@ public class EventsClass implements Listener
 	public void OnWolfSpawned(CreatureSpawnEvent e)
 	{
 		if(!e.getSpawnReason().equals(SpawnReason.SPAWNER_EGG))
-		{
 			return;
-		}
 		
 		if(!e.getEntityType().equals(EntityType.WOLF))
-		{
 			return;
-		}
 
-		Bukkit.broadcastMessage("spawn loup");
 		Wolf wolf = (Wolf) e.getEntity();
 
 		UUID uid = null;
@@ -789,28 +814,24 @@ public class EventsClass implements Listener
 			if(plugin.taupes.get(id) == 4)
 			{
 				if(!plugin.aliveTaupes.contains(uid))
-				{
 					angry = true;
-				}
+				
 				break;
 			}
 		}
 
 		wolf.setAdult();
 		if(angry)
-		{
 			wolf.setAngry(true);
-		}
 		else
 		{
-			Bukkit.broadcastMessage("owner : " + Bukkit.getOfflinePlayer(uid).getName());
 			wolf.setTamed(true);
 			wolf.setAngry(false);
 			wolf.setOwner(Bukkit.getOfflinePlayer(uid));
 		}
 	}
 	
-	@EventHandler
+	/*@EventHandler
 	public void OnCursedTeamTakingDamage(EntityDamageByEntityEvent e)
 	{
 		if (e.getDamager() instanceof Player 
@@ -827,7 +848,7 @@ public class EventsClass implements Listener
 				}
 			}
 		}
-	}
+	}*/
 
 	@EventHandler
 	public void OnBlacksmithTeamDamaged(EntityDamageByEntityEvent e)
@@ -836,11 +857,12 @@ public class EventsClass implements Listener
 				&& e.getEntity() instanceof Player) 
 		{
 			Player damaged = (Player) e.getEntity();
+
+			if(!plugin.s.getTeams().contains(plugin.cyan))
+				return;
 			
 			if(plugin.s.getPlayerTeam(damaged).getName() == plugin.cyan.getName())
-			{
 				e.setDamage(e.getDamage() * 0.8);
-			}
 		}
 	}
 
@@ -851,12 +873,13 @@ public class EventsClass implements Listener
 				&& e.getEntity() instanceof Player) 
 		{
 			Player damager = (Player) e.getDamager();
+
+			if(!plugin.s.getTeams().contains(plugin.rose))
+				return;
 			
 			if(plugin.s.getPlayerTeam(damager).getName() == plugin.rose.getName()
 					&& damager.getItemInHand().getType() == Material.IRON_SWORD)
-			{
 				e.setDamage(e.getDamage() * 1.2);
-			}
 		}
 	}
 
@@ -867,6 +890,9 @@ public class EventsClass implements Listener
 				&& e.getEntity() instanceof Player) 
 		{
 			Player damager = (Player) e.getDamager();
+			
+			if(!plugin.s.getTeams().contains(plugin.verte))
+				return;
 			
 			if(plugin.s.getPlayerTeam(damager).getName() == plugin.verte.getName()
 					&& damager.getItemInHand().getType() == Material.BOW)
@@ -880,6 +906,9 @@ public class EventsClass implements Listener
 	public void OnInnkeeperEatGoldenApple(PlayerItemConsumeEvent e)
 	{
 		UUID uid = e.getPlayer().getUniqueId();
+		
+		if(!plugin.s.getTeams().contains(plugin.violette))
+			return;
 		
 		if(plugin.s.getPlayerTeam(Bukkit.getOfflinePlayer(uid)).getName() == plugin.violette.getName())
 		{
@@ -919,7 +948,10 @@ public class EventsClass implements Listener
         	return;
         
         OfflinePlayer player = (OfflinePlayer) e.getPlayer();
-        int max = plugin.s.getPlayerTeam(player).getName() == plugin.jaune.getName() ? 4 : 3;        	
+        int max = plugin.s.getTeams().contains(plugin.jaune) 
+        		? plugin.s.getPlayerTeam(player).getName() == plugin.jaune.getName() 
+        			? 4 : 3
+        		: 3;        	
         	
         for(int i = 0; i < max; ++i)
         {
@@ -945,6 +977,9 @@ public class EventsClass implements Listener
 			return;
 		
 		Player player = (Player) e.getWhoClicked();
+
+		if(!plugin.s.getTeams().contains(plugin.grise))
+			return;
 		
 		if(plugin.s.getPlayerTeam((OfflinePlayer) player).getName() != plugin.grise.getName()
         		|| plugin.grayTeamCooldown.get(player.getUniqueId()) > 0)
@@ -964,10 +999,9 @@ public class EventsClass implements Listener
 	@EventHandler
     public void OnChestPickedUp(PlayerPickupItemEvent e)
 	{
-		if(e.getItem().getItemStack().getType() == Material.CHEST || e.getItem().getItemStack().getType() == Material.TRAPPED_CHEST)
-		{
+		if(e.getItem().getItemStack().getType() == Material.CHEST 
+				|| e.getItem().getItemStack().getType() == Material.TRAPPED_CHEST)
 			e.setCancelled(true);
-		}
     }
 	
 	@EventHandler
@@ -978,9 +1012,7 @@ public class EventsClass implements Listener
         	Chest chest = (Chest) e.getInventory().getHolder();
         	
         	if(chest.getBlock().getType() != Material.TRAPPED_CHEST)
-        	{
         		return;
-        	}
         	
         	Random rdm = new Random();
         	int kit;

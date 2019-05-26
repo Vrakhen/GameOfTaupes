@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -245,6 +246,8 @@ public class ThePurgeOfSalem extends JavaPlugin
 		setSpawnLocations();
 
 		super.onEnable();
+
+		System.out.println("Plugin initialized");
 	}
 
 	public void startGame()
@@ -264,10 +267,12 @@ public class ThePurgeOfSalem extends JavaPlugin
 
 		clearTeams();		
 
-		
-		for(OfflinePlayer player : grise.getPlayers())
+		if(s.getTeams().contains(grise))
 		{
-			grayTeamCooldown.put(player.getUniqueId(), 0);	
+			for(OfflinePlayer player : grise.getPlayers())
+			{
+				grayTeamCooldown.put(player.getUniqueId(), 0);	
+			}
 		}
 		
 
@@ -834,7 +839,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		{
 			while(true)
 			{
-				l = rdm.nextInt(5);
+				l = rdm.nextInt(6);
 				if(!loc.contains(l))
 				{
 					break;
@@ -1002,16 +1007,31 @@ public class ThePurgeOfSalem extends JavaPlugin
 				psize = random.nextInt(players.size());
 				p = players.get(psize);
 				
+				ArrayList<Integer> roles = new ArrayList<Integer>();
+				if(this.teamf.getInt("heretics") == 0)
+					roles.addAll(Arrays.asList(0, 1, 2, 3, 4, 5));
+				else
+				{
+					int tmp = this.teamf.getInt("heretics");
+					while(tmp > 0)
+					{
+						int r = tmp % 10;
+						roles.add(r);
+						tmp /= 10;
+					}
+				}
 				while (true)
 				{
-					rsize = random.nextInt(5);
+					int r = random.nextInt(roles.size());
+					rsize = roles.get(r);
 					if (!this.taupes.containsValue(rsize))
-					{
 						break;
-					}
 				}
 				this.taupes.put(p, rsize);
 				this.aliveTaupes.add(p);
+				
+				if(rsize == 5)
+					ThePurgeOfSalem.this.seerInitialTeam = team;
 			}
 		}
 	}
@@ -1044,22 +1064,32 @@ public class ThePurgeOfSalem extends JavaPlugin
 						break;
 					}
 				}
-					
+				
+				ArrayList<Integer> roles = new ArrayList<Integer>();
+				if(this.teamf.getInt("repurgators") == 0)
+					roles.addAll(Arrays.asList(0, 1, 2, 3, 4, 5));
+				else
+				{
+					int tmp = this.teamf.getInt("repurgators");
+					while(tmp > 0)
+					{
+						int r = tmp % 10;
+						roles.add(r);
+						tmp /= 10;
+					}
+				}
 				while (true)
 				{
-					rsize = random.nextInt(5);
+					int r = random.nextInt(roles.size());
+					rsize = roles.get(r);
 					if (!this.hunters.containsValue(rsize))
-					{
 						break;
-					}
 				}
 				this.hunters.put(p, rsize);
 				this.aliveHunters.add(p);
 				
 				if(rsize == 0)
-				{
 					ThePurgeOfSalem.this.inquisitorInitialTeam = team;
-				}
 			}
 		}
 	}
@@ -1359,12 +1389,10 @@ public class ThePurgeOfSalem extends JavaPlugin
 						Title.sendTitle(player, "HERETIQUE", "Voyante");
 						player.sendMessage(ChatColor.GOLD + "Vous etes la voyante !");
 						break;
-					}					
+					}
 
 					if(ThePurgeOfSalem.this.taupes.get(uid) != 5)
-					{
 						player.sendMessage(ChatColor.GOLD + "Pour parler avec les autres heretiques, executez la commande /t < message>");
-					}
 
 					player.sendMessage(ChatColor.GOLD + "Si vous voulez devoiler votre vraie identite, executez la commande /reveal");
 					player.sendMessage(ChatColor.GOLD + "Pour obtenir votre kit d'heretique ou activer votre pouvoir, executez la commande /claim");
@@ -1398,7 +1426,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : l'inquisiteur !");
 						break;
 					case 1:
-						Title.sendTitle(player, "REPURGATEUR", "Venguer");
+						Title.sendTitle(player, "REPURGATEUR", "Vengeur");
 						player.sendMessage(ChatColor.GOLD + "Vous etes un repurgateur : le vengeur !");
 						break;
 					case 2:
@@ -1771,9 +1799,8 @@ public class ThePurgeOfSalem extends JavaPlugin
 			{
 				Team team = ThePurgeOfSalem.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(hunter));
 				if(team.getName() == ThePurgeOfSalem.this.seerInitialTeam.getName())
-				{
 					continue;
-				}
+				
 				repurgators += " " + team.getPrefix() + Bukkit.getOfflinePlayer(hunter).getName() 
 						+ ChatColor.WHITE + ",";
 			}
@@ -1802,9 +1829,8 @@ public class ThePurgeOfSalem extends JavaPlugin
 			{
 				Team team = ThePurgeOfSalem.this.s.getPlayerTeam(Bukkit.getOfflinePlayer(taupe));
 				if(team.getName() == ThePurgeOfSalem.this.inquisitorInitialTeam.getName())
-				{
 					continue;
-				}
+				
 				heretics += " " + team.getPrefix() + Bukkit.getOfflinePlayer(taupe).getName() 
 						+ ChatColor.WHITE + ",";
 			}

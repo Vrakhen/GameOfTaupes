@@ -784,12 +784,16 @@ public class EventsClass implements Listener
 					{
 						if(!plugin.assassinPotionUsed)
 						{
-							plugin.taupesTeam.addPlayer(Bukkit.getOfflinePlayer(uid));
+							if(plugin.showedtaupes.contains(uid))
+								plugin.taupesTeam.addPlayer(Bukkit.getOfflinePlayer(uid));
+							else
+								plugin.assassinTeam.addPlayer(Bukkit.getOfflinePlayer(uid));
+							
 							plugin.assassinPotionUsed = true;
 							plugin.unregisterTaupeTeam();
 						}
 					}
-				}.runTaskLater(plugin, 20 * 60 * 8);	
+				}.runTaskLater(plugin, 20 * 60 * 3);	
 			}
 		}
 	}

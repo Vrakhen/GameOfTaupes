@@ -519,6 +519,12 @@ public class ThePurgeOfSalem extends JavaPlugin
 						{
 							continue;
 						}
+
+						if(this.taupes.get(player.getUniqueId()) == 5)
+						{
+							player.sendMessage(ChatColor.RED + "Vous etes la voyante, vous ne pouvez pas communiquer avec les autres heretiques ! ");
+							return true;
+						}
 						
 						String role = "";
 						switch(taupe.getValue())
@@ -587,6 +593,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 							break;
 						case 4:
 							role = "Martyre";
+							break;
+						case 5:
+							role = "Salvateur";
 							break;
 						}
 
@@ -752,6 +761,24 @@ public class ThePurgeOfSalem extends JavaPlugin
 					{
 						player.sendMessage(ChatColor.RED + "Vous avez deja utilise votre pouvoir !");
 					}
+					return true;
+				}
+				player.sendMessage(ChatColor.RED + "Vous n'etes ni un heretique ni un repurgateur !");
+				return true;
+			}
+
+			// TAUPES AND HUNTERS POINTS
+			// -------------------------
+			if (cmd.getName().equalsIgnoreCase("p") && this.taupessetup) 
+			{
+				if (this.taupes.containsKey(player.getUniqueId())) 
+				{
+					player.sendMessage(ChatColor.RED + "Pouvoir demoniaque : " + this.evilPower);
+					return true;
+				}
+				else if (this.hunters.containsKey(player.getUniqueId())) 
+				{
+					player.sendMessage(ChatColor.RED + "Redemption : " + this.redemption);
 					return true;
 				}
 				player.sendMessage(ChatColor.RED + "Vous n'etes ni un heretique ni un repurgateur !");
@@ -1518,7 +1545,9 @@ public class ThePurgeOfSalem extends JavaPlugin
 			if (!ThePurgeOfSalem.this.showedtaupes.contains(entry.getKey())) 
 			{
 				ThePurgeOfSalem.this.showedtaupes.add(entry.getKey());
-				ThePurgeOfSalem.this.taupesTeam.addPlayer(Bukkit.getOfflinePlayer(entry.getKey()));
+				
+				if(entry.getValue() != 2 || ThePurgeOfSalem.this.assassinTeamUnregistered || ThePurgeOfSalem.this.assassinTeam.getPlayers().size() == 0)
+					ThePurgeOfSalem.this.taupesTeam.addPlayer(Bukkit.getOfflinePlayer(entry.getKey()));
 				
 				switch(entry.getValue())
 				{
@@ -1598,9 +1627,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		unregisterSupertaupeTeam();
 
 		if (check) 
-		{
 			checkVictory();
-		}
 	}
 
 
@@ -1611,7 +1638,8 @@ public class ThePurgeOfSalem extends JavaPlugin
 		 if(ThePurgeOfSalem.this.taupes.get(uid) == 2)
 		 {
 			 ThePurgeOfSalem.this.assassinPotionUsed = true;
-		 }		 
+			 Bukkit.getPlayer(uid).removePotionEffect(PotionEffectType.INVISIBILITY);
+		 }
 		 
 		ThePurgeOfSalem.this.aliveTaupes.remove(uid);
 		ThePurgeOfSalem.this.supertaupeTeam.addPlayer(Bukkit.getOfflinePlayer(uid));
@@ -1630,9 +1658,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 		unregisterHunterTeam();
 
 		if (check)
-		{
 			checkVictory();
-		}
 	}
 
 
@@ -1745,7 +1771,7 @@ public class ThePurgeOfSalem extends JavaPlugin
 			player.getWorld().dropItemNaturally(loc, kit);
 			
 			potion.setType(PotionType.INVISIBILITY);
-			potion.setHasExtendedDuration(true);
+			potion.setHasExtendedDuration(false);
 			potion.setSplash(false);
 			potion.apply(kit);
 			player.getWorld().dropItemNaturally(loc, kit);
